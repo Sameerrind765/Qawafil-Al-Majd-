@@ -1,0 +1,147 @@
+{
+  "entities": {
+    "Vehicle": {
+      "title": "Vehicle",
+      "description": "Represents a heavy vehicle, tanker, generator, or bus in the logistics fleet of Qawafil Al Majd Al Mithaliya.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique asset identifier" },
+        "plateNumber": { "type": "string", "description": "Physical license plate number" },
+        "type": { "type": "string", "enum": ["Water Tanker", "Heavy Trailer", "Flatbed Truck", "Passenger Bus", "Excavator"] },
+        "driverName": { "type": "string" },
+        "driverPhone": { "type": "string" },
+        "status": { "type": "string", "enum": ["Available", "In Transit", "Maintenance", "Off Duty"] },
+        "capacity": { "type": "string" },
+        "fuelLevel": { "type": "integer" },
+        "lastMaintenance": { "type": "string" }
+      },
+      "required": ["id", "plateNumber", "type", "driverName", "status"]
+    },
+    "CargoOrder": {
+      "title": "CargoOrder",
+      "description": "Represents a logistics delivery request, passenger journey booking, or heavy machinery transport order.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "clientName": { "type": "string" },
+        "clientPhone": { "type": "string" },
+        "vehicleType": { "type": "string" },
+        "origin": { "type": "string" },
+        "destination": { "type": "string" },
+        "cargoType": { "type": "string" },
+        "weightOrVolume": { "type": "string" },
+        "status": { "type": "string", "enum": ["Pending", "Assigned", "In Transit", "Completed", "Cancelled"] },
+        "assignedVehicleId": { "type": "string" },
+        "estimatedPrice": { "type": "number" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "clientName", "vehicleType", "origin", "destination", "status", "estimatedPrice", "createdAt"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account profile details loaded from Firebase Auth on verification.",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "plan": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["email", "createdAt"]
+    },
+    "Folder": {
+      "title": "Folder",
+      "description": "User created storage directory metadata.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["name", "createdAt"]
+    },
+    "UserFile": {
+      "title": "UserFile",
+      "description": "Document/file metadata stored under the user account.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "folderId": { "type": "string" },
+        "size": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["name", "size", "createdAt"]
+    },
+    "UserNote": {
+      "title": "UserNote",
+      "description": "Text notes capturing user logs and draft memos.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["title", "createdAt"]
+    },
+    "TeamMember": {
+      "title": "TeamMember",
+      "description": "A colleague or employee defined inside the user's crew workspace.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["name", "createdAt"]
+    },
+    "HomepageLead": {
+      "title": "HomepageLead",
+      "description": "Pilgrim or coordinator lead details captured from the homepage conversion system.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "service": { "type": "string" },
+        "caravan": { "type": "string" },
+        "customStation": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "status": { "type": "string", "enum": ["Pending", "Contacted", "Closed"] }
+      },
+      "required": ["id", "name", "phone", "service", "createdAt", "status"]
+    }
+  },
+  "firestore": {
+    "/leads/{leadId}": {
+      "schema": "HomepageLead",
+      "description": "Lead and booking submissions captured through the modern landing stage."
+    },
+    "/vehicles/{vehicleId}": {
+      "schema": "Vehicle",
+      "description": "Global list of physical vehicles and logistics fleets."
+    },
+    "/cargoOrders/{orderId}": {
+      "schema": "CargoOrder",
+      "description": "Logistics and shipping requests placed by clients or system dispatch."
+    },
+    "/users/{uid}": {
+      "schema": "UserProfile",
+      "description": "User specific metadata profile information."
+    },
+    "/users/{uid}/folders/{folderId}": {
+      "schema": "Folder",
+      "description": "Sub-folders owned entirely by the authenticated user."
+    },
+    "/users/{uid}/files/{fileId}": {
+      "schema": "UserFile",
+      "description": "Mock file attachments and operational documents."
+    },
+    "/users/{uid}/notes/{noteId}": {
+      "schema": "UserNote",
+      "description": "Personal developer and operator comments."
+    },
+    "/users/{uid}/teamMembers/{memberId}": {
+      "schema": "TeamMember",
+      "description": "Staff in user crew workspace."
+    }
+  }
+}

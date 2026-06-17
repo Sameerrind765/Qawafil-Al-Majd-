@@ -1,0 +1,254 @@
+export const translations = {
+  en: {
+    brandName: "Qawafil Al Majd",
+    brandSub: "Perfect Caravans of Glory - Transport & Contracting",
+    navHome: "Home",
+    navFleet: "Our Fleet",
+    navZiyarat: "Ziyarat Tours",
+    navContact: "Contact Us",
+    navBookNow: "Book Now",
+    navWhatsappCTA: "Chat Logistics",
+    langToggle: "العربية",
+    currency: "SAR",
+    seats: "Seats",
+    perDay: "Day",
+    search: "Search Available Fleet",
+    loading: "Dispatching telemetry...",
+    success: "Success",
+    
+    // SearchWidget
+    tabPointToPoint: "Point to Point",
+    tabHourly: "By Hour",
+    tabByKm: "By KM",
+    tabContract: "Full Contract",
+    
+    labelFrom: "Pickup City / Location",
+    labelTo: "Drop-off City / Location",
+    labelDate: "Pickup Date & Time",
+    labelPassengers: "Passengers",
+    labelLuggage: "Bags / Luggage",
+    labelHoursNeeded: "Hours Needed",
+    labelStartPoint: "Start Point",
+    labelEstDistance: "Est. Distance (KM)",
+    labelRouteType: "Route / Contract Type",
+    labelDuration: "Contract Duration",
+    labelGroupSize: "Expected Group Size",
+    labelBaseCity: "Base Operation City",
+    
+    selectCityPlaceholder: "Select Pick-up Station",
+    selectDropoffPlaceholder: "Select Destination Station",
+    selectHoursPlaceholder: "Choose hours (Min 4)",
+    selectRoutePlaceholder: "Choose contract logistics type",
+    
+    // Stations
+    makkah: "Makkah Al-Mukarramah",
+    madinah: "Al-Madinah Al-Munawwarah",
+    jeddah: "Jeddah (Airport / Hotels)",
+    riyadh: "Riyadh Metropolitan",
+    yanbu: "Yanbu Port City",
+    taif: "Taif Mountain Resort",
+    
+    // Contract types
+    routeDaily: "Daily Employee Shuttle Service",
+    routeIntercity: "Heavy Cargo & Inter-City Transit",
+    routeSeasonal: "Seasonal Pilgrimage (Hajj / Umrah) Logistics",
+    routeCorporate: "Corporate Logistics & Machinery Charter",
+    
+    // Filter controls
+    filterAll: "All Classes",
+    filterEconomy: "Economy",
+    filterBusiness: "Business Class",
+    filterVip: "VIP Luxury",
+    filterGroup: "Group Coaches",
+    
+    // Trust bar
+    whyTitle: "Why Qawafil Al Majd?",
+    trust1Title: "100% Regulated & Licensed",
+    trust1Desc: "Fully registered with the Transport General Authority (TGA) of Saudi Arabia.",
+    trust2Title: "Elite Local Chauffeurs",
+    trust2Desc: "English and Arabic speaking professionals with deep holy site route knowledge.",
+    trust3Title: "Upfront Transparent Rates",
+    trust3Desc: "Fixed flat-rate pricing with zero hidden surcharges or peak-time inflation.",
+    trust4Title: "24/7 Operations Room",
+    trust4Desc: "Active GPS telemetry tracking and responsive emergency assistance at all times.",
+    
+    // How it works
+    howTitle: "Seamless Booking Protocol",
+    step1Title: "1. Specify Route Detail",
+    step1Desc: "Select from point-to-point, hourly, distance-based, or corporate contract options above.",
+    step2Title: "2. Choose Your Caravan",
+    step2Desc: "Filter and view our certified coaches, VIP sedans, family minivans, or heavy transit.",
+    step3Title: "3. Direct Dispatch",
+    step3Desc: "Lock your reservation. Instant confirmation is sent straight to our 24/7 operations room.",
+    
+    // BookingModal
+    bookTitle: "Reserve Transport Vehicle",
+    fullName: "Your Full Name",
+    fullNamePlaceholder: "e.g., Abdullah Al-Ghamdi",
+    whatsappNum: "WhatsApp Number (with country code)",
+    whatsappNumPlaceholder: "e.g., +966 50 123 4567",
+    hotel: "Hotel Name / Pickup Location Details",
+    hotelPlaceholder: "e.g., Hilton Suite Makkah, or Terminal 1 Jeddah Airport",
+    specialRequests: "Special Logistics Notes / Requests",
+    specialRequestsPlaceholder: "e.g., Child booster seats, specific luggage volume, additional steps...",
+    confirmReservationLetter: "Book Caravan Now",
+    bookingSuccessTitle: "Booking Dispatched Successfully!",
+    bookingSuccessDesc: "Jazakallah Khayran. Our 24/7 operations desk has received your logs. An operator will instantly reach out to your WhatsApp to verify and dispatch your ride.",
+    closeWindow: "Return to Portal",
+    
+    // Ziyarat
+    ziyaratTitle: "Sacred Ziyarat & Holy Site Packages",
+    ziyaratDesc: "Bespoke, spiritually rich, and beautifully guided transportation tours of significant Islamic historical landmarks in the two holy regions.",
+    makkahTour: "Makkah Al-Mukarramah Holy Sites Tour",
+    makkahTourDesc: "Comprehensive safe visits to Cave of Hira, Cave of Thawr, Mount Arafat (Jabal al-Rahmah), Mina, and Muzdalifah.",
+    madinahTour: "Al-Madinah Al-Munawwarah Historical Tour",
+    madinahTourDesc: "Deep exploration of Quba Mosque, Mount Uhud Martyrs Memorial, Masjid al-Qiblatayn, and the Seven Historic Mosques.",
+    customTour: "Custom Multi-Day Multi-City Pilgrim Caravan",
+    customTourDesc: "Tailored luxury group itineraries connecting Jeddah, Makkah, and Madinah with flexible stopovers.",
+    packageIncludes: "Package contains professional local driver, full high-speed A/C, cold mineral water, and toll charges.",
+    durationHours: "Duration: ~4 Hours per tour",
+    
+    // Contact
+    contactTitle: "Operations HQ Control Desk",
+    contactSub: "Need heavy fleet dispatch, customized private packages, or immediate ground coordination?",
+    formLabelSubject: "Inquiry Division",
+    formLabelMessage: "Logistics Details",
+    formBtnSubmit: "Signal Dispatch Desk",
+    hqTitle: "Primary Fleet Control HQ",
+    hqAddress: "Al-Basateen District, Prince Sultan Road, Jeddah, Kingdom of Saudi Arabia",
+    hqEmail: "ops@qawafil-almajd.com",
+    hqPhone: "+966 12 654 3210",
+    hqWorkingHours: "Operations Desk: 24/7 Active",
+    
+    // Home Hero Page
+    heroTitle: "Premium Saudi Fleet Logistics",
+    heroSubtitle: "Safe, licensed, and highly reliable transport services across Jeddah, Makkah, Madinah, and all Kingdom routes.",
+    selectedFleetTitle: "Available Caravans & Vehicles"
+  },
+  ar: {
+    brandName: "قوافل المجد",
+    brandSub: "قوافل المجد المثالية للنقل والخدمات اللوجستية والمقاولات",
+    navHome: "الرئيسية",
+    navFleet: "أسطولنا",
+    navZiyarat: "برامج الزيارات الشريفة",
+    navContact: "اتصل بنا",
+    navBookNow: "احجز الآن",
+    navWhatsappCTA: "وتساب العمليات",
+    langToggle: "English",
+    currency: "ريال",
+    seats: "مقاعد",
+    perDay: "يوم",
+    search: "البحث في الأسطول المتاح",
+    loading: "جاري إرسال الإشارات الرقمية...",
+    success: "تم بنجاح",
+    
+    // SearchWidget
+    tabPointToPoint: "من نقطة إلى نقطة",
+    tabHourly: "بالساعة",
+    tabByKm: "بالكيلومتر",
+    tabContract: "عقود لوجستية كاملة",
+    
+    labelFrom: "مدينة الانطلاق / التجميع",
+    labelTo: "وجهة الوصول / المحطة",
+    labelDate: "تاريخ ووقت الاستلام",
+    labelPassengers: "عدد الركاب",
+    labelLuggage: "الحقائب / الأمتعة",
+    labelHoursNeeded: "الساعات المطلوبة",
+    labelStartPoint: "نقطة البداية المحددة",
+    labelEstDistance: "المسافة التقديرية (كم)",
+    labelRouteType: "نوع الاتفاقية والمسار",
+    labelDuration: "مدة التعاقد اللوجستي",
+    labelGroupSize: "الحجم المتوقع للمجموعة",
+    labelBaseCity: "مدينة العمليات التشغيلية",
+    
+    selectCityPlaceholder: "اختر نقطة الانطلاق",
+    selectDropoffPlaceholder: "اختر نقطة الوصول",
+    selectHoursPlaceholder: "حدد عدد الساعات (أدنى حد 4)",
+    selectRoutePlaceholder: "حدد نوع التعاقد التشغيلي",
+    
+    // Stations
+    makkah: "مكة المكرمة (الحرم / الفنادق)",
+    madinah: "المدينة المنورة (المنطقة المركزية)",
+    jeddah: "جدة (المطار / الفنادق الرئيسية)",
+    riyadh: "منطقة الرياض الكبرى",
+    yanbu: "مدينة ينبع الصناعية والميناء",
+    taif: "مدينة الطائف السياحية",
+    
+    // Contract types
+    routeDaily: "شاتل يومي منتظم لموظفي ومنتسبي الشركات",
+    routeIntercity: "شحن ثقيل ونقل بضائع لوجستية بين المدن",
+    routeSeasonal: "تنقلات دينية للمواسم (حج وعمرة) قوافل متكاملة",
+    routeCorporate: "إسناد نقل تشغيلي لمشروعات النقل والمقاولات",
+    
+    // Filter controls
+    filterAll: "جميع الفئات",
+    filterEconomy: "الاقتصادية المريحة",
+    filterBusiness: "رجال الأعمال والممتازة",
+    filterVip: "الفخامة والـ VIP",
+    filterGroup: "حافلات النقل الجماعي",
+    
+    // Trust bar
+    whyTitle: "لماذا يثق العملاء في قوافل المجد؟",
+    trust1Title: "مرخصة ونظامية بالكامل",
+    trust1Desc: "سجل كامل وتراخيص رسمية معتمدة من الهيئة العامة للنقل في المملكة.",
+    trust2Title: "سائقون ذوو كفاءة عالية",
+    trust2Desc: "كوادر مهنية ومحترفة تتحدث العربية والإنجليزية بمعرفة دقيقة بجميع مسارات المشاعر.",
+    trust3Title: "تسعير ثابت واضح معلن",
+    trust3Desc: "أسعار ثابتة للمسارات لا تخضع للرسوم الإضافية الخفية أو زيادة أسعار الذروة.",
+    trust4Title: "غرفة تحكم ومتابعة 24/7",
+    trust4Desc: "أنظمة تتبع حي وتواصل مستمر لضمان أعلى معايير السلامة التشغيلية.",
+    
+    // How it works
+    howTitle: "بروتوكول حجز المركبات والخدمات اللوجستية",
+    step1Title: "١. تحديد نوع المسار والخدمة",
+    step1Desc: "اختر الخدمة المناسبة من حجز النقطة الواحدة، النقل بالساعة، المسافة الطويلة، أو العقود.",
+    step2Title: "٢. اختيار الناقلة الملائمة",
+    step2Desc: "تصفح أسطول مركباتنا المجهز من سيارات صالون فاخرة، ميني فان عائلي، أو حافلات ركاب.",
+    step3Title: "٣. التفويج والمتابعة الفورية",
+    step3Desc: "أكد طلبك لتنتقل الإشارة فوراً إلى أقرب مركبة تشغيلية عبر تطبيق تتبع العمليات.",
+    
+    // BookingModal
+    bookTitle: "طلب حجز وتخصيص مركبة",
+    fullName: "الاسم الكريم ثلاثياً",
+    fullNamePlaceholder: "مثال: عبدالله الغامدي",
+    whatsappNum: "رقم الواتساب النشط (مع المفتاح الدولي)",
+    whatsappNumPlaceholder: "مثال: +966 50 123 4567",
+    hotel: "موقع التجمع أو الفندق بالتفصيل",
+    hotelPlaceholder: "مثال: أجنحة هيلتون مكة، أو الصالة رقم 1 بمطار الملك عبدالعزيز",
+    specialRequests: "ملاحظات أو متطلبات خاصة بالخدمة",
+    specialRequestsPlaceholder: "مثال: مقاعد أطفال، حمولة حقائب مخصصة، رغبة في نقاط توقف معينة...",
+    confirmReservationLetter: "إرسال طلب حجز الناقلة",
+    bookingSuccessTitle: "تم توجيه الرحلة وجاري معالجتها!",
+    bookingSuccessDesc: "جزاك الله خيراً. تلقى مركز العمليات طلبك التشغيلي بنجاح. سيقوم مأمور العمليات بالتواصل المباشر معك عبر الواتساب لتأكيد الخدمة وتوجيه السائق.",
+    closeWindow: "العودة للمنصة",
+    
+    // Ziyarat
+    ziyaratTitle: "برامج الزيارات الدينية والتاريخية بمكة والمدينة",
+    ziyaratDesc: "رحلات دينية مميزة غنية بالوقائع الإيمانية من أجل زيارة المعالم التاريخية المعتمدة في مكة المكرمة والمدينة المنورة برفقة سائقين مهنيين على معرفة تامة.",
+    makkahTour: "برنامج زيارة المشاعر المقدسة بمكة",
+    makkahTourDesc: "جولة آمنة ومنظمة تشمل غار حراء، غار ثور، جبل الرحمة (عرفات)، مشعر منى، ومشعر مزدلفة.",
+    madinahTour: "برنامج زيارة المعالم النبوية بالمدينة",
+    madinahTourDesc: "جولة فسيحة تغطي مسجد قباء أول مسجد أسس على التقوى، جبل أحد ومقبرة الشهداء، مسجد القبلتين، والمساجد السبعة.",
+    customTour: "قافلة دينية مخصصة لعدة أيام وتنقلات بين المدن",
+    customTourDesc: "مسار مصمم خصيصاً للمجموعات والوفود والحملات العائلية لربط جدة ومكة والمدينة بمرونة وانسيابية.",
+    packageIncludes: "تشمل الجولة السائق المهني، تكييف متكامل فائق البرودة، قوارير ماء بارد، ورسوم الطرق السريعة.",
+    durationHours: "المدة التقريبية: 4 ساعات للجولة الواحدة",
+    
+    // Contact
+    contactTitle: "مركز التواصل وقسم تنسيق العمليات",
+    contactSub: "ترغب في تفويج أساطيل من المركبات، رحلات مخصصة لشركتك، أو تنسيق نقل بري فوري؟ عملياتنا نشطة الآن.",
+    formLabelSubject: "قسم التواصل / الطلب",
+    formLabelMessage: "تفاصيل الاحتياج اللوجستي",
+    formBtnSubmit: "إرسال الإشارة التشغيلية",
+    hqTitle: "المقر الرئيسي لإدارة الأسطول",
+    hqAddress: "حي البساتين، طريق الأمير سلطان، جدة، المملكة العربية السعودية",
+    hqEmail: "ops@qawafil-almajd.com",
+    hqPhone: "+966 12 654 3210",
+    hqWorkingHours: "مركز التحكم والعمليات: يعمل على مدار الساعة 24/7 دون توقف",
+    
+    // Home Hero Page
+    heroTitle: "قوافل المجد الفاخرة للحلول اللوجستية",
+    heroSubtitle: "خدمات نقل مرخصة، آمنة وموثوقة تغطي مكة المكرمة، المدينة المنورة، جدة، وكافة مدن ومنافذ المملكة.",
+    selectedFleetTitle: "الناقلات والأساطيل المتاحة حالياً"
+  }
+};

@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #C0272D;
+  --color-brand-dark: #8B1A1E;
+  --color-brand-light: #FAECEC;
+  --color-brand-bg-dark: #0f0203;
+  --font-sans: "Inter", "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter", "IBM Plex Sans Arabic", sans-serif;
+}
+
+body {
+  background-color: #fefefe;
+  color: #1a1a1a;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+/* Custom styles for logical properties or generic styling */
+.rtl {
+  font-family: "IBM Plex Sans Arabic", "Inter", sans-serif;
+}
+.ltr {
+  font-family: "Inter", sans-serif;
+}

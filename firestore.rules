@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Leads / Pilgrim inquiries: Public can submit them, but only authenticated operators can read, edit or delete them.
+    match /leads/{leadId} {
+      allow read, update, delete: if isSignedIn();
+      allow create: if true;
+    }
+
+    // Vehicles: Only authenticated operators can view or manage them on the dashboard.
+    match /vehicles/{vehicleId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // Cargo Orders: Only authenticated operators can view or manage them on the dashboard.
+    match /cargoOrders/{orderId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // User Profile matching: Allow full collection queries for authenticated admins, lock modifications to the profile owner.
+    match /users/{uid} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && request.auth.uid == uid;
+
+      match /folders/{folderId} {
+        allow read, write: if isSignedIn() && request.auth.uid == uid;
+      }
+
+      match /files/{fileId} {
+        allow read, write: if isSignedIn() && request.auth.uid == uid;
+      }
+
+      match /notes/{noteId} {
+        allow read, write: if isSignedIn() && request.auth.uid == uid;
+      }
+
+      match /teamMembers/{memberId} {
+        allow read, write: if isSignedIn() && request.auth.uid == uid;
+      }
+    }
+  }
+}

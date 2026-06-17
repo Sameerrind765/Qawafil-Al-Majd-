@@ -1,0 +1,300 @@
+import { Vehicle, CargoOrder, MaintenanceJob, SystemLog } from './types';
+
+// Coordinates of major logistics hubs in Saudi Arabia
+export const SAUDI_LOGISTICS_HUBS = [
+  { city: 'Riyadh', name: 'Riyadh HQ Logistics Center', lat: 24.7136, lng: 46.6753, arName: 'مركز لوجستيات الرياض الرئيسي' },
+  { city: 'Jeddah', name: 'Jeddah Seaport Container Terminal', lat: 21.5433, lng: 39.1728, arName: 'محطة حاويات ميناء جدة' },
+  { city: 'Dammam', name: 'King Abdulaziz Port Dammam Hub', lat: 26.4207, lng: 50.0888, arName: 'ميناء الملك عبد العزيز بالدمام' },
+  { city: 'Mecca', name: 'Mecca Pilgrimage Transport Station', lat: 21.3891, lng: 39.8579, arName: 'محطة نقل الحجاج بمكة المكرمة' },
+  { city: 'Medina', name: 'Medina Regional Freight Terminal', lat: 24.4672, lng: 39.6111, arName: 'محطة شحن منطقة المدينة المنورة' },
+  { city: 'Jubail', name: 'Jubail Industrial Logistics Park', lat: 27.0112, lng: 49.6583, arName: 'منطقة الجبيل اللوجستية الصناعية' },
+  { city: 'Yanbu', name: 'Yanbu Industrial Harbor Supply Hub', lat: 24.0891, lng: 38.0637, arName: 'مركز إمدادات ينبع الصناعي' }
+];
+
+export const INITIAL_VEHICLES: Vehicle[] = [
+  {
+    id: 'QMF-101',
+    plateNumber: 'أ ب ج ١ ٢ ٣ ٤',
+    type: 'Water Tanker',
+    driverName: 'Mohammed Al-Sharif',
+    driverPhone: '+966 50 123 4567',
+    status: 'In Transit',
+    location: { lat: 24.6300, lng: 46.7100, city: 'Riyadh' },
+    capacity: '19,000 Liters',
+    fuelLevel: 78,
+    lastMaintenance: '2026-05-10'
+  },
+  {
+    id: 'QMF-102',
+    plateNumber: 'د ر س ٥ ٦ ٧ ٨',
+    type: 'Heavy Trailer',
+    driverName: 'Yaseen Al-Habshi',
+    driverPhone: '+966 55 987 6543',
+    status: 'Available',
+    location: { lat: 21.5433, lng: 39.1728, city: 'Jeddah' },
+    capacity: '25 Tons',
+    fuelLevel: 92,
+    lastMaintenance: '2026-06-01'
+  },
+  {
+    id: 'QMF-103',
+    plateNumber: 'ط ي ر ٩ ٠ ٢ ٤',
+    type: 'Flatbed Truck',
+    driverName: 'Osama Ibrahim',
+    driverPhone: '+966 54 333 8811',
+    status: 'In Transit',
+    location: { lat: 26.2000, lng: 50.1000, city: 'Dammam' },
+    capacity: '15 Tons',
+    fuelLevel: 45,
+    lastMaintenance: '2026-04-18'
+  },
+  {
+    id: 'QMF-104',
+    plateNumber: 'ع س ل ٣ ٣ ٩ ٩',
+    type: 'Passenger Bus',
+    driverName: 'Abdulrahman Qahtani',
+    driverPhone: '+966 56 112 0044',
+    status: 'Available',
+    location: { lat: 21.3891, lng: 39.8579, city: 'Mecca' },
+    capacity: '50 Seats',
+    fuelLevel: 85,
+    lastMaintenance: '2026-05-28'
+  },
+  {
+    id: 'QMF-105',
+    plateNumber: 'م ن ك ٧ ٧ ٥ ٥',
+    type: 'Excavator',
+    driverName: 'Khalid Masoud',
+    driverPhone: '+966 53 777 5522',
+    status: 'Maintenance',
+    location: { lat: 27.0112, lng: 49.6583, city: 'Jubail' },
+    capacity: 'Heavy Duty Category IV',
+    fuelLevel: 15,
+    lastMaintenance: '2026-06-13'
+  },
+  {
+    id: 'QMF-106',
+    plateNumber: 'هـ ب ط ٢ ٢ ٤ ٤',
+    type: 'Water Tanker',
+    driverName: 'Saeed Al-Zahrani',
+    driverPhone: '+966 59 444 3322',
+    status: 'Off Duty',
+    location: { lat: 24.4672, lng: 39.6111, city: 'Medina' },
+    capacity: '19,000 Liters',
+    fuelLevel: 100,
+    lastMaintenance: '2026-06-05'
+  }
+];
+
+export const INITIAL_CARGO_ORDERS: CargoOrder[] = [
+  {
+    id: 'ORD-9021',
+    clientName: 'Al-Khobar Heights Contracting',
+    clientPhone: '+966 50 111 2222',
+    vehicleType: 'Heavy Trailer',
+    origin: 'Dammam Port',
+    destination: 'Riyadh Depot B',
+    cargoType: 'Steel Rebar Bundles',
+    weightOrVolume: '24 Tons',
+    status: 'In Transit',
+    assignedVehicleId: 'QMF-103',
+    estimatedPrice: 4200,
+    createdAt: '2026-06-14T08:30:00Z',
+    notes: 'Urgent reinforcement bars for District 5 project.'
+  },
+  {
+    id: 'ORD-9022',
+    clientName: 'Saudi Water Distributing Co.',
+    clientPhone: '+966 55 333 4444',
+    vehicleType: 'Water Tanker',
+    origin: 'Jeddah Desalination Plant B',
+    destination: 'Makkah Construction Site C',
+    cargoType: 'Potable Drinking Water',
+    weightOrVolume: '19,000 Liters',
+    status: 'Pending',
+    estimatedPrice: 1350,
+    createdAt: '2026-06-14T11:15:00Z',
+    notes: 'Scheduled daily bulk water refill.'
+  },
+  {
+    id: 'ORD-9023',
+    clientName: 'Hajj & Umrah Tourism Corp',
+    clientPhone: '+966 56 777 8888',
+    vehicleType: 'Passenger Bus',
+    origin: 'King Abdulaziz Airport Jeddah',
+    destination: 'Medina Al Mizan Hotel',
+    cargoType: 'Pilgrimage Passengers',
+    weightOrVolume: '45 Passengers',
+    status: 'Completed',
+    assignedVehicleId: 'QMF-104',
+    estimatedPrice: 3200,
+    createdAt: '2026-06-13T09:00:00Z',
+    notes: 'Mecca detour verified, luxury class ride expected.'
+  },
+  {
+    id: 'ORD-9024',
+    clientName: 'SABIC Petrochemical Logistics',
+    clientPhone: '+966 53 444 5555',
+    vehicleType: 'Heavy Trailer',
+    origin: 'Jubail Industrial Port',
+    destination: 'Riyadh Compound 12',
+    cargoType: 'Polymer Pallets',
+    weightOrVolume: '22 Tons',
+    status: 'Assigned',
+    assignedVehicleId: 'QMF-102',
+    estimatedPrice: 5100,
+    createdAt: '2026-06-14T14:00:00Z',
+    notes: 'Secure flatbed with robust weatherproof locks.'
+  }
+];
+
+export const INITIAL_MAINTENANCE_JOBS: MaintenanceJob[] = [
+  {
+    id: 'MNT-401',
+    vehicleId: 'QMF-105',
+    plateNumber: 'م ن ك ٧ ٧ ٥ ٥',
+    vehicleType: 'Excavator',
+    issue: 'Hydraulic arm pressure leak & filter replacement',
+    cost: 3400,
+    status: 'In Progress',
+    date: '2026-06-13'
+  },
+  {
+    id: 'MNT-402',
+    vehicleId: 'QMF-101',
+    plateNumber: 'أ ب ج ١ ٢ ٣ ٤',
+    vehicleType: 'Water Tanker',
+    issue: 'Rear tire replacement and brake booster check',
+    cost: 1800,
+    status: 'Resolved',
+    date: '2026-06-10'
+  }
+];
+
+export const INITIAL_LOGS: SystemLog[] = [
+  {
+    id: 'LOG-001',
+    timestamp: '2026-06-14T13:45:00Z',
+    type: 'success',
+    actor: 'System Auto Dispatch',
+    message: 'Auto routing optimization completed for all Jeddah-Mecca tracks.'
+  },
+  {
+    id: 'LOG-002',
+    timestamp: '2026-06-14T14:10:00Z',
+    type: 'info',
+    actor: 'Operation Officer Sameer',
+    message: 'Vehicle QMF-102 status set to Available at Jeddah Depot.'
+  },
+  {
+    id: 'LOG-003',
+    timestamp: '2026-06-14T14:32:00Z',
+    type: 'warning',
+    actor: 'Maintenance Hub',
+    message: 'Excavator QMF-105 reported Hydraulic Pressure drop. Dispatched parts.'
+  }
+];
+
+// ARABIC & ENGLISH TRANSLATION RESOURCE
+export const TRANSLATIONS = {
+  en: {
+    brandName: 'Qawafil Al Majd Al Mithaliya',
+    brandSub: 'Perfect Caravans of Glory - Transport & Contracting Logistics Hub',
+    dashboard: 'Dashboard',
+    fleetTracking: 'Live Fleet Map',
+    orderBooking: 'Lanes & Cargo Booking',
+    fleetRoster: 'Vehicle & Truck Roster',
+    maintenance: 'Maintenance Board',
+    systemLogs: 'System Audit Logs',
+    activeShipments: 'Active Trips',
+    availableFleets: 'Standby Fleets',
+    criticalAlerts: 'Svc Alerts',
+    completedTrips: 'Trips Completed',
+    newCargoBooking: 'Dispatch New Cargo',
+    addVehicle: 'Register New Asset',
+    trackShipment: 'Track Dispatch Lane',
+    plateText: 'Plate Number',
+    driver: 'Assignee / Driver',
+    capacity: 'Max Load / Capacity',
+    fuel: 'Fuel Indicator',
+    status: 'Status',
+    actions: 'Control Panel',
+    arabicPlate: 'Arabic Plate Letters/Numbers',
+    chooseType: 'Select Rig Class',
+    origin: 'Source Hub',
+    destination: 'Delivery Destination',
+    weightVol: 'Tonnage / Volume',
+    estimatedPrice: 'Est. Shipping Cost',
+    priceCurrency: 'SAR (Saudi Riyal)',
+    searchLabel: 'Search order, vehicle, or operator name...',
+    allCities: 'Saudi Ports & Logistics Hubs',
+    chatPlaceholder: 'Ping active vehicle operators on the lane...',
+    sentMsg: 'Lanes Office',
+    driverStatus: 'Driver Alert Node',
+    createOrderSuccess: 'Cargo consignment registered in Firebase!',
+    createVehicleSuccess: 'Heavy utility asset appended to Firebase!',
+    statusPending: 'Pending Dispatch',
+    statusAssigned: 'Rig Assigned',
+    statusTransit: 'In Transit',
+    statusCompleted: 'Arrived Safe',
+    statusCancelled: 'Aborted Cargo',
+    langToggle: 'بالعربية',
+    saveBtn: 'Save & Commit',
+    cancelBtn: 'Close Dialog',
+    statsChartTitle: 'Revenue Trend per Industrial Destination (SAR)',
+    activeDutyPct: 'Fleet Mobility Coef',
+    driverNamePlaceholder: 'e.g. Salim Al Hosni',
+    driverPhonePlaceholder: 'e.g. +966 50 123 4567',
+    capacityPlaceholder: 'e.g. 19,000 L / 24 Tons',
+  },
+  ar: {
+    brandName: 'قوافل المجد المثالية',
+    brandSub: 'قوافل المجد المثالية للمقاولات والخدمات واللوجستيات',
+    dashboard: 'لوحة التحكم والمتابعة',
+    fleetTracking: 'الخريطة المباشرة والمسارات',
+    orderBooking: 'حجز الحمولات والطلبيات',
+    fleetRoster: 'أسطول الناقلات والمعدات الثقيلة',
+    maintenance: 'الصيانة والورش الفنية',
+    systemLogs: 'سجلات العمليات والنظام',
+    activeShipments: 'الرحلات النشطة',
+    availableFleets: 'الناقلات المتاحة',
+    criticalAlerts: 'تنبيهات الصيانة',
+    completedTrips: 'الرحلات المكتملة',
+    newCargoBooking: 'تسجيل شحنة أو حمولة جديدة',
+    addVehicle: 'تسجيل مركبة في الأسطول',
+    trackShipment: 'مسار تتبع الشحنة الرقمية',
+    plateText: 'رقم اللوحة الرقمية',
+    driver: 'السائق المعين',
+    capacity: 'السعة القصوى / الحمولة',
+    fuel: 'مؤشر الوقود',
+    status: 'الحالة التشغيلية',
+    actions: 'التحكم والتوجيه',
+    arabicPlate: 'حروف وأرقام اللوحة العربية',
+    chooseType: 'اختر تصنيف الناقلة/المركبة',
+    origin: 'موقع الاستلام (المنشأ)',
+    destination: 'موقع التسليم (الوجهة)',
+    weightVol: 'الحجم / الوزن الكلي',
+    estimatedPrice: 'التكلفة اللوجستية المقدرة',
+    priceCurrency: 'ريال سعودي',
+    searchLabel: 'ابحث عن شحنة، رقم لوحة، أو اسم سائق...',
+    allCities: 'الموانئ والمراكز اللوجستية بالمملكة',
+    chatPlaceholder: 'أرسل تنبيهاً أو رسالة إلى ناقلات الشحن النشطة...',
+    sentMsg: 'مكتب العمليات',
+    driverStatus: 'تنبيه السائق المباشر',
+    createOrderSuccess: 'تم تسجيل حمولة الشحن في قواعد بيانات الفايربيس!',
+    createVehicleSuccess: 'تمت إضافة المعدة الثقيلة لأسطول الفايربيس بنجاح!',
+    statusPending: 'قيد الانتظار',
+    statusAssigned: 'تم تعيين ناقلة',
+    statusTransit: 'في الطريق لتسليم',
+    statusCompleted: 'تم التسليم بأمان',
+    statusCancelled: 'ملغاة',
+    langToggle: 'English UI',
+    saveBtn: 'حفظ وتأكيد البيانات',
+    cancelBtn: 'إغلاق النافذة',
+    statsChartTitle: 'توزيع الإيرادات حسب المدن والوجهات الصناعية (بالريال السعودي)',
+    activeDutyPct: 'معامل حركة الأسطول',
+    driverNamePlaceholder: 'مثال: يوسف الشمري',
+    driverPhonePlaceholder: 'مثال: 966501234567+',
+    capacityPlaceholder: 'مثال: 19,000 لتر أو 25 طن',
+  }
+};

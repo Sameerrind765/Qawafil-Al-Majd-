@@ -1,0 +1,6 @@
+{
+  "name": "Qawafil Al Majd Al Mithaliya",
+  "description": "Premium fleet management, logistics tracking, and transport booking dashboard for Qawafil Al Majd Al Mithaliya.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
