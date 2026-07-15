@@ -108,12 +108,34 @@
         "status": { "type": "string", "enum": ["Pending", "Contacted", "Closed"] }
       },
       "required": ["id", "name", "phone", "service", "createdAt", "status"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Represents an accounting ledger entry (debit or credit) generated from completed bookings or manually made.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["credit", "debit"] },
+        "amount": { "type": "number" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "referenceId": { "type": "string" },
+        "date": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "createdBy": { "type": "string" }
+      },
+      "required": ["id", "type", "amount", "title", "date", "createdAt", "createdBy"]
     }
   },
   "firestore": {
     "/leads/{leadId}": {
       "schema": "HomepageLead",
       "description": "Lead and booking submissions captured through the modern landing stage."
+    },
+    "/transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "Ledger transactions representing credits (revenues) and debits (fuel, repairs, payroll, etc.)."
     },
     "/vehicles/{vehicleId}": {
       "schema": "Vehicle",

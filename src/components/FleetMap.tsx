@@ -39,7 +39,7 @@ export default function FleetMap({ vehicles, selectedVehicle, onSelectVehicle, l
       {/* Top Map Header */}
       <div className="flex items-center justify-between mb-3 border-b border-slate-100 pb-3">
         <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-ping" />
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
           <span className="font-sans text-xs text-slate-800 uppercase tracking-wider font-bold">
             {lang === 'en' ? 'Live Telemetry System' : 'الراصد الملاحي المباشر'}
           </span>
@@ -50,7 +50,7 @@ export default function FleetMap({ vehicles, selectedVehicle, onSelectVehicle, l
             {lang === 'en' ? 'Hubs' : 'المراكز'}
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded bg-blue-600 inline-block" />
+            <span className="w-2.5 h-2.5 rounded bg-brand-primary inline-block" />
             {lang === 'en' ? 'Active Trucks' : 'الناقلات'}
           </span>
           <span className="flex items-center gap-1">
@@ -227,7 +227,7 @@ export default function FleetMap({ vehicles, selectedVehicle, onSelectVehicle, l
             className="absolute bottom-3 left-3 right-3 bg-white/95 border border-slate-200 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 backdrop-blur-md shadow-lg"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
+              <div className="w-10 h-10 rounded-lg bg-brand-light border border-brand-primary/20 flex items-center justify-center text-brand-primary">
                 <Truck className="w-5 h-5" />
               </div>
               <div>
@@ -248,12 +248,12 @@ export default function FleetMap({ vehicles, selectedVehicle, onSelectVehicle, l
                 <span className="text-[10px] text-slate-400 block font-mono font-bold uppercase">{lang === 'en' ? 'Status' : 'الحالة'}</span>
                 <span className={`inline-flex items-center gap-1.5 text-xs font-bold font-mono ${
                   selectedVehicle.status === 'Available' ? 'text-emerald-600' :
-                  selectedVehicle.status === 'In Transit' ? 'text-blue-600' :
+                  selectedVehicle.status === 'In Transit' ? 'text-brand-primary' :
                   selectedVehicle.status === 'Maintenance' ? 'text-rose-600' : 'text-slate-500'
                 }`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${
                     selectedVehicle.status === 'Available' ? 'bg-emerald-500' :
-                    selectedVehicle.status === 'In Transit' ? 'bg-blue-500' :
+                    selectedVehicle.status === 'In Transit' ? 'bg-brand-light0' :
                     selectedVehicle.status === 'Maintenance' ? 'bg-rose-500' : 'bg-slate-400'
                   }`} />
                   {selectedVehicle.status}
@@ -262,7 +262,7 @@ export default function FleetMap({ vehicles, selectedVehicle, onSelectVehicle, l
 
               <div className="text-right border-l border-slate-100 pl-4">
                 <span className="text-[10px] text-slate-400 block font-mono font-bold uppercase">{lang === 'en' ? 'Fuel / Power' : 'مؤشر الوقود'}</span>
-                <span className="text-xs font-bold text-blue-600 font-mono">{selectedVehicle.fuelLevel}%</span>
+                <span className="text-xs font-bold text-brand-primary font-mono">{selectedVehicle.fuelLevel}%</span>
               </div>
             </div>
           </motion.div>

@@ -63,7 +63,7 @@ export default function AddVehicleModal({ onClose, onSave, lang }: AddVehicleMod
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white">
           <div className="flex items-center gap-2">
-            <Truck className="w-5 h-5 text-blue-700 animate-pulse" />
+            <Truck className="w-5 h-5 text-brand-primary animate-pulse" />
             <h3 className="text-base font-bold text-slate-800 tracking-wide">
               {t.addVehicle}
             </h3>
@@ -90,7 +90,7 @@ export default function AddVehicleModal({ onClose, onSave, lang }: AddVehicleMod
                 value={plateNumber}
                 onChange={(e) => setPlateNumber(e.target.value)}
                 placeholder="e.g. د ر س ٥ ٦ ٧ ٨"
-                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-blue-700 font-bold focus:outline-none focus:border-blue-500 uppercase"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-brand-primary font-bold focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 uppercase"
               />
             </div>
             <div>
@@ -100,7 +100,7 @@ export default function AddVehicleModal({ onClose, onSave, lang }: AddVehicleMod
               <select
                 value={vehicleType}
                 onChange={(e) => setVehicleType(e.target.value as any)}
-                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-blue-500 font-semibold"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 font-semibold"
               >
                 <option value="Water Tanker">Water Tanker</option>
                 <option value="Heavy Trailer">Heavy Trailer</option>
@@ -122,7 +122,7 @@ export default function AddVehicleModal({ onClose, onSave, lang }: AddVehicleMod
                 value={driverName}
                 onChange={(e) => setDriverName(e.target.value)}
                 placeholder={t.driverNamePlaceholder}
-                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-blue-500"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30"
               />
             </div>
             <div>
@@ -135,7 +135,7 @@ export default function AddVehicleModal({ onClose, onSave, lang }: AddVehicleMod
                 value={driverPhone}
                 onChange={(e) => setDriverPhone(e.target.value)}
                 placeholder={t.driverPhonePlaceholder}
-                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-blue-500"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30"
               />
             </div>
           </div>
@@ -150,7 +150,7 @@ export default function AddVehicleModal({ onClose, onSave, lang }: AddVehicleMod
                 value={capacity}
                 onChange={(e) => setCapacity(e.target.value)}
                 placeholder={t.capacityPlaceholder}
-                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-blue-500"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30"
               />
             </div>
             <div>
@@ -160,7 +160,7 @@ export default function AddVehicleModal({ onClose, onSave, lang }: AddVehicleMod
               <select
                 value={selectedCity}
                 onChange={(e) => setSelectedCity(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-blue-500"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30"
               >
                 {CITIES_COORDS.map((c) => (
                   <option key={c.city} value={c.city}>{c.city}</option>
@@ -185,7 +185,7 @@ export default function AddVehicleModal({ onClose, onSave, lang }: AddVehicleMod
             <button
               id="submit-register-vehicle-button"
               type="submit"
-              className="flex-1 bg-blue-700 hover:bg-blue-800 text-white text-sm font-bold rounded-lg py-2.5 transition-colors duration-200 shadow-sm cursor-pointer"
+              className="flex-1 bg-brand-primary hover:bg-brand-dark text-white text-sm font-bold rounded-lg py-2.5 transition-colors duration-200 shadow-sm cursor-pointer"
             >
               {t.saveBtn}
             </button>

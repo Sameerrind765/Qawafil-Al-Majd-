@@ -97,5 +97,19 @@ export interface HomepageLead {
   status: 'Pending' | 'Contacted' | 'Closed';
   date?: string;
   time?: string;
+  price?: number; // Estimated booking revenue SAR
+}
+
+export interface Transaction {
+  id: string;
+  type: 'credit' | 'debit';
+  amount: number;
+  title: string;
+  description: string;
+  category?: 'Leads' | 'Cargo' | 'Fuel' | 'Maintenance' | 'Payroll' | 'General';
+  referenceId?: string; // leadId or orderId or vehicleId
+  date: string; // YYYY-MM-DD
+  createdAt: string; // ISO String
+  createdBy: string; // User Name / Dispatched Name
 }
 

@@ -90,6 +90,14 @@ export default function Footer() {
             © 2026 {t.brandName} Integrated Hub. All rights reserved.
           </div>
           <div className="flex items-center gap-4">
+            <Link 
+              to="/admin" 
+              className="hover:text-brand-primary text-slate-400 transition-colors duration-200 decoration-transparent font-bold flex items-center gap-1"
+              id="footer-admin-link"
+            >
+              🔐 <span>{lang === 'en' ? 'Admin Portal' : 'بوابة الإدارة'}</span>
+            </Link>
+            <span className="text-slate-700">|</span>
             <span className="hover:text-slate-300 cursor-pointer flex items-center gap-1.5 font-bold">
               <ShieldAlert className="w-3.5 h-3.5 text-brand-primary" />
               <span>Minister of Transport Approved (TGA License)</span>

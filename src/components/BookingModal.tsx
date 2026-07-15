@@ -97,6 +97,13 @@ export default function BookingModal({ isOpen, onClose, selectedVehicle, booking
         ? `Date: ${finalDate} | Time: ${finalTime} | Pax: ${bookingDetails.passengers} | Luggage: ${bookingDetails.luggage} | Hotel: ${pickupHotel} | Notes: ${specialRequests}`
         : `Hotel: ${pickupHotel} | Notes: ${specialRequests}`;
       
+      const rawPrice = selectedVehicle?.price;
+      const parsedPrice = typeof rawPrice === 'number' 
+        ? rawPrice 
+        : rawPrice 
+          ? parseFloat(String(rawPrice).replace(/[^\d.]/g, '')) || 1200 
+          : 1200;
+
       const newLead: HomepageLead = {
         id: generatedId,
         name: fullName.trim(),
@@ -107,7 +114,8 @@ export default function BookingModal({ isOpen, onClose, selectedVehicle, booking
         createdAt: serverTimestamp(),
         status: 'Pending',
         date: finalDate,
-        time: finalTime
+        time: finalTime,
+        price: parsedPrice
       };
 
       await saveLead(newLead);
@@ -157,7 +165,7 @@ export default function BookingModal({ isOpen, onClose, selectedVehicle, booking
     >
       <div 
         ref={modalRef}
-        className="bg-white rounded-2xl shadow-2xl border border-rose-100 max-w-lg w-full overflow-hidden transform transition-all duration-300"
+        className="bg-white rounded-2xl shadow-2xl border border-rose-100 max-w-lg w-full max-h-[calc(100vh-40px)] flex flex-col overflow-hidden transform transition-all duration-300"
         id="booking-modal-card"
       >
         {/* Header bar */}
@@ -201,10 +209,10 @@ export default function BookingModal({ isOpen, onClose, selectedVehicle, booking
         )}
 
         {/* Modal body */}
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto flex-1">
           {isSuccess ? (
             <div className="text-center py-6" id="booking-success-container">
-              <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 mx-auto mb-5 animate-bounce">
+              <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 mx-auto mb-5">
                 <CheckCircle2 className="w-10 h-10" />
               </div>
               <h4 className="text-lg font-extrabold text-slate-900 mb-2">

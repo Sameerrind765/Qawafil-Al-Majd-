@@ -66,7 +66,7 @@ export default function Contact() {
           <div className="bg-rose-50/20 border border-rose-100 rounded-2xl p-6 sm:p-8" id="contact-form-container">
             {success ? (
               <div className="text-center py-8">
-                <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-650 mx-auto mb-5 animate-bounce">
+                <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-650 mx-auto mb-5">
                   <CheckCircle2 className="w-10 h-10 text-emerald-600" />
                 </div>
                 <h4 className="text-base font-extrabold text-slate-900 mb-2">

@@ -67,7 +67,7 @@ export default function CreateOrderModal({ onClose, onSave, lang }: CreateOrderM
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white">
           <div className="flex items-center gap-2">
-            <Box className="w-5 h-5 text-blue-700 animate-pulse" />
+            <Box className="w-5 h-5 text-brand-primary animate-pulse" />
             <h3 className="text-base font-bold text-slate-800 tracking-wide">
               {t.newCargoBooking}
             </h3>
@@ -95,7 +95,7 @@ export default function CreateOrderModal({ onClose, onSave, lang }: CreateOrderM
                 value={clientName}
                 onChange={(e) => setClientName(e.target.value)}
                 placeholder="e.g. Aramco Projects Division"
-                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-blue-500"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30"
               />
             </div>
             <div>
@@ -108,7 +108,7 @@ export default function CreateOrderModal({ onClose, onSave, lang }: CreateOrderM
                 value={clientPhone}
                 onChange={(e) => setClientPhone(e.target.value)}
                 placeholder="e.g. +966 50 000 0000"
-                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-blue-500"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30"
               />
             </div>
           </div>
@@ -121,7 +121,7 @@ export default function CreateOrderModal({ onClose, onSave, lang }: CreateOrderM
             <select
               value={vehicleType}
               onChange={(e) => setVehicleType(e.target.value)}
-              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-blue-700 font-bold focus:outline-none focus:border-blue-500"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-brand-primary font-bold focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30"
             >
               <option value="Water Tanker">{lang === 'en' ? 'Water Tanker (ناقلة مياه)' : 'ناقلة مياه (Water Tanker)'}</option>
               <option value="Heavy Trailer">{lang === 'en' ? 'Heavy Trailer (شاحنة ثقيلة)' : 'شاحنة ثقيلة (Heavy Trailer)'}</option>
@@ -140,7 +140,7 @@ export default function CreateOrderModal({ onClose, onSave, lang }: CreateOrderM
               <select
                 value={origin}
                 onChange={(e) => setOrigin(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-blue-500"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30"
               >
                 {SAUDI_CITIES.map((city) => (
                   <option key={city} value={city}>{city}</option>
@@ -154,7 +154,7 @@ export default function CreateOrderModal({ onClose, onSave, lang }: CreateOrderM
               <select
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-blue-500"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30"
               >
                 {SAUDI_CITIES.map((city) => (
                   <option key={city} value={city}>{city}</option>
@@ -174,7 +174,7 @@ export default function CreateOrderModal({ onClose, onSave, lang }: CreateOrderM
                 value={cargoType}
                 onChange={(e) => setCargoType(e.target.value)}
                 placeholder="e.g. Sweet Water / Fuel / Iron rods"
-                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-blue-500"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30"
               />
             </div>
             <div>
@@ -186,7 +186,7 @@ export default function CreateOrderModal({ onClose, onSave, lang }: CreateOrderM
                 value={weightOrVolume}
                 onChange={(e) => setWeightOrVolume(e.target.value)}
                 placeholder="e.g. 19k Liters / 20 Tons"
-                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-blue-500"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30"
               />
             </div>
           </div>
@@ -201,7 +201,7 @@ export default function CreateOrderModal({ onClose, onSave, lang }: CreateOrderM
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
               placeholder="Provide directions, gate codes, or temperature requirements..."
-              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-blue-500 resize-none"
+              className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 resize-none"
             />
           </div>
 
@@ -220,7 +220,7 @@ export default function CreateOrderModal({ onClose, onSave, lang }: CreateOrderM
             <button
               id="submit-create-order-button"
               type="submit"
-              className="flex-1 bg-blue-700 hover:bg-blue-800 text-white text-sm font-bold rounded-lg py-2.5 transition-colors duration-200 shadow-sm cursor-pointer"
+              className="flex-1 bg-brand-primary hover:bg-brand-dark text-white text-sm font-bold rounded-lg py-2.5 transition-colors duration-200 shadow-sm cursor-pointer"
             >
               {t.saveBtn}
             </button>

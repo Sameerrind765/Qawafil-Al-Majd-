@@ -22,10 +22,45 @@ service cloud.firestore {
       allow read, write: if isSignedIn();
     }
 
-    // User Profile matching: Allow full collection queries for authenticated admins, lock modifications to the profile owner.
+    // Transactions / Account Ledger records: Only authenticated operators can manage them on the dashboard.
+    match /transactions/{transactionId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // Receipts: Only authenticated operators or owners can view or manage scanned receipts.
+    match /receipts/{receiptId} {
+      allow read: if isSignedIn() && (
+        resource == null ||
+        resource.data.driver_uid == request.auth.uid ||
+        resource.data.driver_id == request.auth.uid ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['superadmin', 'admin', 'viewer'])
+      );
+      allow create: if isSignedIn() && (
+        request.resource.data.driver_uid == request.auth.uid ||
+        request.resource.data.driver_id == request.auth.uid ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['superadmin', 'admin'])
+      );
+      allow update: if isSignedIn() && (
+        (resource.data.driver_uid == request.auth.uid && request.resource.data.driver_uid == request.auth.uid) ||
+        (resource.data.driver_id == request.auth.uid && request.resource.data.driver_id == request.auth.uid) ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['superadmin', 'admin'])
+      );
+      allow delete: if isSignedIn() && (
+        resource.data.driver_uid == request.auth.uid ||
+        resource.data.driver_id == request.auth.uid ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'superadmin')
+      );
+    }
+
+    // Settings (e.g. google_sheets config): Only authenticated operators can read/write.
+    match /settings/{docId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // User Profile matching: Allow full collection queries for authenticated admins, lock modifications to the profile owner or superadmins.
     match /users/{uid} {
       allow read: if isSignedIn();
-      allow write: if isSignedIn() && request.auth.uid == uid;
+      allow write: if isSignedIn() && (request.auth.uid == uid || (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'superadmin'));
 
       match /folders/{folderId} {
         allow read, write: if isSignedIn() && request.auth.uid == uid;

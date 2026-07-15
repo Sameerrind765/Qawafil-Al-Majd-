@@ -1,10 +1,9 @@
 {
   "projectId": "qawafil-al-majd-al-mithaliya",
-  "appId": "",
-  "apiKey": "",
+  "appId": "1:48348004932:web:a1ead32d03048509b9f211",
+  "apiKey": "AIzaSyCT12SYF46110v4tiATpbQT71IS7l6c9LU",
   "authDomain": "qawafil-al-majd-al-mithaliya.firebaseapp.com",
-  "firestoreDatabaseId": "",
   "storageBucket": "qawafil-al-majd-al-mithaliya.firebasestorage.app",
-  "messagingSenderId": "",
+  "messagingSenderId": "48348004932",
   "measurementId": ""
 }

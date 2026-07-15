@@ -248,7 +248,8 @@ export default function Home() {
         caravan: leadCaravan,
         customStation: leadCustomStation.trim() || 'N/A',
         createdAt: new Date().toISOString(),
-        status: 'Pending'
+        status: 'Pending',
+        price: 1500 // default price for land service inquiries
       };
       
       await saveLead(newLead);
@@ -361,8 +362,8 @@ export default function Home() {
             <div className="lg:col-span-7 space-y-6 lg:pe-6">
               
               {/* TGA regulatory badge */}
-              <div className="inline-flex items-center gap-2 bg-[#C0272D]/15 border border-[#C0272D]/35 py-1.5 px-3.5 rounded-full text-brand-primary font-black text-xs uppercase tracking-wider animate-pulse">
-                <ShieldCheck className="w-4 h-4 text-brand-primary" />
+              <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 py-1.5 px-3.5 rounded-full text-amber-500 font-black text-xs uppercase tracking-wider">
+                <ShieldCheck className="w-4 h-4 text-amber-500" />
                 <span>{copy.verifiedTag}</span>
               </div>
 
@@ -658,7 +659,7 @@ export default function Home() {
 
                     {leadSuccessVisible ? (
                       <div className="space-y-4 py-4 text-center" id="lead-success-block">
-                        <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 mx-auto animate-bounce mb-3">
+                        <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 mx-auto mb-3">
                           <CheckCircle2 className="w-8 h-8" />
                         </div>
 

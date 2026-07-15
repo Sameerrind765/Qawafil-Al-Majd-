@@ -101,10 +101,10 @@ export default function DriverChat({ vehicles, selectedVehicle, lang }: DriverCh
       {/* Target Driver info header */}
       <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+          <div className="w-2 h-2 rounded-full bg-emerald-500" />
           <span className="text-xs font-mono font-bold text-slate-800 uppercase">{activeVehicle.id} Terminal</span>
         </div>
-        <span className="text-[11px] text-blue-700 font-bold font-mono">{activeVehicle.driverName}</span>
+        <span className="text-[11px] text-brand-primary font-bold font-mono">{activeVehicle.driverName}</span>
       </div>
 
       {/* Message history */}
@@ -127,7 +127,7 @@ export default function DriverChat({ vehicles, selectedVehicle, lang }: DriverCh
               </span>
               <div className={`rounded-xl px-3 py-1.5 text-xs font-semibold leading-relaxed ${
                 m.isDispatch 
-                  ? 'bg-blue-700 text-white rounded-tr-none' 
+                  ? 'bg-brand-primary text-white rounded-tr-none' 
                   : 'bg-white text-slate-800 border border-slate-200 shadow-sm rounded-tl-none'
               }`}>
                 {m.text}
@@ -144,11 +144,11 @@ export default function DriverChat({ vehicles, selectedVehicle, lang }: DriverCh
           value={msgInput}
           onChange={(e) => setMsgInput(e.target.value)}
           placeholder={t.chatPlaceholder}
-          className="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500 placeholder-slate-400 font-semibold"
+          className="flex-1 bg-white border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 placeholder-slate-400 font-semibold"
         />
         <button
           type="submit"
-          className="bg-blue-700 hover:bg-blue-800 text-white p-2.5 rounded-xl transition-all duration-200 cursor-pointer shadow-sm"
+          className="bg-brand-primary hover:bg-brand-dark text-white p-2.5 rounded-xl transition-all duration-200 cursor-pointer shadow-sm"
         >
           <Send className="w-4 h-4" />
         </button>

@@ -89,14 +89,14 @@ export default function AuthScreen({ lang, setLang, onSuccess, unverifiedUserEma
         {/* Top Banner similar to Dashboard */}
         <header className="bg-white border-b border-slate-200 shadow-sm px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-700 flex items-center justify-center text-white font-bold border border-blue-600 shadow-lg shadow-blue-500/10">
+            <div className="w-10 h-10 rounded-xl bg-brand-primary flex items-center justify-center text-white font-bold border border-brand-primary shadow-lg shadow-brand-primary/10">
               <Truck className="w-6 h-6" />
             </div>
             <div>
               <h1 className="text-lg font-extrabold tracking-tight text-slate-800 font-display uppercase">
                 {t.brandName}
               </h1>
-              <p className="text-[11px] text-blue-600 font-semibold tracking-wide">
+              <p className="text-[11px] text-brand-primary font-semibold tracking-wide">
                 {t.brandSub}
               </p>
             </div>
@@ -105,10 +105,10 @@ export default function AuthScreen({ lang, setLang, onSuccess, unverifiedUserEma
           <button
             type="button"
             onClick={() => setLang(prev => prev === 'en' ? 'ar' : 'en')}
-            className="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-blue-700 text-xs font-bold px-4 py-2 rounded-xl transition-all duration-300 cursor-pointer shadow-sm"
+            className="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-brand-primary text-xs font-bold px-4 py-2 rounded-xl transition-all duration-300 cursor-pointer shadow-sm"
             id="lang-toggle-btn"
           >
-            <Globe className="w-4 h-4 text-blue-600" />
+            <Globe className="w-4 h-4 text-brand-primary" />
             {lang === 'en' ? 'بالعربية' : 'English UI'}
           </button>
         </header>
@@ -116,7 +116,7 @@ export default function AuthScreen({ lang, setLang, onSuccess, unverifiedUserEma
         {/* Verification Screen */}
         <main className="flex-1 flex items-center justify-center p-6">
           <div className="bg-white border border-slate-200 shadow-xl rounded-2xl p-8 max-w-md w-full text-center" id="verification-card">
-            <div className="mx-auto w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center text-blue-700 mb-6 border border-blue-100 shadow-sm animate-pulse">
+            <div className="mx-auto w-16 h-16 rounded-full bg-brand-light flex items-center justify-center text-brand-primary mb-6 border border-brand-primary/20 shadow-sm animate-pulse">
               <Mail className="w-8 h-8" />
             </div>
             
@@ -143,7 +143,7 @@ export default function AuthScreen({ lang, setLang, onSuccess, unverifiedUserEma
                 setPassword('');
                 setErrorMessage('');
               }}
-              className="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs rounded-xl py-3 px-4 transition-colors duration-200 cursor-pointer shadow-md"
+              className="w-full bg-brand-primary hover:bg-brand-dark text-white font-bold text-xs rounded-xl py-3 px-4 transition-colors duration-200 cursor-pointer shadow-md"
               id="verification-login-btn"
             >
               {lang === 'en' ? 'Login' : 'تسجيل الدخول'}
@@ -168,14 +168,14 @@ export default function AuthScreen({ lang, setLang, onSuccess, unverifiedUserEma
       {/* Top Banner similar to Dashboard */}
       <header className="bg-white border-b border-slate-200 shadow-sm px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-700 flex items-center justify-center text-white font-bold border border-blue-600 shadow-lg shadow-blue-500/10">
+          <div className="w-10 h-10 rounded-xl bg-brand-primary flex items-center justify-center text-white font-bold border border-brand-primary shadow-lg shadow-brand-primary/10">
             <Truck className="w-6 h-6" />
           </div>
           <div>
             <h1 className="text-lg font-extrabold tracking-tight text-slate-800 font-display uppercase">
               {t.brandName}
             </h1>
-            <p className="text-[11px] text-blue-600 font-semibold tracking-wide">
+            <p className="text-[11px] text-brand-primary font-semibold tracking-wide">
               {t.brandSub}
             </p>
           </div>
@@ -184,10 +184,10 @@ export default function AuthScreen({ lang, setLang, onSuccess, unverifiedUserEma
         <button
           type="button"
           onClick={() => setLang(prev => prev === 'en' ? 'ar' : 'en')}
-          className="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-blue-700 text-xs font-bold px-4 py-2 rounded-xl transition-all duration-300 cursor-pointer shadow-sm"
+          className="flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-brand-primary text-xs font-bold px-4 py-2 rounded-xl transition-all duration-300 cursor-pointer shadow-sm"
           id="lang-toggle-btn"
         >
-          <Globe className="w-4 h-4 text-blue-600" />
+          <Globe className="w-4 h-4 text-brand-primary" />
           {lang === 'en' ? 'بالعربية' : 'English UI'}
         </button>
       </header>
@@ -230,7 +230,7 @@ export default function AuthScreen({ lang, setLang, onSuccess, unverifiedUserEma
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={t.emailPlaceholder}
-                  className={`w-full bg-white border border-slate-200 rounded-xl py-2.5 ${lang === 'ar' ? 'pr-9.5 pl-4' : 'pl-9.5 pr-4'} text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 font-semibold`}
+                  className={`w-full bg-white border border-slate-200 rounded-xl py-2.5 ${lang === 'ar' ? 'pr-9.5 pl-4' : 'pl-9.5 pr-4'} text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 focus:ring-1 focus:ring-brand-primary/40 font-semibold`}
                   required
                 />
               </div>
@@ -251,7 +251,7 @@ export default function AuthScreen({ lang, setLang, onSuccess, unverifiedUserEma
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder={t.passwordPlaceholder}
-                  className={`w-full bg-white border border-slate-200 rounded-xl py-2.5 ${lang === 'ar' ? 'pr-9.5 pl-10' : 'pl-9.5 pr-10'} text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 font-semibold`}
+                  className={`w-full bg-white border border-slate-200 rounded-xl py-2.5 ${lang === 'ar' ? 'pr-9.5 pl-10' : 'pl-9.5 pr-10'} text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 focus:ring-1 focus:ring-brand-primary/40 font-semibold`}
                   required
                 />
                 <button

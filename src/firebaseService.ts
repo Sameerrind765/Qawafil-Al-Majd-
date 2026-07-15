@@ -1,6 +1,6 @@
 import { collection, doc, getDocs, getDoc, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db, auth } from './firebase';
-import { Vehicle, CargoOrder, Folder, UserFile, UserNote, TeamMember, UserProfile, HomepageLead } from './types';
+import { Vehicle, CargoOrder, Folder, UserFile, UserNote, TeamMember, UserProfile, HomepageLead, Transaction } from './types';
 import { INITIAL_VEHICLES, INITIAL_CARGO_ORDERS } from './data';
 
 export enum OperationType {
@@ -441,4 +441,64 @@ export async function deleteLead(id: string): Promise<void> {
     handleFirestoreError(error, OperationType.DELETE, path);
   }
 }
+
+// ====================
+// Transactions Ledger Actions
+// ====================
+
+export async function fetchAllTransactions(): Promise<Transaction[]> {
+  const path = 'transactions';
+  try {
+    const querySnapshot = await getDocs(collection(db, path));
+    const list: Transaction[] = [];
+    querySnapshot.forEach((d) => {
+      list.push({ id: d.id, ...d.data() } as Transaction);
+    });
+
+    // Sort by recent first
+    return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  } catch (error) {
+    console.warn("Could not fetch transactions from Firestore. Serving cached offline copy.", error);
+    const local = localStorage.getItem('qawafil_transactions');
+    return local ? JSON.parse(local) : [];
+  }
+}
+
+export async function createOrUpdateTransaction(transaction: Transaction): Promise<void> {
+  const path = 'transactions';
+  try {
+    await setDoc(doc(db, path, transaction.id), cleanData(transaction));
+    
+    // Sync cache
+    const current = localStorage.getItem('qawafil_transactions');
+    const list: Transaction[] = current ? JSON.parse(current) : [];
+    const index = list.findIndex(t => t.id === transaction.id);
+    if (index >= 0) {
+      list[index] = transaction;
+    } else {
+      list.unshift(transaction);
+    }
+    localStorage.setItem('qawafil_transactions', JSON.stringify(list));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, `${path}/${transaction.id}`);
+  }
+}
+
+export async function deleteTransaction(id: string): Promise<void> {
+  const path = `transactions/${id}`;
+  try {
+    await deleteDoc(doc(db, 'transactions', id));
+    
+    // Sync cache
+    const current = localStorage.getItem('qawafil_transactions');
+    if (current) {
+      const list: Transaction[] = JSON.parse(current);
+      const filtered = list.filter(t => t.id !== id);
+      localStorage.setItem('qawafil_transactions', JSON.stringify(filtered));
+    }
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, path);
+  }
+}
+
 
