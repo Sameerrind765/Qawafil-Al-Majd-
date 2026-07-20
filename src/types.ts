@@ -111,5 +111,7 @@ export interface Transaction {
   date: string; // YYYY-MM-DD
   createdAt: string; // ISO String
   createdBy: string; // User Name / Dispatched Name
+  isReceipt?: boolean;
+  image_url?: string;
 }
 

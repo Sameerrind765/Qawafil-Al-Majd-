@@ -362,19 +362,41 @@ export default function AdminDashboard() {
       try {
         let q;
         if (role === 'superadmin' || role === 'admin' || role === 'viewer') {
-          q = query(collection(db, "receipts"));
+          q = query(collection(db, "transactions"), where("type", "==", "receipt"));
         } else {
-          q = query(collection(db, "receipts"), where("driver_uid", "==", auth.currentUser.uid));
+          q = query(collection(db, "transactions"), where("type", "==", "receipt"), where("driver_id", "==", auth.currentUser.uid));
         }
         const snapshot = await getDocs(q);
         const list: any[] = [];
         snapshot.forEach((docSnap) => {
-          list.push({ id: docSnap.id, ...(docSnap.data() as any) });
+          const data = docSnap.data() as any;
+          list.push({
+            id: data.receiptId || docSnap.id,
+            driver_id: data.driver_id || data.driver_uid || "", // standardized UID is driver_id
+            driver_name: data.driver_name || data.driver_id || data.createdBy || "dispatcher_admin", // display name is driver_name
+            vendor_name: data.vendor_name || data.title || "Merchant",
+            amount: Number(data.amount) || 0,
+            currency: data.currency || "SAR",
+            transaction_date: data.transaction_date || data.date || new Date().toISOString().split("T")[0],
+            invoice_number: data.invoice_number || "",
+            vat_number: data.vat_number || "",
+            vat_amount: Number(data.vat_amount) || 0,
+            subtotal_amount: Number(data.subtotal_amount) || 0,
+            needs_manual_review: !!data.needs_manual_review,
+            raw_ocr_text: data.raw_ocr_text || "",
+            image_url: data.image_url || "",
+            created_at: data.created_at || data.createdAt || new Date().toISOString()
+          });
         });
+
         list.sort((a, b) => new Date(b.created_at || b.transaction_date).getTime() - new Date(a.created_at || a.transaction_date).getTime());
         setReceipts(list);
       } catch (fallbackErr: any) {
-        console.error("Client fallback receipts query failed:", fallbackErr);
+        if (fallbackErr?.message?.includes("permission") || fallbackErr?.message?.includes("Missing or insufficient")) {
+          console.warn("Client fallback receipts query skipped due to insufficient permissions (using local state fallback):", fallbackErr.message);
+        } else {
+          console.error("Client fallback receipts query encountered an unexpected error:", fallbackErr);
+        }
       }
     } finally {
       setReceiptsLoading(false);
@@ -420,8 +442,9 @@ export default function AdminDashboard() {
     setSavingReceipt(true);
     try {
       const payload = {
-        driver_id: userData?.name || userData?.email || "driver_operator",
-        driver_uid: userData?.uid || user?.uid || auth.currentUser?.uid || "",
+        // Standardized on driver_id for the Firebase auth/user UID, and driver_name for the display name/email
+        driver_id: userData?.uid || user?.uid || auth.currentUser?.uid || "",
+        driver_name: userData?.name || userData?.email || "driver_operator",
         vendor_name: scannedPreview.vendor_name,
         amount: scannedPreview.amount,
         currency: scannedPreview.currency,
@@ -464,14 +487,25 @@ export default function AdminDashboard() {
 
       if (!saveSuccess) {
         const receiptId = `rcpt_${Math.random().toString(36).substring(2, 9)}_${Date.now()}`;
-        const receiptData = {
-          id: receiptId,
-          driver_id: payload.driver_id,
-          driver_uid: payload.driver_uid,
-          vendor_name: payload.vendor_name,
+        const txId = `TX-RCPT-${receiptId}`;
+        const txData = {
+          id: txId,
+          type: 'receipt', // type is strictly 'receipt' as requested
           amount: Number(payload.amount) || 0,
+          title: `${payload.vendor_name || "Receipt Expense"}`,
+          description: `Scanned Receipt ID: ${receiptId}. Inv: ${payload.invoice_number || "N/A"}. Scanned by ${payload.driver_name}`,
+          category: 'Fuel',
+          referenceId: receiptId,
+          date: payload.transaction_date || new Date().toISOString().split('T')[0],
+          createdAt: new Date().toISOString(),
+          createdBy: payload.driver_name,
+          // Integrated Receipt Properties inside transactions collection
+          isReceipt: true,
+          receiptId: receiptId,
+          driver_id: payload.driver_id, // UID
+          driver_name: payload.driver_name, // Display name
+          vendor_name: payload.vendor_name,
           currency: payload.currency,
-          transaction_date: payload.transaction_date,
           invoice_number: payload.invoice_number,
           vat_number: payload.vat_number,
           vat_amount: Number(payload.vat_amount) || 0,
@@ -485,37 +519,17 @@ export default function AdminDashboard() {
         // === [DIAGNOSTICS POINT 5 - CLIENT FIRESTORE FALLBACK] ===
         console.log("=== [DIAGNOSTICS POINT 5 - CLIENT FIRESTORE FALLBACK] ===");
         console.log("Direct client fallback triggered. Database client instance (db) present?", !!db);
-        console.log("Generating fresh Receipt ID for client-side write:", receiptId);
-        console.log("Client-side direct write Payload:", JSON.stringify(receiptData, null, 2));
+        console.log("Generating fresh Receipt ID and Transaction ID for client-side write:", receiptId, txId);
+        console.log("Client-side direct write integrated Transactions ledger payload:", JSON.stringify(txData, null, 2));
 
         try {
-          // Write directly to Firestore receipts collection
-          console.log("WRITING TO FIRESTORE NOW (collection: receipts)");
-          await setDoc(doc(db, "receipts", receiptId), receiptData);
-          console.log("WRITE SUCCEEDED (collection: receipts)");
-          console.log("Successfully wrote receipt document to client-side Firestore receipts collection.");
-
-          // Save in transactions ledger for financial tracing
-          const txId = `TX-RCPT-${receiptId}`;
-          const txData = {
-            id: txId,
-            type: 'debit',
-            amount: Number(payload.amount) || 0,
-            title: `${payload.vendor_name || "Receipt Expense"}`,
-            description: `Scanned Receipt ID: ${receiptId}. Inv: ${payload.invoice_number || "N/A"}. Scanned by ${payload.driver_id}`,
-            category: 'Fuel & Expenses',
-            referenceId: receiptId,
-            date: payload.transaction_date || new Date().toISOString().split('T')[0],
-            createdAt: new Date().toISOString(),
-            createdBy: payload.driver_id
-          };
-          console.log("Client-side direct write Transactions ledger payload:", JSON.stringify(txData, null, 2));
+          // Write directly to Firestore transactions collection (primary receipt storage)
           console.log("WRITING TO FIRESTORE NOW (collection: transactions)");
           await setDoc(doc(db, "transactions", txId), txData);
           console.log("WRITE SUCCEEDED (collection: transactions)");
-          console.log("Successfully wrote transaction document to client-side Firestore transactions ledger.");
+          console.log("Successfully wrote integrated receipt transaction document to client-side Firestore transactions collection.");
         } catch (rulesErr: any) {
-          console.error("WRITE FAILED (collection: receipts/transactions):", rulesErr);
+          console.error("WRITE FAILED (collection: transactions):", rulesErr);
           console.error("CRITICAL CLIENT-SIDE WRITE ERROR! Check if Firestore security rules or internet connection is blocking the write.", rulesErr);
           throw rulesErr;
         }
@@ -581,8 +595,12 @@ export default function AdminDashboard() {
         setSpreadsheetId('1RJUZ1CauT5fvb38OLDze-y93jhb4O_eNv_ZCX2nh1jc');
         setSpreadsheetName('Qawafil Records Ledger');
       }
-    } catch (err) {
-      console.error("Error loading Google Sheets config:", err);
+    } catch (err: any) {
+      if (err?.message?.includes("permission") || err?.message?.includes("Missing or insufficient")) {
+        console.warn("Google Sheets settings document skipped due to permissions (using default spreadsheet ID):", err.message);
+      } else {
+        console.error("Error loading Google Sheets config:", err);
+      }
       setSpreadsheetId('1RJUZ1CauT5fvb38OLDze-y93jhb4O_eNv_ZCX2nh1jc');
     }
   };
@@ -878,11 +896,16 @@ export default function AdminDashboard() {
         sheetTitle = 'Scanned Receipts';
         headers = ["Receipt ID", "Merchant/Vendor", "Amount", "Currency", "Invoice Number", "Date", "Driver ID", "Image URL", "OCR Text"];
         
-        const res = await fetch("/api/receipts");
         let dbReceipts = [];
-        if (res.ok) {
-          dbReceipts = await res.json();
-        } else {
+        try {
+          const res = await fetch("/api/receipts");
+          if (res.ok && res.headers.get("content-type")?.includes("application/json")) {
+            dbReceipts = await res.json();
+          } else {
+            dbReceipts = receipts;
+          }
+        } catch (fetchErr) {
+          console.warn("Google Sheets Sync: Failed to fetch receipts API (falling back to client memory state):", fetchErr);
           dbReceipts = receipts;
         }
 
@@ -914,6 +937,23 @@ export default function AdminDashboard() {
           v.status || '',
           v.lastMaintenance || ''
         ]);
+      }
+
+      const isSimulated = googleToken && googleToken.startsWith("simulated_google_oauth_token");
+      if (isSimulated) {
+        console.log(`[SIMULATED GOOGLE SHEETS SYNC] Synchronizing ${collectionKey} with sheet "${sheetTitle}"...`);
+        console.log("Headers:", headers);
+        console.log("Values count:", values.length);
+        
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        setSheetsLogs(prev => ({
+          ...prev,
+          [collectionKey]: lang === 'en' 
+            ? `Success (Simulated)! ${values.length} rows synced.` 
+            : `تمت المزامنة التجريبية بنجاح! تم كتابة ${values.length} من الأسطر.`
+        }));
+        return;
       }
 
       setSheetsLogs(prev => ({ ...prev, [collectionKey]: lang === 'en' ? 'Ensuring sheet tab exists...' : 'التحقق من علامة تبويب الجدول...' }));
@@ -1210,7 +1250,7 @@ export default function AdminDashboard() {
     .reduce((acc, t) => acc + (t.amount || 0), 0);
 
   const totalLedgerDebits = allTransactions
-    .filter(t => t.type === 'debit')
+    .filter(t => t.type === 'debit' || t.type === 'receipt')
     .reduce((acc, t) => acc + (t.amount || 0), 0);
 
   const ledgerNetBalance = totalLedgerCredits - totalLedgerDebits;
@@ -2242,7 +2282,7 @@ export default function AdminDashboard() {
                             (tx.referenceId || '').toLowerCase().includes(searchTxQuery.toLowerCase()) ||
                             (tx.createdBy || '').toLowerCase().includes(searchTxQuery.toLowerCase());
 
-                          const matchesType = filterTxType === 'all' || tx.type === filterTxType;
+                          const matchesType = filterTxType === 'all' || tx.type === filterTxType || (filterTxType === 'debit' && tx.type === 'receipt');
                           const matchesCategory = filterTxCat === 'all' || tx.category === filterTxCat;
 
                           return matchesSearch && matchesType && matchesCategory;
@@ -2299,7 +2339,7 @@ export default function AdminDashboard() {
                               (tx.referenceId || '').toLowerCase().includes(searchTxQuery.toLowerCase()) ||
                               (tx.createdBy || '').toLowerCase().includes(searchTxQuery.toLowerCase());
 
-                            const matchesType = filterTxType === 'all' || tx.type === filterTxType;
+                            const matchesType = filterTxType === 'all' || tx.type === filterTxType || (filterTxType === 'debit' && tx.type === 'receipt');
                             const matchesCategory = filterTxCat === 'all' || tx.category === filterTxCat;
 
                             return matchesSearch && matchesType && matchesCategory;
@@ -2315,27 +2355,56 @@ export default function AdminDashboard() {
                                 </span>
                               </td>
                               <td className="py-3.5 px-4">
-                                <div className="font-extrabold text-[#111]">{tx.title}</div>
-                                {tx.description && <p className="text-[10px] text-slate-500 font-medium font-sans mt-0.5">{tx.description}</p>}
-                                {tx.referenceId && (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      if (tx.category === 'Leads') {
-                                        setSearchLeadsQuery(tx.referenceId!);
-                                        setFilterLeadsStatus('all');
-                                        setActiveTab('leads');
-                                      } else if (tx.category === 'Fuel') {
-                                        // Highlight or open roster view
-                                        setActiveTab('roster');
-                                      }
-                                    }}
-                                    className="inline-flex items-center gap-1 mt-1 font-mono text-[9px] bg-indigo-50 hover:bg-indigo-110 text-indigo-700 px-1.5 py-0.5 rounded border border-indigo-150 cursor-pointer transition-colors active:scale-95"
-                                    title={lang === 'en' ? "Click to view referred booking / asset details" : "انقر لعرض تفاصيل الحجز أو الأصل المرتبط ماليًا"}
-                                  >
-                                    🔗 {lang === 'en' ? `Booking REF: ${tx.referenceId}` : `رابط المرجعية: ${tx.referenceId}`}
-                                  </button>
-                                )}
+                                <div className="flex items-center gap-3">
+                                  {tx.image_url && (
+                                    <div 
+                                      className="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center cursor-pointer group/thumb relative"
+                                      onClick={() => setViewingReceiptDetail({
+                                        id: tx.referenceId || tx.id,
+                                        vendor_name: tx.title,
+                                        amount: tx.amount,
+                                        image_url: tx.image_url,
+                                        transaction_date: tx.date,
+                                        driver_id: tx.driver_id || "",
+                                        driver_name: tx.driver_name || tx.createdBy || "dispatcher_admin",
+                                        currency: 'SAR',
+                                        ...tx
+                                      })}
+                                      title={lang === 'en' ? "Click to view original scanned receipt document image" : "انقر لعرض الفاتورة / المستند الأصلي الممسوح ضوئياً"}
+                                    >
+                                      <img src={tx.image_url} alt="Receipt Thumbnail" referrerPolicy="no-referrer" className="w-full h-full object-cover group-hover/thumb:scale-110 transition duration-150" />
+                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/thumb:opacity-100 transition flex items-center justify-center">
+                                        <Eye className="w-3.5 h-3.5 text-white" />
+                                      </div>
+                                    </div>
+                                  )}
+                                  <div>
+                                    <div className="font-extrabold text-[#111] flex items-center gap-1.5">
+                                      {tx.isReceipt && <span className="text-xs" title="Scanned Receipt">🧾</span>}
+                                      {tx.title}
+                                    </div>
+                                    {tx.description && <p className="text-[10px] text-slate-500 font-medium font-sans mt-0.5">{tx.description}</p>}
+                                    {tx.referenceId && (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          if (tx.category === 'Leads') {
+                                            setSearchLeadsQuery(tx.referenceId!);
+                                            setFilterLeadsStatus('all');
+                                            setActiveTab('leads');
+                                          } else if (tx.category === 'Fuel') {
+                                            // Highlight or open roster view
+                                            setActiveTab('roster');
+                                          }
+                                        }}
+                                        className="inline-flex items-center gap-1 mt-1 font-mono text-[9px] bg-indigo-50 hover:bg-indigo-110 text-indigo-700 px-1.5 py-0.5 rounded border border-indigo-150 cursor-pointer transition-colors active:scale-95"
+                                        title={lang === 'en' ? "Click to view referred booking / asset details" : "انقر لعرض تفاصيل الحجز أو الأصل المرتبط ماليًا"}
+                                      >
+                                        🔗 {lang === 'en' ? `Booking REF: ${tx.referenceId}` : `رابط المرجعية: ${tx.referenceId}`}
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
                               </td>
                               <td className="py-3.5 px-4">
                                 <span className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-lg border border-slate-200 font-bold">
@@ -2683,6 +2752,7 @@ export default function AdminDashboard() {
                     return (
                       (rc.vendor_name || '').toLowerCase().includes(term) ||
                       (rc.invoice_number || '').toLowerCase().includes(term) ||
+                      (rc.driver_name || '').toLowerCase().includes(term) ||
                       (rc.driver_id || '').toLowerCase().includes(term)
                     );
                   }).length === 0 ? (
@@ -2698,6 +2768,7 @@ export default function AdminDashboard() {
                         return (
                           (rc.vendor_name || '').toLowerCase().includes(term) ||
                           (rc.invoice_number || '').toLowerCase().includes(term) ||
+                          (rc.driver_name || '').toLowerCase().includes(term) ||
                           (rc.driver_id || '').toLowerCase().includes(term)
                         );
                       }).map((rc) => (
@@ -2727,7 +2798,7 @@ export default function AdminDashboard() {
                                 )}
                               </div>
                               <p className="text-[9px] text-slate-400 mt-0.5 font-bold uppercase">
-                                {lang === 'en' ? `Driver: ${rc.driver_id}` : `المأمور: ${rc.driver_id}`}
+                                {lang === 'en' ? `Driver: ${rc.driver_name || rc.driver_id}` : `المأمور: ${rc.driver_name || rc.driver_id}`}
                               </p>
                             </div>
                           </div>
@@ -2817,7 +2888,7 @@ export default function AdminDashboard() {
                       </div>
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-400 font-bold">{lang === 'en' ? 'Scanned By:' : 'مسجل بواسطة:'}</span>
-                        <span className="text-slate-500 font-bold uppercase text-[10px]">{viewingReceiptDetail.driver_id}</span>
+                        <span className="text-slate-500 font-bold uppercase text-[10px]">{viewingReceiptDetail.driver_name || viewingReceiptDetail.driver_id}</span>
                       </div>
                     </div>
 
