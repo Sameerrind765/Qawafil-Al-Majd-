@@ -1,3 +1,7 @@
+export function getVehicleImageUrl(vehicleId: string): string {
+  return `https://res.cloudinary.com/hre1igvz/image/upload/c_fill,g_auto,w_1164,h_672,dpr_auto,f_auto,q_auto/v1784725441/white-${vehicleId}.jpg`;
+}
+
 export interface VehicleData {
   id: string;
   nameEn: string;

@@ -2,11 +2,27 @@ import React, { useState } from 'react';
 import { useLang } from '../context/LangContext';
 import BookingModal from '../components/BookingModal';
 import { VehicleData } from '../data/vehicles';
-import { Compass, Sparkles, Star, Calendar, CheckSquare, MessageSquare, Ticket } from 'lucide-react';
+import { 
+  Clock, 
+  ShieldCheck, 
+  UserCheck, 
+  Wind, 
+  Droplet, 
+  Ticket, 
+  MessageSquare, 
+  Headphones, 
+  Award, 
+  Landmark,
+  Compass,
+  CheckCircle2
+} from 'lucide-react';
 
 export default function Ziyarat() {
   const { lang, t } = useLang();
   
+  // Tab state for single screen focus: 'madinah' | 'makkah' | 'custom' | 'all'
+  const [activeTab, setActiveTab] = useState<string>('madinah');
+
   // Custom Booking modal context for Ziyarat packages
   const [modalOpen, setModalOpen] = useState(false);
   const [surrogateVehicle, setSurrogateVehicle] = useState<VehicleData | null>(null);
@@ -66,235 +82,319 @@ export default function Ziyarat() {
   const getWhatsAppURL = (titleEn: string, titleAr: string, rate: number) => {
     const title = lang === 'en' ? titleEn : titleAr;
     const msg = lang === 'en'
-      ? `Ahlalan Wa Sahlan Qawafil Al Majd! I am looking to confirm a booking reservation for the guided spiritual tour program: "${title}" at the flat rate of SAR ${rate}. Please advise.`
-      : `السلام عليكم قوافل المجد! أرغب في تأكيد حجز برنامج الزيارات الشريفة: "${title}" بسعر ثابت قدره ${rate} ريال. يرجى إرشادي بخصوص تفاصيل التفويج والخدمة.`;
+      ? `Ahlalan Wa Sahlan Qawafil Al Majd! I am looking to confirm a booking reservation for the guided spiritual tour program: "${title}" at the rate of SAR ${rate}. Please advise.`
+      : `السلام عليكم قوافل المجد! أرغب في تأكيد حجز برنامج الزيارات الشريفة: "${title}" بسعر ${rate} ريال. يرجى إرشادي بخصوص تفاصيل التفويج والخدمة.`;
     return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
   };
 
+  const tourPackages = [
+    {
+      id: "madinah",
+      badgeText: t.madinahBadge,
+      title: t.madinahTour,
+      duration: t.durationHours,
+      description: t.madinahTourDesc,
+      inclusionsText: t.packageIncludes,
+      priceLabel: t.flatTourPrice,
+      price: madinahSurrogate.price,
+      image: "https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=1200&q=80",
+      surrogate: madinahSurrogate,
+      waUrl: getWhatsAppURL(madinahSurrogate.nameEn, madinahSurrogate.nameAr, madinahSurrogate.price)
+    },
+    {
+      id: "makkah",
+      badgeText: t.makkahBadge,
+      title: t.makkahTour,
+      duration: t.durationHours,
+      description: t.makkahTourDesc,
+      inclusionsText: t.packageIncludes,
+      priceLabel: t.flatTourPrice,
+      price: makkahSurrogate.price,
+      image: "https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=1200&q=80",
+      surrogate: makkahSurrogate,
+      waUrl: getWhatsAppURL(makkahSurrogate.nameEn, makkahSurrogate.nameAr, makkahSurrogate.price)
+    },
+    {
+      id: "custom",
+      badgeText: t.customBadge,
+      title: t.customTour,
+      duration: t.durationFlexible,
+      description: t.customTourDesc,
+      inclusionsText: t.customPackageIncludes,
+      priceLabel: t.estBasePrice,
+      price: customSurrogate.price,
+      image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80",
+      surrogate: customSurrogate,
+      waUrl: getWhatsAppURL(customSurrogate.nameEn, customSurrogate.nameAr, customSurrogate.price)
+    }
+  ];
+
+  const displayedPackages = activeTab === 'all' 
+    ? tourPackages 
+    : tourPackages.filter(p => p.id === activeTab);
+
   return (
-    <div className="flex-1 py-12 bg-rose-50/20 font-sans select-none">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex-1 py-6 sm:py-8 bg-[#f8f9fa] font-sans select-none">
+      <div className="max-w-2xl mx-auto px-3 sm:px-4">
         
-        {/* Title and Intro */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-1.5 bg-brand-primary/10 border border-brand-primary/20 py-1.5 px-3.5 rounded-full text-brand-primary font-bold text-xs uppercase tracking-wider mb-4">
-            <Star className="w-4 h-4 fill-brand-primary" />
+        {/* Title and Intro Header */}
+        <div className="text-center mb-5 sm:mb-6">
+          <div className="inline-flex items-center gap-1.5 bg-emerald-100/80 border border-emerald-200 py-1 px-3 rounded-full text-[#0d6b46] font-extrabold text-[11px] uppercase tracking-wider mb-2 shadow-xs">
+            <Compass className="w-3.5 h-3.5 text-[#0d6b46]" />
             <span>Spiritual Landmarks & Tours</span>
           </div>
 
-          <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight" id="ziyarat-page-title">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 tracking-tight" id="ziyarat-page-title">
             {t.ziyaratTitle}
           </h2>
 
-          <p className="text-slate-500 text-xs sm:text-sm font-semibold leading-relaxed max-w-xl mx-auto mt-3">
+          <p className="text-slate-500 text-xs font-semibold leading-relaxed max-w-lg mx-auto mt-1.5">
             {t.ziyaratDesc}
           </p>
         </div>
 
-        {/* 3 Packages Display */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          
-          {/* Makkah Tour card */}
-          <div className="bg-white border border-rose-100 rounded-2xl shadow-md hover:shadow-xl hover:border-brand-primary/20 transition-all duration-300 overflow-hidden flex flex-col justify-between group" id="ziyarat-makkah-card">
-            <div>
-              <div className="bg-brand-bg-dark h-48 relative flex items-center justify-center p-6 text-center select-none overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-bg-dark via-brand-bg-dark/80 to-transparent z-10" />
-                <span className="text-6xl text-white/10 absolute -right-4 -bottom-4 font-black select-none">🕋</span>
+        {/* Tour Selection Tabs (Ensures single screen focused viewing) */}
+        <div className="flex items-center justify-center p-1 bg-slate-200/70 rounded-2xl mb-5 sm:mb-6 gap-1 max-w-lg mx-auto text-xs font-extrabold">
+          <button
+            type="button"
+            onClick={() => setActiveTab('madinah')}
+            className={`flex-1 py-2 px-2 sm:px-3 rounded-xl transition-all duration-200 text-center cursor-pointer ${
+              activeTab === 'madinah'
+                ? 'bg-[#055c3c] text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+            }`}
+          >
+            {t.madinahBadge}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('makkah')}
+            className={`flex-1 py-2 px-2 sm:px-3 rounded-xl transition-all duration-200 text-center cursor-pointer ${
+              activeTab === 'makkah'
+                ? 'bg-[#055c3c] text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+            }`}
+          >
+            {t.makkahBadge}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('custom')}
+            className={`flex-1 py-2 px-2 sm:px-3 rounded-xl transition-all duration-200 text-center cursor-pointer ${
+              activeTab === 'custom'
+                ? 'bg-[#055c3c] text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+            }`}
+          >
+            {t.customBadge}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('all')}
+            className={`py-2 px-2 sm:px-3 rounded-xl transition-all duration-200 text-center cursor-pointer ${
+              activeTab === 'all'
+                ? 'bg-slate-800 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+            }`}
+          >
+            {lang === 'en' ? "All" : "الكل"}
+          </button>
+        </div>
+
+        {/* Tour Cards Container (Single screen compact layout) */}
+        <div className="space-y-8">
+          {displayedPackages.map((tour) => (
+            <div 
+              key={tour.id}
+              id={`ziyarat-${tour.id}-card`}
+              className="bg-white rounded-[22px] border border-slate-200/90 shadow-md hover:shadow-xl overflow-hidden transition-all duration-300 flex flex-col justify-between"
+            >
+              {/* 1. Hero Image Header Stage - Reduced height for single-screen view */}
+              <div className="relative h-44 sm:h-52 w-full overflow-hidden select-none bg-slate-900">
+                <img 
+                  src={tour.image} 
+                  alt={tour.title}
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full object-cover"
+                />
                 
-                <div className="relative z-20 text-center text-white">
-                  <span className="bg-brand-primary text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-full">
-                    Makkah Holy Sites
-                  </span>
-                  <h3 className="text-base font-extrabold mt-3 tracking-tight">
-                    {t.makkahTour}
-                  </h3>
-                  <p className="text-[10px] text-slate-400 mt-1 font-semibold">
-                    {t.durationHours}
-                  </p>
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/45 to-slate-950/10" />
+
+                {/* Overlay Header Content */}
+                <div className="absolute inset-0 p-4 sm:p-5 flex flex-col justify-between z-10 text-white">
+                  {/* Top Badge */}
+                  <div className="flex items-center justify-start">
+                    <span className="inline-flex items-center gap-1.5 bg-[#055c3c] text-emerald-100 font-extrabold text-[10px] sm:text-[11px] uppercase tracking-wider px-3 py-1 rounded-full shadow-sm border border-emerald-500/20">
+                      <Landmark className="w-3.5 h-3.5 text-emerald-300" />
+                      <span>{tour.badgeText}</span>
+                    </span>
+                  </div>
+
+                  {/* Bottom Title & Duration */}
+                  <div>
+                    <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white drop-shadow-sm leading-tight">
+                      {tour.title}
+                    </h3>
+                    
+                    {/* Gold Accent Divider Bar */}
+                    <div className="w-8 h-0.5 bg-amber-400 rounded-full my-1.5" />
+                    
+                    {/* Clock & Duration */}
+                    <div className="flex items-center gap-1.5 text-amber-300 font-bold text-xs">
+                      <Clock className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+                      <span>{tour.duration}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="p-6 space-y-4">
-                <p className="text-xs text-slate-600 font-bold leading-relaxed line-clamp-3">
-                  {t.makkahTourDesc}
+              {/* 2. Card Body Content - Compact padding and typography */}
+              <div className="p-4 sm:p-5 space-y-4">
+                
+                {/* Description Paragraph */}
+                <p className="text-slate-700 text-xs sm:text-sm font-semibold leading-relaxed">
+                  {tour.description}
                 </p>
 
-                {/* Inclusions */}
-                <div className="bg-rose-50/50 p-3 rounded-xl border border-rose-100/30 text-[11px] text-slate-500 font-bold leading-relaxed">
-                  ✓ {t.packageIncludes}
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 border-t border-rose-50 bg-slate-50/50">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[11px] uppercase font-bold text-slate-500">
-                  Flat Tour Price
-                </span>
-                <span className="text-brand-primary font-black text-xl">
-                  {makkahSurrogate.price} <span className="text-xs font-bold font-mono">{t.currency}</span>
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <a
-                  href={getWhatsAppURL(makkahSurrogate.nameEn, makkahSurrogate.nameAr, makkahSurrogate.price)}
-                  target="_blank"
-                  referrerPolicy="no-referrer"
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-2.5 px-2 rounded-xl text-center flex items-center justify-center gap-1.5 shadow"
-                  id={`wa-ziyarat-${makkahSurrogate.id}`}
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  <span>WhatsApp</span>
-                </a>
-
-                <button
-                  type="button"
-                  onClick={() => handleBookPackage(makkahSurrogate)}
-                  className="bg-brand-primary hover:bg-brand-dark text-white font-extrabold text-xs py-2.5 px-2 rounded-xl text-center flex items-center justify-center gap-1.5 shadow cursor-pointer"
-                  id={`book-ziyarat-${makkahSurrogate.id}`}
-                >
-                  <Ticket className="w-4 h-4" />
-                  <span>{t.navBookNow}</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Madinah Tour card */}
-          <div className="bg-white border border-rose-100 rounded-2xl shadow-md hover:shadow-xl hover:border-brand-primary/20 transition-all duration-300 overflow-hidden flex flex-col justify-between group" id="ziyarat-madinah-card">
-            <div>
-              <div className="bg-brand-bg-dark h-48 relative flex items-center justify-center p-6 text-center select-none overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-bg-dark via-brand-bg-dark/80 to-transparent z-10" />
-                <span className="text-6xl text-white/10 absolute -right-4 -bottom-4 font-black select-none">🟢</span>
-                
-                <div className="relative z-20 text-center text-white">
-                  <span className="bg-emerald-600 text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-full">
-                    Madinah Noble Sites
-                  </span>
-                  <h3 className="text-base font-extrabold mt-3 tracking-tight">
-                    {t.madinahTour}
-                  </h3>
-                  <p className="text-[10px] text-slate-400 mt-1 font-semibold">
-                    {t.durationHours}
+                {/* Highlighted Inclusions Callout Box */}
+                <div className="bg-[#f0f8f4] border border-[#d3ece0] rounded-xl p-3 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-[#d8f3e5] text-[#0d6b46] flex items-center justify-center flex-shrink-0 shadow-xs">
+                    <ShieldCheck className="w-4 h-4 text-[#0d6b46]" />
+                  </div>
+                  <p className="text-xs text-slate-700 font-bold leading-snug">
+                    {tour.inclusionsText}
                   </p>
                 </div>
+
+                {/* Price & Amenities Section */}
+                <div className="border-t border-slate-100 pt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  
+                  {/* Price Block */}
+                  <div className="space-y-0.5 flex-shrink-0">
+                    <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
+                      {tour.priceLabel}
+                    </span>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-3xl sm:text-4xl font-black text-[#055c3c] tracking-tight">
+                        {tour.price}
+                      </span>
+                      <span className="text-emerald-700 font-bold text-xs sm:text-sm font-mono">
+                        {t.currency}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Vertical Divider for SM+ */}
+                  <div className="hidden sm:block w-px h-10 bg-slate-200/80 mx-1" />
+
+                  {/* Amenities Grid (4 items) */}
+                  <div className="grid grid-cols-4 gap-2 flex-1 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                    {/* Driver */}
+                    <div className="flex flex-col items-center text-center">
+                      <div className="w-9 h-9 rounded-full bg-[#e8f5ee] text-[#0d6b46] flex items-center justify-center mb-1 shadow-xs">
+                        <UserCheck className="w-4 h-4" />
+                      </div>
+                      <span className="text-[10px] font-bold text-slate-700 leading-tight">
+                        {t.amenityDriver}
+                      </span>
+                    </div>
+
+                    {/* High-speed A/C */}
+                    <div className="flex flex-col items-center text-center">
+                      <div className="w-9 h-9 rounded-full bg-[#e8f5ee] text-[#0d6b46] flex items-center justify-center mb-1 shadow-xs">
+                        <Wind className="w-4 h-4" />
+                      </div>
+                      <span className="text-[10px] font-bold text-slate-700 leading-tight">
+                        {t.amenityAC}
+                      </span>
+                    </div>
+
+                    {/* Cold Mineral Water */}
+                    <div className="flex flex-col items-center text-center">
+                      <div className="w-9 h-9 rounded-full bg-[#e8f5ee] text-[#0d6b46] flex items-center justify-center mb-1 shadow-xs">
+                        <Droplet className="w-4 h-4" />
+                      </div>
+                      <span className="text-[10px] font-bold text-slate-700 leading-tight">
+                        {t.amenityWater}
+                      </span>
+                    </div>
+
+                    {/* Toll Charges */}
+                    <div className="flex flex-col items-center text-center">
+                      <div className="w-9 h-9 rounded-full bg-[#e8f5ee] text-[#0d6b46] flex items-center justify-center mb-1 shadow-xs">
+                        <Ticket className="w-4 h-4" />
+                      </div>
+                      <span className="text-[10px] font-bold text-slate-700 leading-tight">
+                        {t.amenityTolls}
+                      </span>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* 3. Action Buttons Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                  {/* WhatsApp Button */}
+                  <a
+                    href={tour.waUrl}
+                    target="_blank"
+                    referrerPolicy="no-referrer"
+                    className="bg-[#058a58] hover:bg-[#04774b] text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2.5 transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.99] text-left group decoration-transparent"
+                    id={`wa-ziyarat-${tour.id}`}
+                  >
+                    <MessageSquare className="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                    <div>
+                      <span className="text-sm sm:text-base font-black block leading-tight">
+                        WhatsApp
+                      </span>
+                      <span className="text-[10px] text-emerald-100 font-semibold block leading-none mt-0.5">
+                        {t.waChatSub}
+                      </span>
+                    </div>
+                  </a>
+
+                  {/* Book Now Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleBookPackage(tour.surrogate)}
+                    className="bg-[#d92d20] hover:bg-[#b82116] text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2.5 transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.99] text-left cursor-pointer group"
+                    id={`book-ziyarat-${tour.id}`}
+                  >
+                    <Ticket className="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                    <div>
+                      <span className="text-sm sm:text-base font-black block leading-tight">
+                        {t.navBookNow || "Book Now"}
+                      </span>
+                      <span className="text-[10px] text-rose-100 font-semibold block leading-none mt-0.5">
+                        {t.bookSub}
+                      </span>
+                    </div>
+                  </button>
+                </div>
+
               </div>
 
-              <div className="p-6 space-y-4">
-                <p className="text-xs text-slate-600 font-bold leading-relaxed line-clamp-3">
-                  {t.madinahTourDesc}
-                </p>
-
-                {/* Inclusions */}
-                <div className="bg-rose-50/50 p-3 rounded-xl border border-rose-100/30 text-[11px] text-slate-500 font-bold leading-relaxed">
-                  ✓ {t.packageIncludes}
+              {/* 4. Footer Trust Badges Strip */}
+              <div className="bg-[#f4f7f5] border-t border-slate-100 px-4 py-2.5 flex flex-wrap items-center justify-around text-[10px] sm:text-[11px] text-slate-600 font-bold gap-2">
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>{t.trustVerified}</span>
+                </div>
+                <div className="hidden sm:block w-px h-3 bg-slate-300" />
+                <div className="flex items-center gap-1.5">
+                  <Headphones className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>{t.trustSupport}</span>
+                </div>
+                <div className="hidden sm:block w-px h-3 bg-slate-300" />
+                <div className="flex items-center gap-1.5">
+                  <Award className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>{t.trustPrice}</span>
                 </div>
               </div>
+
             </div>
-
-            <div className="p-6 border-t border-rose-50 bg-slate-50/50">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[11px] uppercase font-bold text-slate-500">
-                  Flat Tour Price
-                </span>
-                <span className="text-brand-primary font-black text-xl">
-                  {madinahSurrogate.price} <span className="text-xs font-bold font-mono">{t.currency}</span>
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <a
-                  href={getWhatsAppURL(madinahSurrogate.nameEn, madinahSurrogate.nameAr, madinahSurrogate.price)}
-                  target="_blank"
-                  referrerPolicy="no-referrer"
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-2.5 px-2 rounded-xl text-center flex items-center justify-center gap-1.5 shadow"
-                  id={`wa-ziyarat-${madinahSurrogate.id}`}
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  <span>WhatsApp</span>
-                </a>
-
-                <button
-                  type="button"
-                  onClick={() => handleBookPackage(madinahSurrogate)}
-                  className="bg-brand-primary hover:bg-brand-dark text-white font-extrabold text-xs py-2.5 px-2 rounded-xl text-center flex items-center justify-center gap-1.5 shadow cursor-pointer"
-                  id={`book-ziyarat-${madinahSurrogate.id}`}
-                >
-                  <Ticket className="w-4 h-4" />
-                  <span>{t.navBookNow}</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Custom Group Holy Caravan Tour card */}
-          <div className="bg-white border border-rose-100 rounded-2xl shadow-md hover:shadow-xl hover:border-brand-primary/20 transition-all duration-300 overflow-hidden flex flex-col justify-between group" id="ziyarat-custom-card">
-            <div>
-              <div className="bg-brand-bg-dark h-48 relative flex items-center justify-center p-6 text-center select-none overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-bg-dark via-brand-bg-dark/80 to-transparent z-10" />
-                <span className="text-6xl text-white/10 absolute -right-4 -bottom-4 font-black select-none">🚍</span>
-                
-                <div className="relative z-20 text-center text-white">
-                  <span className="bg-amber-600 text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-full">
-                    Custom Large Group
-                  </span>
-                  <h3 className="text-base font-extrabold mt-3 tracking-tight">
-                    {t.customTour}
-                  </h3>
-                  <p className="text-[10px] text-slate-400 mt-1 font-semibold">
-                    Flexible / Multi-Day Schedule
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-6 space-y-4">
-                <p className="text-xs text-slate-600 font-bold leading-relaxed line-clamp-3">
-                  {t.customTourDesc}
-                </p>
-
-                {/* Inclusions */}
-                <div className="bg-rose-50/50 p-3 rounded-xl border border-rose-100/30 text-[11px] text-slate-500 font-bold leading-relaxed">
-                  ✓ Includes multi-day bus allocation, toll handling, 24/7 dedicated dispatch supervisor.
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 border-t border-rose-50 bg-slate-50/50">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[11px] uppercase font-bold text-slate-500">
-                  Est. Base Group Rate
-                </span>
-                <span className="text-brand-primary font-black text-xl">
-                  {customSurrogate.price} <span className="text-xs font-bold font-mono">{t.currency}</span>
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <a
-                  href={getWhatsAppURL(customSurrogate.nameEn, customSurrogate.nameAr, customSurrogate.price)}
-                  target="_blank"
-                  referrerPolicy="no-referrer"
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-2.5 px-2 rounded-xl text-center flex items-center justify-center gap-1.5 shadow"
-                  id={`wa-ziyarat-${customSurrogate.id}`}
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  <span>WhatsApp</span>
-                </a>
-
-                <button
-                  type="button"
-                  onClick={() => handleBookPackage(customSurrogate)}
-                  className="bg-brand-primary hover:bg-brand-dark text-white font-extrabold text-xs py-2.5 px-2 rounded-xl text-center flex items-center justify-center gap-1.5 shadow cursor-pointer"
-                  id={`book-ziyarat-${customSurrogate.id}`}
-                >
-                  <Ticket className="w-4 h-4" />
-                  <span>{t.navBookNow}</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
+          ))}
         </div>
 
       </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLang } from '../context/LangContext';
-import { VehicleData } from '../data/vehicles';
+import { VehicleData, getVehicleImageUrl } from '../data/vehicles';
 import { 
   Users, 
   MessageSquare, 
@@ -21,15 +21,6 @@ interface VehicleCardProps {
   vehicle: VehicleData;
   onBookNow: (vehicle: VehicleData) => void;
 }
-
-const vehicleImages: { [key: string]: string } = {
-  "toyota-camry": "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?auto=format&fit=crop&w=800&q=80",
-  "hyundai-staria": "https://images.unsplash.com/photo-1695663335275-c54cc41a5472?auto=format&fit=crop&w=800&q=80",
-  "gmc-yukon-xl": "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=800&q=80",
-  "toyota-hiace": "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=800&q=80",
-  "sprinter-van": "https://images.unsplash.com/photo-1608222351212-18fe0ec7b13b?auto=format&fit=crop&w=800&q=80",
-  "coaster-bus": "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=800&q=80"
-};
 
 export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
   const { lang, t } = useLang();
@@ -120,7 +111,7 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
       {/* Top Graphic Stage with full cover image */}
       <div className="h-48 sm:h-56 w-full relative overflow-hidden bg-slate-100">
         <img 
-          src={vehicleImages[vehicle.id] || "https://images.unsplash.com/photo-1619551483344-0de91dda9c16?auto=format&fit=crop&w=800&q=80"} 
+          src={getVehicleImageUrl(vehicle.id)} 
           alt={name}
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
