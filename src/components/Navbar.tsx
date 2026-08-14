@@ -20,10 +20,10 @@ export default function Navbar() {
   ];
 
   // WhatsApp click link pre-filled template message
-  const whatsappNumber = "966501234567"; // Sample TGA office number
+  const whatsappNumber = "966542049512"; // Sample TGA office number
   const defaultMsg = lang === 'en' 
-    ? "Hello Qawafil Al Majd! I am looking to inquire about premium vehicle transportation services."
-    : "مرحباً قوافل المجد! أرغب في الاستفسار عن خدمات النقل وتأجير الحافلات المتميزة.";
+    ? "Hello Qawafil Al Majd Al Misaliya! I am looking to inquire about premium vehicle transportation services."
+    : "مرحباً قوافل المجد المثالية! أرغب في الاستفسار عن خدمات النقل وتأجير الحافلات المتميزة.";
   const linkUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(defaultMsg)}`;
 
   return (
@@ -38,11 +38,11 @@ export default function Navbar() {
                 <Truck className="w-6 h-6" />
               </div>
               <div className="flex flex-col">
-                <span className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight leading-none">
+                <span className="text-base sm:text-lg lg:text-xl font-extrabold text-slate-900 tracking-tight leading-none">
                   {t.brandName}
                 </span>
                 <span className="text-[10px] sm:text-[11px] text-brand-primary font-bold tracking-wide mt-1">
-                  {lang === 'en' ? "Perfect Caravans of Glory" : "قوافل المجد اللوجستية المتميزة"}
+                  {lang === 'en' ? "Transport & Logistics Services" : "للنقل والخدمات اللوجستية"}
                 </span>
               </div>
             </Link>

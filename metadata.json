@@ -1,6 +1,6 @@
 {
-  "name": "Qawafil Al Majd Al Mithaliya",
-  "description": "Specialized pilgrim booking inquiries receipts and accounts general ledger management dashboard for Qawafil Al Majd Al Mithaliya.",
+  "name": "Qawafil Al Majd Al Misaliya",
+  "description": "Specialized pilgrim booking inquiries receipts and accounts general ledger management dashboard for Qawafil Al Majd Al Misaliya.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

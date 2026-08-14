@@ -31,11 +31,11 @@ export default function Contact() {
     setSuccess(false);
   };
 
-  const whatsappNumber = "966501234567";
+  const whatsappNumber = "966542049512";
   const getWhatsAppURL = () => {
     const msg = lang === 'en'
-      ? `Ahlalan Qawafil Al Majd! I am reaching out via your website contact form:\n\n- *Name:* ${name}\n- *Email:* ${email}\n- *Subject:* ${subject}\n- *Message:* ${message}`
-      : `السلام عليكم قوافل المجد! أتواصل معكم عبر نموذج التواصل في الموقع:\n\n- *الاسم:* ${name}\n- *البريد:* ${email}\n- *الموضوع:* ${subject}\n- *الرسالة:* ${message}`;
+      ? `Ahlalan Qawafil Al Majd Al Misaliya! I am reaching out via your website contact form:\n\n- *Name:* ${name}\n- *Email:* ${email}\n- *Subject:* ${subject}\n- *Message:* ${message}`
+      : `السلام عليكم قوافل المجد المثالية! أتواصل معكم عبر نموذج التواصل في الموقع:\n\n- *الاسم:* ${name}\n- *البريد:* ${email}\n- *الموضوع:* ${subject}\n- *الرسالة:* ${message}`;
     return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
   };
 
@@ -76,8 +76,8 @@ export default function Contact() {
                 
                 <p className="text-xs sm:text-sm text-slate-600 font-semibold mb-6 max-w-md mx-auto leading-relaxed">
                   {lang === 'en' 
-                    ? 'Thank you for reaching out to Qawafil Al Majd. Our customer support team will review your message and reply promptly.' 
-                    : 'شكراً لتواصلك مع قوافل المجد. سيقوم فريق خدمة العملاء بمراجعة رسالتك والرد عليك في أقرب وقت.'
+                    ? 'Thank you for reaching out to Qawafil Al Majd Al Misaliya. Our customer support team will review your message and reply promptly.' 
+                    : 'شكراً لتواصلك مع قوافل المجد المثالية. سيقوم فريق خدمة العملاء بمراجعة رسالتك والرد عليك في أقرب وقت.'
                   }
                 </p>
 

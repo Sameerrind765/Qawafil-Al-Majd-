@@ -284,14 +284,14 @@ export default function Home() {
 
   // Pre-filled WhatsApp message generation from Hero quick assistant
   const getHeroWhatsAppURL = () => {
-    const whatsappNum = "966501234567";
+    const whatsappNum = "966542049512";
     const serviceName = leadService;
     const caravanClass = leadCaravan;
     const pickupDetail = leadCustomStation || "Not specified yet";
 
     const msg = lang === 'en'
-      ? `Assalamu Alaikum Qawafil Al Majd! I want to confirm my quick landing reservation:\n\n- *Requested Service:* ${serviceName}\n- *Caravan Level:* ${caravanClass}\n- *My Name:* ${leadName}\n- *WhatsApp:* ${leadPhone}\n- *Pickup Details:* ${pickupDetail}\n\nPlease dispatch, Jazakallah Khayran.`
-      : `السلام عليكم قوافل المجد! أرغب في تأكيد حجز تفويج سريع بري عبر الموقع:\n\n- *الخدمة المطلوبة:* ${serviceName}\n- *فئة ومستوى الناقلة:* ${caravanClass}\n- *الاسم الكريم:* ${leadName}\n- *رقم التواصل:* ${leadPhone}\n- *تفاصيل الاستلام:* ${pickupDetail}\n\nيرجى تأكيد الحجز وتوجيه السائق، بارك الله فيكم.`;
+      ? `Assalamu Alaikum Qawafil Al Majd Al Misaliya! I want to confirm my quick landing reservation:\n\n- *Requested Service:* ${serviceName}\n- *Caravan Level:* ${caravanClass}\n- *My Name:* ${leadName}\n- *WhatsApp:* ${leadPhone}\n- *Pickup Details:* ${pickupDetail}\n\nPlease dispatch, Jazakallah Khayran.`
+      : `السلام عليكم قوافل المجد المثالية! أرغب في تأكيد حجز تفويج سريع بري عبر الموقع:\n\n- *الخدمة المطلوبة:* ${serviceName}\n- *فئة ومستوى الناقلة:* ${caravanClass}\n- *الاسم الكريم:* ${leadName}\n- *رقم التواصل:* ${leadPhone}\n- *تفاصيل الاستلام:* ${pickupDetail}\n\nيرجى تأكيد الحجز وتوجيه السائق، بارك الله فيكم.`;
 
     return `https://wa.me/${whatsappNum}?text=${encodeURIComponent(msg)}`;
   };
@@ -1150,7 +1150,7 @@ export default function Home() {
                   priceLabel: t.flatTourPrice,
                   price: 360,
                   image: "https://res.cloudinary.com/hre1igvz/image/upload/q_auto/f_auto/v1786639331/madinah-tours-1-1.webp",
-                  waUrl: `https://wa.me/966501234567?text=${encodeURIComponent(lang === 'en' ? 'Ahlalan Wa Sahlan Qawafil Al Majd! I am looking to confirm a booking reservation for the guided spiritual tour program: "Madinah Noble Ziyarat Program" at the rate of SAR 360. Please advise.' : 'السلام عليكم قوافل المجد! أرغب في تأكيد حجز برنامج الزيارات الشريفة: "برنامج زيارة المعالم النبوية بالمدينة" بسعر 360 ريال. يرجى إرشادي بخصوص تفاصيل التفويج والخدمة.')}`
+                  waUrl: `https://wa.me/966542049512?text=${encodeURIComponent(lang === 'en' ? 'Ahlalan Wa Sahlan Qawafil Al Majd Al Misaliya! I am looking to confirm a booking reservation for the guided spiritual tour program: "Madinah Noble Ziyarat Program" at the rate of SAR 360. Please advise.' : 'السلام عليكم قوافل المجد المثالية! أرغب في تأكيد حجز برنامج الزيارات الشريفة: "برنامج زيارة المعالم النبوية بالمدينة" بسعر 360 ريال. يرجى إرشادي بخصوص تفاصيل التفويج والخدمة.')}`
                 },
                 {
                   id: "makkah",
@@ -1164,7 +1164,7 @@ export default function Home() {
                   priceLabel: t.flatTourPrice,
                   price: 380,
                   image: "https://res.cloudinary.com/hre1igvz/image/upload/q_auto/f_auto/v1786639331/makkah-tours-1-1.webp",
-                  waUrl: `https://wa.me/966501234567?text=${encodeURIComponent(lang === 'en' ? 'Ahlalan Wa Sahlan Qawafil Al Majd! I am looking to confirm a booking reservation for the guided spiritual tour program: "Makkah Sacred Ziyarat Program" at the rate of SAR 380. Please advise.' : 'السلام عليكم قوافل المجد! أرغب في تأكيد حجز برنامج الزيارات الشريفة: "برنامج زيارة المشاعر المقدسة بمكة" بسعر 380 ريال. يرجى إرشادي بخصوص تفاصيل التفويج والخدمة.')}`
+                  waUrl: `https://wa.me/966542049512?text=${encodeURIComponent(lang === 'en' ? 'Ahlalan Wa Sahlan Qawafil Al Majd Al Misaliya! I am looking to confirm a booking reservation for the guided spiritual tour program: "Makkah Sacred Ziyarat Program" at the rate of SAR 380. Please advise.' : 'السلام عليكم قوافل المجد المثالية! أرغب في تأكيد حجز برنامج الزيارات الشريفة: "برنامج زيارة المشاعر المقدسة بمكة" بسعر 380 ريال. يرجى إرشادي بخصوص تفاصيل التفويج والخدمة.')}`
                 }
               ].map((tour) => (
                 <div 

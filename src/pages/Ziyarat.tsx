@@ -78,12 +78,12 @@ export default function Ziyarat() {
   };
 
   // WhatsApp click link pre-filled template specifically for Ziyarat packages
-  const whatsappNumber = "966501234567";
+  const whatsappNumber = "966542049512";
   const getWhatsAppURL = (titleEn: string, titleAr: string, rate: number) => {
     const title = lang === 'en' ? titleEn : titleAr;
     const msg = lang === 'en'
-      ? `Ahlalan Wa Sahlan Qawafil Al Majd! I am looking to confirm a booking reservation for the guided spiritual tour program: "${title}" at the rate of SAR ${rate}. Please advise.`
-      : `السلام عليكم قوافل المجد! أرغب في تأكيد حجز برنامج الزيارات الشريفة: "${title}" بسعر ${rate} ريال. يرجى إرشادي بخصوص تفاصيل التفويج والخدمة.`;
+      ? `Ahlalan Wa Sahlan Qawafil Al Majd Al Misaliya! I am looking to confirm a booking reservation for the guided spiritual tour program: "${title}" at the rate of SAR ${rate}. Please advise.`
+      : `السلام عليكم قوافل المجد المثالية! أرغب في تأكيد حجز برنامج الزيارات الشريفة: "${title}" بسعر ${rate} ريال. يرجى إرشادي بخصوص تفاصيل التفويج والخدمة.`;
     return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
   };
 

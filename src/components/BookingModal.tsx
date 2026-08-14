@@ -139,7 +139,7 @@ export default function BookingModal({ isOpen, onClose, selectedVehicle, booking
   };
 
   // Pre-filled WhatsApp message URL
-  const whatsappNumber = "966501234567";
+  const whatsappNumber = "966542049512";
   const getWhatsAppURL = () => {
     const vName = lang === 'en' ? selectedVehicle?.nameEn : selectedVehicle?.nameAr;
     const vPrice = selectedVehicle?.price;
@@ -152,8 +152,8 @@ export default function BookingModal({ isOpen, onClose, selectedVehicle, booking
     }
 
     const msg = lang === 'en'
-      ? `Assalamu Alaikum Qawafil Al Majd! I want to confirm my booking reservation for:\n\n- *Vehicle:* ${vName}\n- *Rate:* SAR ${vPrice}${routeInfo}\n- *My Name:* ${fullName}\n- *WhatsApp:* ${phone}\n- *Pickup Details:* ${pickupHotel}\n- *Notes:* ${specialRequests}\n\nPlease dispatch, thank you.`
-      : `السلام عليكم قوافل المجد! أرغب في تأكيد حجز الرحلة:\n\n- *المركبة المطلوبة:* ${vName}\n- *التسعيرة المقدرة:* ${vPrice} ريال${routeInfo}\n- *الاسم الكريم:* ${fullName}\n- *رقم التواصل:* ${phone}\n- *موقع الاستلام:* ${pickupHotel}\n- *متطلبات خاصة:* ${specialRequests}\n\nيرجى تأكيد التفويج والخدمة البرية، شكراً لكم.`;
+      ? `Assalamu Alaikum Qawafil Al Majd Al Misaliya! I want to confirm my booking reservation for:\n\n- *Vehicle:* ${vName}\n- *Rate:* SAR ${vPrice}${routeInfo}\n- *My Name:* ${fullName}\n- *WhatsApp:* ${phone}\n- *Pickup Details:* ${pickupHotel}\n- *Notes:* ${specialRequests}\n\nPlease dispatch, thank you.`
+      : `السلام عليكم قوافل المجد المثالية! أرغب في تأكيد حجز الرحلة:\n\n- *المركبة المطلوبة:* ${vName}\n- *التسعيرة المقدرة:* ${vPrice} ريال${routeInfo}\n- *الاسم الكريم:* ${fullName}\n- *رقم التواصل:* ${phone}\n- *موقع الاستلام:* ${pickupHotel}\n- *متطلبات خاصة:* ${specialRequests}\n\nيرجى تأكيد التفويج والخدمة البرية، شكراً لكم.`;
     return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
   };
 

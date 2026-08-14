@@ -103,15 +103,15 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
   }, [pickupId, destinationId, customDistanceKm, vehicle, lang, isBusOrVan]);
 
   // WhatsApp link tailored with the card's live selected route and price
-  const whatsappNumber = "966501234567";
+  const whatsappNumber = "966542049512";
   const getWhatsAppURL = () => {
     const rateTypeStr = isEstimated 
       ? (lang === 'en' ? `Estimated Distance Rate (${distanceKm} km)` : `تسعيرة تقديرية للمسافة (${distanceKm} كم)`)
       : (lang === 'en' ? 'Fixed Flat Rate' : 'سعر مسطح ثابت');
 
     const msg = lang === 'en'
-      ? `Hello Qawafil Al Majd! I am interested in booking the "${vehicle.nameEn}" (${vehicle.capacity}).\n- Route: ${routeLabel}\n- Price: SAR ${computedPrice} (${rateTypeStr})\nPlease let me know how to proceed.`
-      : `مرحباً قوافل المجد! أرغب في الاستفسار وحجز مركبة "${vehicle.nameAr}" (${vehicle.capacity}).\n- المسار: ${routeLabel}\n- السعر: ${computedPrice} ريال سعودي (${rateTypeStr})\nيرجى إفادتي بالتفاصيل.`;
+      ? `Hello Qawafil Al Majd Al Misaliya! I am interested in booking the "${vehicle.nameEn}" (${vehicle.capacity}).\n- Route: ${routeLabel}\n- Price: SAR ${computedPrice} (${rateTypeStr})\nPlease let me know how to proceed.`
+      : `مرحباً قوافل المجد المثالية! أرغب في الاستفسار وحجز مركبة "${vehicle.nameAr}" (${vehicle.capacity}).\n- المسار: ${routeLabel}\n- السعر: ${computedPrice} ريال سعودي (${rateTypeStr})\nيرجى إفادتي بالتفاصيل.`;
     return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
   };
 

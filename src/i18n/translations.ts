@@ -1,7 +1,7 @@
 export const translations = {
   en: {
-    brandName: "Qawafil Al Majd",
-    brandSub: "Perfect Caravans of Glory - Transport & Contracting",
+    brandName: "Qawafil Al Majd Al Misaliya",
+    brandSub: "Qawafil Al Majd Al Misaliya - Transport & Logistics Services",
     navHome: "Home",
     navFleet: "Our Fleet",
     navZiyarat: "Ziyarat Tours",
@@ -142,7 +142,7 @@ export const translations = {
     selectedFleetTitle: "Available Caravans & Vehicles"
   },
   ar: {
-    brandName: "قوافل المجد",
+    brandName: "قوافل المجد المثالية",
     brandSub: "قوافل المجد المثالية للنقل والخدمات اللوجستية والمقاولات",
     navHome: "الرئيسية",
     navFleet: "أسطولنا",
