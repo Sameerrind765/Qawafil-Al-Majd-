@@ -125,16 +125,16 @@ export const translations = {
     customBadge: "CUSTOM GROUP CARAVAN",
     
     // Contact
-    contactTitle: "Operations HQ Control Desk",
-    contactSub: "Need heavy fleet dispatch, customized private packages, or immediate ground coordination?",
-    formLabelSubject: "Inquiry Division",
-    formLabelMessage: "Logistics Details",
-    formBtnSubmit: "Signal Dispatch Desk",
-    hqTitle: "Primary Fleet Control HQ",
+    contactTitle: "Get in Touch with Us",
+    contactSub: "Have questions about our transport services, fleet bookings, or custom group packages? We're here to help you 24/7.",
+    formLabelSubject: "Subject",
+    formLabelMessage: "Your Message",
+    formBtnSubmit: "Send Message",
+    hqTitle: "Headquarters & Office",
     hqAddress: "Al-Basateen District, Prince Sultan Road, Jeddah, Kingdom of Saudi Arabia",
-    hqEmail: "ops@qawafil-almajd.com",
+    hqEmail: "info@qawafil-almajd.com",
     hqPhone: "+966 12 654 3210",
-    hqWorkingHours: "Operations Desk: 24/7 Active",
+    hqWorkingHours: "Customer Care: 24/7 Always Available",
     
     // Home Hero Page
     heroTitle: "Premium Saudi Fleet Logistics",
@@ -267,16 +267,16 @@ export const translations = {
     customBadge: "حافلة مجموعات مخصصة",
     
     // Contact
-    contactTitle: "مركز التواصل وقسم تنسيق العمليات",
-    contactSub: "ترغب في تفويج أساطيل من المركبات، رحلات مخصصة لشركتك، أو تنسيق نقل بري فوري؟ عملياتنا نشطة الآن.",
-    formLabelSubject: "قسم التواصل / الطلب",
-    formLabelMessage: "تفاصيل الاحتياج اللوجستي",
-    formBtnSubmit: "إرسال الإشارة التشغيلية",
-    hqTitle: "المقر الرئيسي لإدارة الأسطول",
+    contactTitle: "تواصل معنا",
+    contactSub: "هل لديك استفسار عن خدمات النقل، الحجوزات، أو باقات المجموعات الخاصة؟ نحن هنا لخدمتك على مدار الساعة.",
+    formLabelSubject: "الموضوع",
+    formLabelMessage: "الرسالة",
+    formBtnSubmit: "إرسال الرسالة",
+    hqTitle: "المقر الرئيسي والمكتب",
     hqAddress: "حي البساتين، طريق الأمير سلطان، جدة، المملكة العربية السعودية",
-    hqEmail: "ops@qawafil-almajd.com",
+    hqEmail: "info@qawafil-almajd.com",
     hqPhone: "+966 12 654 3210",
-    hqWorkingHours: "مركز التحكم والعمليات: يعمل على مدار الساعة 24/7 دون توقف",
+    hqWorkingHours: "خدمة العملاء: متاحة دائماً 24/7",
     
     // Home Hero Page
     heroTitle: "قوافل المجد الفاخرة للحلول اللوجستية",

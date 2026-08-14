@@ -237,7 +237,7 @@ export default function SearchWidget({ onSearch }: SearchWidgetProps) {
 
         {/* BY HOUR TAB FIELD LAYOUT */}
         {activeTab === 'hourly' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-750 block font-mono tracking-wider text-slate-800 uppercase">
                 {t.labelBaseCity}
@@ -287,24 +287,6 @@ export default function SearchWidget({ onSearch }: SearchWidgetProps) {
                   type="datetime-local"
                   value={hourlyValues.date}
                   onChange={(e) => setHourlyValues({ ...hourlyValues, date: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-9.5 pr-4 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:ring-1 focus:ring-brand-primary"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-750 block font-mono tracking-wider text-slate-800 uppercase">
-                {t.labelPassengers}
-              </label>
-              <div className="relative">
-                <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-primary" />
-                <input
-                  type="number"
-                  min="1"
-                  max="100"
-                  value={hourlyValues.passengers}
-                  onChange={(e) => setHourlyValues({ ...hourlyValues, passengers: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-9.5 pr-4 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:ring-1 focus:ring-brand-primary"
                   required
                 />
@@ -390,7 +372,7 @@ export default function SearchWidget({ onSearch }: SearchWidgetProps) {
 
         {/* FULL CONTRACT TAB FIELD LAYOUT */}
         {activeTab === 'contract' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-750 block font-mono tracking-wider text-slate-800 uppercase">
                 {t.labelRouteType}
@@ -436,24 +418,6 @@ export default function SearchWidget({ onSearch }: SearchWidgetProps) {
                   type="date"
                   value={contractValues.startDate}
                   onChange={(e) => setContractValues({ ...contractValues, startDate: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-9.5 pr-4 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:ring-1 focus:ring-brand-primary"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-750 block font-mono tracking-wider text-slate-800 uppercase">
-                {t.labelGroupSize}
-              </label>
-              <div className="relative">
-                <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-primary" />
-                <input
-                  type="number"
-                  min="5"
-                  max="5000"
-                  value={contractValues.groupSize}
-                  onChange={(e) => setContractValues({ ...contractValues, groupSize: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-9.5 pr-4 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:ring-1 focus:ring-brand-primary"
                   required
                 />

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLang } from '../context/LangContext';
-import { Mail, Phone, MapPin, Compass, MessageSquare, Send, CheckCircle2 } from 'lucide-react';
+import { Mail, Phone, MapPin, MessageSquare, Send, CheckCircle2, Headphones, Clock } from 'lucide-react';
 
 export default function Contact() {
   const { lang, t } = useLang();
@@ -20,7 +20,7 @@ export default function Contact() {
     setTimeout(() => {
       setSubmitting(false);
       setSuccess(true);
-    }, 1200);
+    }, 1000);
   };
 
   const resetForm = () => {
@@ -34,96 +34,103 @@ export default function Contact() {
   const whatsappNumber = "966501234567";
   const getWhatsAppURL = () => {
     const msg = lang === 'en'
-      ? `Ahlalan Qawafil Al Majd Operations Desk! I have submitted a contact inquiry:\n\n- *Name:* ${name}\n- *Email:* ${email}\n- *Topic:* ${subject}\n- *Details:* ${message}`
-      : `السلام عليكم قوافل المجد! لقد قمت بإرسال طلب استفسار عبر الموقع:\n\n- *الاسم:* ${name}\n- *البريد:* ${email}\n- *عنوان الطلب:* ${subject}\n- *التفاصيل:* ${message}`;
+      ? `Ahlalan Qawafil Al Majd! I am reaching out via your website contact form:\n\n- *Name:* ${name}\n- *Email:* ${email}\n- *Subject:* ${subject}\n- *Message:* ${message}`
+      : `السلام عليكم قوافل المجد! أتواصل معكم عبر نموذج التواصل في الموقع:\n\n- *الاسم:* ${name}\n- *البريد:* ${email}\n- *الموضوع:* ${subject}\n- *الرسالة:* ${message}`;
     return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
   };
 
   return (
-    <div className="flex-1 py-12 bg-white font-sans select-none">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex-1 py-10 sm:py-16 bg-[#f8f9fa] font-sans select-none">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         
-        {/* Title structure */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-1.5 bg-brand-primary/10 border border-brand-primary/20 py-1.5 px-3.5 rounded-full text-brand-primary font-bold text-xs uppercase tracking-wider mb-4">
-            <Compass className="w-4 h-4" />
-            <span>HQ Operations Command Desk</span>
+        {/* Header */}
+        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
+          <div className="inline-flex items-center gap-2 bg-emerald-100/80 border border-emerald-200 py-1.5 px-4 rounded-full text-[#0d6b46] font-extrabold text-xs uppercase tracking-wider mb-3.5 shadow-xs">
+            <Headphones className="w-4 h-4 text-[#0d6b46]" />
+            <span>{lang === 'en' ? 'Customer Support & Inquiries' : 'خدمة العملاء والاستفسارات'}</span>
           </div>
 
           <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight" id="contact-page-title">
             {t.contactTitle}
           </h2>
 
-          <p className="text-slate-500 text-xs sm:text-sm font-semibold leading-relaxed max-w-xl mx-auto mt-2">
+          <p className="text-slate-500 text-xs sm:text-sm font-semibold leading-relaxed max-w-xl mx-auto mt-2.5">
             {t.contactSub}
           </p>
         </div>
 
-        {/* Dynamic split view */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
+        {/* Content Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 max-w-5xl mx-auto items-start">
           
-          {/* Left panel: Controlled feedback form */}
-          <div className="bg-rose-50/20 border border-rose-100 rounded-2xl p-6 sm:p-8" id="contact-form-container">
+          {/* Left panel: Contact Form */}
+          <div className="lg:col-span-7 bg-white border border-slate-200/90 rounded-[24px] p-6 sm:p-8 shadow-sm" id="contact-form-container">
             {success ? (
-              <div className="text-center py-8">
-                <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-650 mx-auto mb-5">
+              <div className="text-center py-6">
+                <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 mx-auto mb-4">
                   <CheckCircle2 className="w-10 h-10 text-emerald-600" />
                 </div>
-                <h4 className="text-base font-extrabold text-slate-900 mb-2">
-                  {lang === 'en' ? 'Inquiry Sent Successfully!' : 'تم تقديم الاستفسار بنجاح!'}
+                
+                <h4 className="text-lg font-black text-slate-900 mb-2">
+                  {lang === 'en' ? 'Message Sent Successfully!' : 'تم إرسال رسالتك بنجاح!'}
                 </h4>
-                <p className="text-xs text-slate-500 font-semibold mb-6 max-w-sm mx-auto">
+                
+                <p className="text-xs sm:text-sm text-slate-600 font-semibold mb-6 max-w-md mx-auto leading-relaxed">
                   {lang === 'en' 
-                    ? 'Our logistics dispatcher will respond to your registered email or phone within 10 minutes.' 
-                    : 'سيتواصل معك ضابط العمليات المناوب فور مراجعة طلبك عبر البريد أو الهاتف خلال دقائق.'
+                    ? 'Thank you for reaching out to Qawafil Al Majd. Our customer support team will review your message and reply promptly.' 
+                    : 'شكراً لتواصلك مع قوافل المجد. سيقوم فريق خدمة العملاء بمراجعة رسالتك والرد عليك في أقرب وقت.'
                   }
                 </p>
 
-                <div className="space-y-3">
+                <div className="space-y-3 max-w-xs mx-auto">
                   <a
                     href={getWhatsAppURL()}
                     target="_blank"
                     referrerPolicy="no-referrer"
-                    className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-3.5 px-4 rounded-xl shadow transition-colors decoration-transparent"
+                    className="w-full flex items-center justify-center gap-2.5 bg-[#058a58] hover:bg-[#04774b] text-white font-extrabold text-xs py-3.5 px-4 rounded-xl shadow transition-colors decoration-transparent"
                     id="contact-whatsapp-confirm"
                   >
                     <MessageSquare className="w-4 h-4" />
-                    <span>{lang === 'en' ? 'Puff Dispatch on WhatsApp' : 'إرسال إشارة عبر وتساب'}</span>
+                    <span>{lang === 'en' ? 'Chat directly on WhatsApp' : 'التواصل المباشر عبر الواتساب'}</span>
                   </a>
 
                   <button
                     type="button"
                     onClick={resetForm}
-                    className="w-full bg-slate-150 hover:bg-slate-200 text-slate-750 font-bold text-xs py-2.5 rounded-xl transition-colors"
+                    className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-3 rounded-xl transition-colors cursor-pointer"
                   >
-                    {lang === 'en' ? 'Submit New Ticket' : 'إرسال طلب جديد'}
+                    {lang === 'en' ? 'Send Another Message' : 'إرسال رسالة أخرى'}
                   </button>
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleFormSubmit} className="space-y-5" id="contact-actual-form">
-                <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wide mb-2">
-                  {lang === 'en' ? 'Operational Message Ticket' : 'بطاقة استفسار وتنسيق'}
-                </h3>
+              <form onSubmit={handleFormSubmit} className="space-y-4" id="contact-actual-form">
+                <div className="border-b border-slate-100 pb-3 mb-2">
+                  <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                    {lang === 'en' ? 'Send Us a Message' : 'أرسل لنا رسالة'}
+                  </h3>
+                  <p className="text-xs text-slate-500 font-semibold mt-0.5">
+                    {lang === 'en' ? 'Fill out the form below and we will get back to you.' : 'يسعدنا استقبال استفساراتك واقتراحاتك في أي وقت.'}
+                  </p>
+                </div>
 
                 {/* Name */}
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-600 block uppercase">
-                    {lang === 'en' ? 'Full Name' : 'الاسم الكريم'}
+                  <label className="text-xs font-bold text-slate-700 block">
+                    {lang === 'en' ? 'Full Name' : 'الاسم الكامل'}
                   </label>
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g., Yahya"
-                    className="w-full bg-white border border-slate-200 rounded-xl py-3 px-4 text-xs font-bold text-slate-850 outline-none focus:border-brand-primary"
+                    placeholder={lang === 'en' ? 'e.g. Mohammed Ali' : 'مثال: محمد علي'}
+                    className="w-full bg-slate-50/80 border border-slate-200 rounded-xl py-3 px-4 text-xs font-semibold text-slate-800 outline-none focus:bg-white focus:border-[#055c3c] transition-colors"
                   />
                 </div>
 
                 {/* Email */}
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-600 block uppercase">
+                  <label className="text-xs font-bold text-slate-700 block">
                     {lang === 'en' ? 'Email Address' : 'البريد الإلكتروني'}
                   </label>
                   <input
@@ -131,15 +138,15 @@ export default function Contact() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="e.g., active@company.com"
-                    className="w-full bg-white border border-slate-200 rounded-xl py-3 px-4 text-xs font-bold text-slate-850 outline-none focus:border-brand-primary text-left"
+                    placeholder="name@example.com"
+                    className="w-full bg-slate-50/80 border border-slate-200 rounded-xl py-3 px-4 text-xs font-semibold text-slate-800 outline-none focus:bg-white focus:border-[#055c3c] transition-colors text-left"
                     dir="ltr"
                   />
                 </div>
 
                 {/* Subject */}
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-600 block uppercase">
+                  <label className="text-xs font-bold text-slate-700 block">
                     {t.formLabelSubject}
                   </label>
                   <input
@@ -147,14 +154,14 @@ export default function Contact() {
                     required
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
-                    placeholder="e.g., Fleet Reservation"
-                    className="w-full bg-white border border-slate-200 rounded-xl py-3 px-4 text-xs font-bold text-slate-850 outline-none focus:border-brand-primary"
+                    placeholder={lang === 'en' ? 'e.g. Booking Inquiry / Special Request' : 'مثال: استفسار عن حجز / طلب خاص'}
+                    className="w-full bg-slate-50/80 border border-slate-200 rounded-xl py-3 px-4 text-xs font-semibold text-slate-800 outline-none focus:bg-white focus:border-[#055c3c] transition-colors"
                   />
                 </div>
 
-                {/* Body Message */}
+                {/* Message */}
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-600 block uppercase">
+                  <label className="text-xs font-bold text-slate-700 block">
                     {t.formLabelMessage}
                   </label>
                   <textarea
@@ -162,8 +169,8 @@ export default function Contact() {
                     required
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="..."
-                    className="w-full bg-white border border-slate-200 rounded-xl p-4 text-xs font-bold text-slate-850 outline-none focus:border-brand-primary resize-none"
+                    placeholder={lang === 'en' ? 'Write your message details here...' : 'اكتب تفاصيل رسالتك هنا...'}
+                    className="w-full bg-slate-50/80 border border-slate-200 rounded-xl p-4 text-xs font-semibold text-slate-800 outline-none focus:bg-white focus:border-[#055c3c] transition-colors resize-none"
                   />
                 </div>
 
@@ -171,80 +178,113 @@ export default function Contact() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full bg-brand-primary hover:bg-brand-dark text-white font-extrabold text-xs py-3.5 rounded-xl shadow-lg shadow-brand-primary/2 w-full flex items-center justify-center gap-2 cursor-pointer transition-colors duration-200"
+                  className="w-full bg-[#055c3c] hover:bg-[#04482f] text-white font-extrabold text-xs py-3.5 rounded-xl shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.99] mt-2"
                   id="contact-form-submit-btn"
                 >
-                  <Send className="w-3.5 h-3.5" />
+                  <Send className="w-4 h-4" />
                   <span>{submitting ? t.loading : t.formBtnSubmit}</span>
                 </button>
               </form>
             )}
           </div>
 
-          {/* Right panel: Static headquarters metadata */}
-          <div className="space-y-8 flex flex-col justify-between" id="contact-hq-info">
-            <div className="space-y-6">
-              <h3 className="text-base font-black text-slate-900 border-b border-rose-100 pb-3 uppercase tracking-wide">
+          {/* Right panel: Office Info & Quick Contact */}
+          <div className="lg:col-span-5 space-y-6" id="contact-hq-info">
+            
+            {/* Contact Details Card */}
+            <div className="bg-white border border-slate-200/90 rounded-[24px] p-6 sm:p-7 shadow-sm space-y-5">
+              <h3 className="text-base font-black text-slate-900 border-b border-slate-100 pb-3">
                 {t.hqTitle}
               </h3>
 
               <div className="space-y-4">
+                {/* Address */}
                 <div className="flex items-start gap-3 text-xs font-semibold text-slate-600">
-                  <div className="bg-rose-50 p-2.5 rounded-xl border border-rose-100 mt-0.5 shrink-0">
-                    <MapPin className="w-5 h-5 text-brand-primary" />
+                  <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-100/80 mt-0.5 shrink-0 text-[#0d6b46]">
+                    <MapPin className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-bold text-slate-800 uppercase tracking-wider mb-0.5">
-                      {lang === 'en' ? 'Physical HQ Address' : 'موقع المقر الفعلي'}
+                    <p className="font-bold text-slate-900 text-xs mb-0.5">
+                      {lang === 'en' ? 'Office Location' : 'موقع المكتب الرئيسي'}
                     </p>
-                    <p className="leading-relaxed mt-0.5">{t.hqAddress}</p>
+                    <p className="leading-relaxed text-slate-600">{t.hqAddress}</p>
                   </div>
                 </div>
 
+                {/* Phone */}
                 <div className="flex items-start gap-3 text-xs font-semibold text-slate-600">
-                  <div className="bg-rose-50 p-2.5 rounded-xl border border-rose-100 mt-0.5 shrink-0">
-                    <Phone className="w-5 h-5 text-brand-primary" />
+                  <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-100/80 mt-0.5 shrink-0 text-[#0d6b46]">
+                    <Phone className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-bold text-slate-800 uppercase tracking-wider mb-0.5">
-                      {lang === 'en' ? 'Direct Hotline Link' : 'رقم الخط الساخن والعمليات'}
+                    <p className="font-bold text-slate-900 text-xs mb-0.5">
+                      {lang === 'en' ? 'Phone & WhatsApp' : 'الهاتف والواتساب'}
                     </p>
-                    <p className="leading-relaxed font-mono mt-0.5">{t.hqPhone}</p>
+                    <p className="leading-relaxed font-mono text-slate-700">{t.hqPhone}</p>
                   </div>
                 </div>
 
+                {/* Email */}
                 <div className="flex items-start gap-3 text-xs font-semibold text-slate-600">
-                  <div className="bg-rose-50 p-2.5 rounded-xl border border-rose-100 mt-0.5 shrink-0">
-                    <Mail className="w-5 h-5 text-brand-primary" />
+                  <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-100/80 mt-0.5 shrink-0 text-[#0d6b46]">
+                    <Mail className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-bold text-slate-800 uppercase tracking-wider mb-0.5">
-                      {lang === 'en' ? 'Corporate Correspondence Email' : 'البريد الرسمي المكتبي'}
+                    <p className="font-bold text-slate-900 text-xs mb-0.5">
+                      {lang === 'en' ? 'Email Support' : 'البريد الإلكتروني'}
                     </p>
-                    <p className="leading-relaxed font-mono mt-0.5">{t.hqEmail}</p>
+                    <p className="leading-relaxed font-mono text-slate-700">{t.hqEmail}</p>
+                  </div>
+                </div>
+
+                {/* Working Hours */}
+                <div className="flex items-start gap-3 text-xs font-semibold text-slate-600">
+                  <div className="bg-emerald-50 p-2.5 rounded-xl border border-emerald-100/80 mt-0.5 shrink-0 text-[#0d6b46]">
+                    <Clock className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-slate-900 text-xs mb-0.5">
+                      {lang === 'en' ? 'Working Hours' : 'ساعات العمل'}
+                    </p>
+                    <p className="leading-relaxed text-emerald-700 font-bold">{t.hqWorkingHours}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Live duty dispatch note */}
-            <div className="bg-slate-900 text-white rounded-2xl p-6 relative overflow-hidden select-none shadow-md">
-              <span className="text-7xl absolute -right-4 -bottom-6 opacity-5">📡</span>
-              <div className="relative z-10">
-                <h4 className="text-xs uppercase font-extrabold text-brand-primary tracking-widest mb-1">
-                  {lang === 'en' ? 'Operations Duty Status: Live' : 'حالة مركز التنسيق والعمليات'}
+            {/* Quick 24/7 Support Banner */}
+            <div className="bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-[24px] p-6 relative overflow-hidden shadow-md">
+              <div className="relative z-10 space-y-2">
+                <div className="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 font-extrabold text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-full border border-emerald-500/30">
+                  <Headphones className="w-3.5 h-3.5" />
+                  <span>{lang === 'en' ? '24/7 Always Here for You' : 'خدمة مستمرة 24/7'}</span>
+                </div>
+
+                <h4 className="text-sm font-black text-white pt-1">
+                  {lang === 'en' ? 'Need Immediate Assistance?' : 'تحتاج مساعدة فورية؟'}
                 </h4>
-                <p className="text-xs font-bold text-slate-300 leading-relaxed">
-                  {t.hqWorkingHours}
-                </p>
-                <p className="text-[10px] text-slate-400 font-semibold mt-3 leading-relaxed">
+
+                <p className="text-xs text-slate-300 font-semibold leading-relaxed">
                   {lang === 'en'
-                    ? 'Our telecommunications unit handles continuous GPS coordinates feedback from all active caravans to guarantee absolute safety.'
-                    : 'ترتبط المركبات الميدانية ببروتوكول اتصالات مستمر مع نظام تحديد المواقع العالمي (GPS) لضمان تفويج سليم تحت إشراف ضابط السلامة.'
+                    ? 'Whether you need help with private chauffeured cars, airport transfers, or guided Ziyarat tours, our customer care team is ready to assist.'
+                    : 'سواء كنت بحاجة لمساعدة في حجز سيارة خاصة مع سائق، توصيل المطار، أو رحلات الزيارة الشريفة، فريقنا متواجد دائماً لخدمتك.'
                   }
                 </p>
+
+                <div className="pt-2">
+                  <a
+                    href={`https://wa.me/${whatsappNumber}`}
+                    target="_blank"
+                    referrerPolicy="no-referrer"
+                    className="inline-flex items-center gap-2 text-xs font-black text-emerald-400 hover:text-emerald-300 transition-colors decoration-transparent"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    <span>{lang === 'en' ? 'Instant WhatsApp Support →' : 'تواصل فورياً عبر الواتساب ←'}</span>
+                  </a>
+                </div>
               </div>
             </div>
+
           </div>
 
         </div>

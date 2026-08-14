@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useLang } from '../context/LangContext';
 import { vehiclesData, VehicleData, getVehicleImageUrl } from '../data/vehicles';
 import BookingModal from '../components/BookingModal';
+import VehicleCard from '../components/VehicleCard';
 import { saveLead } from '../firebaseService';
 import { HomepageLead } from '../types';
 
@@ -342,6 +343,35 @@ export default function Home() {
     setBookingModalOpen(true);
   };
 
+  const handleVehicleCardBooking = (
+    vehicle: VehicleData,
+    customDetails?: {
+      pickup: string;
+      destination: string;
+      routeName: string;
+      computedPrice: number;
+      isEstimated: boolean;
+      distanceKm?: number;
+    }
+  ) => {
+    const dynamicVehicle: VehicleData = {
+      ...vehicle,
+      price: customDetails?.computedPrice || vehicle.price
+    };
+    setSelectedVehicle(dynamicVehicle);
+    if (customDetails) {
+      setBookingDetails({
+        tripType: customDetails.isEstimated ? (lang === 'en' ? 'Estimated Distance' : 'مسافة تقديرية') : (lang === 'en' ? 'Flat Route' : 'مسار ثابت'),
+        fromLocation: customDetails.pickup,
+        toLocation: customDetails.destination,
+        date: bookingDate || new Date().toISOString().split('T')[0],
+        passengers: vehicle.capacity,
+        luggage: luggage
+      });
+    }
+    setBookingModalOpen(true);
+  };
+
   const triggerTourBooking = (tourNameEn: string, tourNameAr: string, price: number) => {
     const tourSurrogate: VehicleData = {
       id: "tour-surrogate",
@@ -579,74 +609,118 @@ export default function Home() {
                         </div>
                       </div>
 
-                      {/* Row 2: Date, Passengers, Luggage */}
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        {/* Date */}
-                        <div className="space-y-1.5">
-                          <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                            <Calendar className="w-4 h-4 text-[#C0272D]" />
-                            <span>{lang === 'ar' ? 'التاريخ' : 'Date'}</span>
-                          </label>
-                          <input
-                            type="date"
-                            required
-                            value={bookingDate}
-                            onChange={(e) => setBookingDate(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-2.5 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#C0272D]"
-                          />
-                        </div>
+                      {/* Row 2: Date, Passengers (conditionally hidden for By Hour & Full Contract), Luggage */}
+                      {tripType === 'By Hour' || tripType === 'Full Contract' ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {/* Date */}
+                          <div className="space-y-1.5">
+                            <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wide">
+                              <Calendar className="w-4 h-4 text-[#C0272D]" />
+                              <span>{lang === 'ar' ? 'التاريخ' : 'Date'}</span>
+                            </label>
+                            <input
+                              type="date"
+                              required
+                              value={bookingDate}
+                              onChange={(e) => setBookingDate(e.target.value)}
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-2.5 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#C0272D]"
+                            />
+                          </div>
 
-                        {/* Passengers */}
-                        <div className="space-y-1.5">
-                          <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                            <Users className="w-4 h-4 text-[#C0272D]" />
-                            <span>{lang === 'ar' ? 'الركاب' : 'Passengers'}</span>
-                          </label>
-                          <select
-                            value={passengers}
-                            onChange={(e) => setPassengers(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-2 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#C0272D] cursor-pointer"
-                          >
-                            {[
-                              "1–4 passengers",
-                              "5-7 passengers",
-                              "8-15 passengers",
-                              "Group / Bus Caravan"
-                            ].map((p, idx) => (
-                              <option key={idx} value={p}>
-                                {lang === 'ar' 
-                                  ? (p === "1–4 passengers" ? "من 1 لـ 4 ركاب" : p === "5-7 passengers" ? "من 5 لـ 7 ركاب" : p === "8-15 passengers" ? "من 8 لـ 15 راكب" : "حملات كبرى (حافلة)")
-                                  : p}
-                              </option>
-                            ))}
-                          </select>
+                          {/* Luggage */}
+                          <div className="space-y-1.5">
+                            <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wide">
+                              <Briefcase className="w-4 h-4 text-[#C0272D]" />
+                              <span>{lang === 'ar' ? 'الأمتعة' : 'Luggage'}</span>
+                            </label>
+                            <select
+                              value={luggage}
+                              onChange={(e) => setLuggage(e.target.value)}
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-2 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#C0272D] cursor-pointer"
+                            >
+                              {[
+                                "Standard",
+                                "Medium / Large Bags",
+                                "Excess / Heavy Cargo"
+                              ].map((l, idx) => (
+                                <option key={idx} value={l}>
+                                  {lang === 'ar' 
+                                    ? (l === "Standard" ? "حقائب قياسية" : l === "Medium / Large Bags" ? "حقائب كبيرة" : "أمتعة جماعية إضافية")
+                                    : l}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
                         </div>
+                      ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          {/* Date */}
+                          <div className="space-y-1.5">
+                            <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wide">
+                              <Calendar className="w-4 h-4 text-[#C0272D]" />
+                              <span>{lang === 'ar' ? 'التاريخ' : 'Date'}</span>
+                            </label>
+                            <input
+                              type="date"
+                              required
+                              value={bookingDate}
+                              onChange={(e) => setBookingDate(e.target.value)}
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-2.5 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#C0272D]"
+                            />
+                          </div>
 
-                        {/* Luggage */}
-                        <div className="space-y-1.5">
-                          <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                            <Briefcase className="w-4 h-4 text-[#C0272D]" />
-                            <span>{lang === 'ar' ? 'الأمتعة' : 'Luggage'}</span>
-                          </label>
-                          <select
-                            value={luggage}
-                            onChange={(e) => setLuggage(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-2 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#C0272D] cursor-pointer"
-                          >
-                            {[
-                              "Standard",
-                              "Medium / Large Bags",
-                              "Excess / Heavy Cargo"
-                            ].map((l, idx) => (
-                              <option key={idx} value={l}>
-                                {lang === 'ar' 
-                                  ? (l === "Standard" ? "حقائب قياسية" : l === "Medium / Large Bags" ? "حقائب كبيرة" : "أمتعة جماعية إضافية")
-                                  : l}
-                              </option>
-                            ))}
-                          </select>
+                          {/* Passengers */}
+                          <div className="space-y-1.5">
+                            <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wide">
+                              <Users className="w-4 h-4 text-[#C0272D]" />
+                              <span>{lang === 'ar' ? 'الركاب' : 'Passengers'}</span>
+                            </label>
+                            <select
+                              value={passengers}
+                              onChange={(e) => setPassengers(e.target.value)}
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-2 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#C0272D] cursor-pointer"
+                            >
+                              {[
+                                "1–4 passengers",
+                                "5-7 passengers",
+                                "8-15 passengers",
+                                "Group / Bus Caravan"
+                              ].map((p, idx) => (
+                                <option key={idx} value={p}>
+                                  {lang === 'ar' 
+                                    ? (p === "1–4 passengers" ? "من 1 لـ 4 ركاب" : p === "5-7 passengers" ? "من 5 لـ 7 ركاب" : p === "8-15 passengers" ? "من 8 لـ 15 راكب" : "حملات كبرى (حافلة)")
+                                    : p}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          {/* Luggage */}
+                          <div className="space-y-1.5">
+                            <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wide">
+                              <Briefcase className="w-4 h-4 text-[#C0272D]" />
+                              <span>{lang === 'ar' ? 'الأمتعة' : 'Luggage'}</span>
+                            </label>
+                            <select
+                              value={luggage}
+                              onChange={(e) => setLuggage(e.target.value)}
+                              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-2 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#C0272D] cursor-pointer"
+                            >
+                              {[
+                                "Standard",
+                                "Medium / Large Bags",
+                                "Excess / Heavy Cargo"
+                              ].map((l, idx) => (
+                                <option key={idx} value={l}>
+                                  {lang === 'ar' 
+                                    ? (l === "Standard" ? "حقائب قياسية" : l === "Medium / Large Bags" ? "حقائب كبيرة" : "أمتعة جماعية إضافية")
+                                    : l}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
                         </div>
-                      </div>
+                      )}
 
                       <button
                         type="submit"
@@ -1006,214 +1080,13 @@ export default function Home() {
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredVehicles.map((vehicle) => {
-              const displayPrice = getDynamicVehiclePrice(vehicle);
-              const name = lang === 'en' ? vehicle.nameEn : vehicle.nameAr;
-              const typeBadge = lang === 'en' ? vehicle.typeEn : vehicle.typeAr;
-              const tags = lang === 'en' ? vehicle.tagsEn : vehicle.tagsAr;
-
-              const whatsappNumber = "966501234567";
-              const getWhatsAppURL = () => {
-                const msg = lang === 'en' 
-                  ? `Hello Qawafil! I am interested in booking the ${vehicle.nameEn} (${vehicle.seats} Seats) for my Umrah trip. Please share availability & process.`
-                  : `مرحباً قوافل! أود الاستفسار عن حجز سيارة ${vehicle.nameAr} (${vehicle.seats} مقعد) لرحلة العمرة. يرجى تزويدي بالتوفر والخطوات.`;
-                return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
-              };
-
-              const getTagIcon = (tag: string) => {
-                const lower = tag.toLowerCase();
-                if (lower.includes('a/c') || lower.includes('klimat') || lower.includes('تكييف') || lower.includes('هو')) {
-                  return <Snowflake className="w-4 h-4 text-[#C0272D]" />;
-                }
-                if (lower.includes('wifi') || lower.includes('إنترنت') || lower.includes('وايفاي')) {
-                  return <Wifi className="w-4 h-4 text-[#C0272D]" />;
-                }
-                if (lower.includes('usb') || lower.includes('شواحن') || lower.includes('charg')) {
-                  return <Usb className="w-4 h-4 text-[#C0272D]" />;
-                }
-                if (lower.includes('seat') || lower.includes('مقاعد') || lower.includes('جلدي')) {
-                  return <Armchair className="w-4 h-4 text-[#C0272D]" />;
-                }
-                if (lower.includes('audio') || lower.includes('صوت') || lower.includes('mic') || lower.includes('بلوتوث')) {
-                  return <Music className="w-4 h-4 text-[#C0272D]" />;
-                }
-                if (lower.includes('lugg') || lower.includes('bag') || lower.includes('أمتعة') || lower.includes('حقائب')) {
-                  return <Briefcase className="w-4 h-4 text-[#C0272D]" />;
-                }
-                return <Sparkles className="w-4 h-4 text-[#C0272D]" />;
-              };
-
-              const getBottomLeftBadge = () => {
-                if (vehicle.recommended) {
-                  return (
-                    <div className="bg-[#FAECEC] text-brand-primary text-[10px] font-black uppercase tracking-widest px-3.5 py-2 rounded-xl flex items-center gap-1.5 border border-brand-primary/10">
-                      <Star className="w-3.5 h-3.5 fill-brand-primary text-brand-primary" />
-                      <span>{lang === 'en' ? 'Recommended' : 'موصى به'}</span>
-                    </div>
-                  );
-                }
-                
-                switch (vehicle.classFilter) {
-                  case 'vip':
-                    return (
-                      <div className="bg-amber-50 text-amber-700 text-[10px] font-black uppercase tracking-widest px-3.5 py-2 rounded-xl flex items-center gap-1.5 border border-amber-200">
-                        <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-600" />
-                        <span>{lang === 'en' ? 'VIP Luxury' : 'فخامة VIP'}</span>
-                      </div>
-                    );
-                  case 'business':
-                    return (
-                      <div className="bg-brand-light text-brand-primary text-[10px] font-black uppercase tracking-widest px-3.5 py-2 rounded-xl flex items-center gap-1.5 border border-brand-primary/10">
-                        <Star className="w-3.5 h-3.5 fill-brand-primary text-brand-primary" />
-                        <span>{lang === 'en' ? 'Premium Class' : 'فئة ممتازة'}</span>
-                      </div>
-                    );
-                  case 'economy':
-                    return (
-                      <div className="bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-widest px-3.5 py-2 rounded-xl flex items-center gap-1.5 border border-emerald-200">
-                        <Star className="w-3.5 h-3.5 fill-emerald-500 text-emerald-600" />
-                        <span>{lang === 'en' ? 'Best Value' : 'أفضل قيمة'}</span>
-                      </div>
-                    );
-                  default:
-                    return (
-                      <div className="bg-slate-50 text-slate-700 text-[10px] font-black uppercase tracking-widest px-3.5 py-2 rounded-xl flex items-center gap-1.5 border border-slate-200">
-                        <Star className="w-3.5 h-3.5 fill-slate-400 text-slate-500" />
-                        <span>{lang === 'en' ? 'Standard' : 'قياسي'}</span>
-                      </div>
-                    );
-                }
-              };
-
-              const isFav = !!favorites[vehicle.id];
-
-              return (
-                <div 
-                  key={vehicle.id} 
-                  className="bg-white border border-rose-100 rounded-3xl shadow-md hover:shadow-xl hover:border-brand-primary/20 transition-all duration-300 overflow-hidden flex flex-col justify-between group"
-                  id={`vehicle-card-${vehicle.id}`}
-                >
-                  {/* Top Cover Image with slanted bottom */}
-                  <div className="h-48 sm:h-56 w-full relative overflow-hidden bg-slate-100">
-                    <img 
-                      src={getVehicleImageUrl(vehicle.id)} 
-                      alt={name}
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-60 pointer-events-none" />
-                    
-                    <svg className="absolute bottom-0 left-0 w-full h-8 text-white fill-current pointer-events-none" viewBox="0 0 100 10" preserveAspectRatio="none">
-                      <polygon points="0,10 100,10 100,0 0,7" />
-                    </svg>
-
-                    {/* Quick action widgets on top right */}
-                    <div className="absolute top-4 right-4 flex gap-2 z-10">
-                      {/* WhatsApp Button */}
-                      <a
-                        href={getWhatsAppURL()}
-                        target="_blank"
-                        referrerPolicy="no-referrer"
-                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white flex items-center justify-center shadow-md cursor-pointer hover:scale-110 active:scale-95 transition-all duration-200 text-emerald-600 border border-emerald-50"
-                        title={lang === 'en' ? 'Enquire on WhatsApp' : 'الاستفسار عبر الواتساب'}
-                      >
-                        <MessageSquare className="w-4.5 h-4.5 sm:w-5 sm:h-5 fill-emerald-50/20 text-emerald-600" />
-                      </a>
-
-                      {/* Favorite Button */}
-                      <button
-                        type="button"
-                        onClick={() => setFavorites(prev => ({ ...prev, [vehicle.id]: !prev[vehicle.id] }))}
-                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white flex items-center justify-center shadow-md cursor-pointer hover:scale-110 active:scale-95 transition-all duration-200 border border-rose-50"
-                      >
-                        <Heart className={`w-4.5 h-4.5 sm:w-5 sm:h-5 transition-colors duration-200 ${isFav ? 'fill-[#C0272D] text-[#C0272D]' : 'text-slate-400'}`} />
-                      </button>
-                    </div>
-
-                    {/* Overlapping Price Badge */}
-                    <div className="absolute bottom-0 right-4 bg-white px-5 py-3 rounded-t-2xl shadow-lg border-x border-t border-rose-50 flex flex-col items-center justify-center translate-y-[2px] z-10">
-                      <div className="flex items-baseline gap-0.5">
-                        <span className="text-xl sm:text-2xl font-black text-[#C0272D] leading-none">
-                          {displayPrice}
-                        </span>
-                        <span className="text-[10px] font-black text-[#C0272D] uppercase ml-0.5">
-                          {t.currency || 'SAR'}
-                        </span>
-                      </div>
-                      <span className="text-[9px] font-black text-slate-400 tracking-widest uppercase mt-1 leading-none">
-                        {isFiltered ? (lang === 'en' ? "EST. QUOTE" : "سعر تقديري") : (lang === 'en' ? "FLAT RATE" : "سعر ثابت")}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Details Area */}
-                  <div className="p-6 flex-1 flex flex-col justify-between">
-                    <div>
-                      {/* Vehicle Header with illustration & Name */}
-                      <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 rounded-2xl bg-[#FAECEC] flex items-center justify-center text-3xl shrink-0 border border-rose-100 shadow-sm">
-                          <span className="transform group-hover:scale-110 transition-transform duration-200 select-none">
-                            {vehicle.emoji === 'SUV' ? '🚙' : vehicle.emoji}
-                          </span>
-                        </div>
-                        <div className="min-w-0">
-                          <h4 className="text-base sm:text-lg font-black text-slate-900 tracking-tight truncate group-hover:text-brand-primary transition-colors">
-                            {name}
-                          </h4>
-                          <p className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5 truncate">
-                            {typeBadge}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="border-t border-slate-100 my-4" />
-
-                      {/* Seat Capacity & Feature list */}
-                      <div className="flex flex-col md:flex-row gap-4 items-stretch">
-                        <div className="bg-[#FAECEC]/60 rounded-2xl py-3 px-4 flex items-center gap-3 shrink-0 self-start md:self-center">
-                          <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center shadow-sm">
-                            <Users className="w-4.5 h-4.5 text-[#C0272D]" />
-                          </div>
-                          <div className="text-xs sm:text-sm font-bold text-slate-800">
-                            <span className="text-slate-500 font-medium">{lang === 'en' ? 'Seats: ' : 'المقاعد: '}</span>
-                            <span className="text-brand-primary font-black text-sm sm:text-base">{vehicle.seats}</span>
-                          </div>
-                        </div>
-
-                        {/* Features 2x2 list */}
-                        <div className="flex-1 grid grid-cols-2 gap-x-4 gap-y-3 pl-1 border-l border-slate-100/60 md:pl-4">
-                          {tags.slice(0, 4).map((tag, idx) => (
-                            <div key={idx} className="flex items-center gap-2">
-                              {getTagIcon(tag)}
-                              <span className="text-[11px] sm:text-xs font-bold text-slate-700 truncate" title={tag}>
-                                {tag}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Footer Row with badges & Book CTA button */}
-                    <div className="flex items-center justify-between gap-4 mt-6 pt-4 border-t border-slate-100">
-                      <div>
-                        {getBottomLeftBadge()}
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => triggerDirectVehicleBooking({ ...vehicle, price: displayPrice })}
-                        className="bg-brand-primary hover:bg-brand-dark text-white font-extrabold text-xs sm:text-sm px-5 py-3.5 rounded-2xl shadow-md hover:shadow-lg hover:translate-y-[-1px] active:translate-y-[1px] transition-all duration-200 cursor-pointer flex items-center gap-1.5 group-hover:scale-[1.02]"
-                      >
-                        <span>{t.navBookNow}</span>
-                        <ChevronRight className={`w-4 h-4 transition-transform duration-200 group-hover:translate-x-1 ${lang === 'en' ? '' : 'rotate-180 group-hover:-translate-x-1'}`} />
-                      </button>
-                    </div>
-                  </div>
-
-                </div>
-              );
-            })}
+            {filteredVehicles.map((vehicle) => (
+              <VehicleCard
+                key={vehicle.id}
+                vehicle={vehicle}
+                onBookNow={handleVehicleCardBooking}
+              />
+            ))}
           </div>
 
         </div>
@@ -1276,7 +1149,7 @@ export default function Home() {
                   inclusionsText: t.packageIncludes,
                   priceLabel: t.flatTourPrice,
                   price: 360,
-                  image: "https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=1200&q=80",
+                  image: "https://res.cloudinary.com/hre1igvz/image/upload/q_auto/f_auto/v1786639331/madinah-tours-1-1.webp",
                   waUrl: `https://wa.me/966501234567?text=${encodeURIComponent(lang === 'en' ? 'Ahlalan Wa Sahlan Qawafil Al Majd! I am looking to confirm a booking reservation for the guided spiritual tour program: "Madinah Noble Ziyarat Program" at the rate of SAR 360. Please advise.' : 'السلام عليكم قوافل المجد! أرغب في تأكيد حجز برنامج الزيارات الشريفة: "برنامج زيارة المعالم النبوية بالمدينة" بسعر 360 ريال. يرجى إرشادي بخصوص تفاصيل التفويج والخدمة.')}`
                 },
                 {
@@ -1290,7 +1163,7 @@ export default function Home() {
                   inclusionsText: t.packageIncludes,
                   priceLabel: t.flatTourPrice,
                   price: 380,
-                  image: "https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=1200&q=80",
+                  image: "https://res.cloudinary.com/hre1igvz/image/upload/q_auto/f_auto/v1786639331/makkah-tours-1-1.webp",
                   waUrl: `https://wa.me/966501234567?text=${encodeURIComponent(lang === 'en' ? 'Ahlalan Wa Sahlan Qawafil Al Majd! I am looking to confirm a booking reservation for the guided spiritual tour program: "Makkah Sacred Ziyarat Program" at the rate of SAR 380. Please advise.' : 'السلام عليكم قوافل المجد! أرغب في تأكيد حجز برنامج الزيارات الشريفة: "برنامج زيارة المشاعر المقدسة بمكة" بسعر 380 ريال. يرجى إرشادي بخصوص تفاصيل التفويج والخدمة.')}`
                 }
               ].map((tour) => (

@@ -1,3 +1,4 @@
+import { syncReceiptToMySQL } from '../syncReceiptToMySQL';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useLang } from '../context/LangContext';
@@ -534,6 +535,9 @@ export default function AdminDashboard() {
           throw rulesErr;
         }
       }
+
+      // Sync receipt copy to MySQL endpoint (/receipts.php) asynchronously
+      syncReceiptToMySQL(payload);
 
       setSavedSuccess(true);
       setScannedPreview(null);
