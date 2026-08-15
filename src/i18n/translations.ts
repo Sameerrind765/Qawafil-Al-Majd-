@@ -132,8 +132,8 @@ export const translations = {
     formBtnSubmit: "Send Message",
     hqTitle: "Headquarters & Office",
     hqAddress: "Al-Basateen District, Prince Sultan Road, Jeddah, Kingdom of Saudi Arabia",
-    hqEmail: "info@qawafil-almajd.com",
-    hqPhone: "+966 12 654 3210",
+    hqEmail: "Info@qawafilalmajdalmisaliya.com",
+    hqPhone: "+966 54 204 9512",
     hqWorkingHours: "Customer Care: 24/7 Always Available",
     
     // Home Hero Page
@@ -274,8 +274,8 @@ export const translations = {
     formBtnSubmit: "إرسال الرسالة",
     hqTitle: "المقر الرئيسي والمكتب",
     hqAddress: "حي البساتين، طريق الأمير سلطان، جدة، المملكة العربية السعودية",
-    hqEmail: "info@qawafil-almajd.com",
-    hqPhone: "+966 12 654 3210",
+    hqEmail: "Info@qawafilalmajdalmisaliya.com",
+    hqPhone: "+966 54 204 9512",
     hqWorkingHours: "خدمة العملاء: متاحة دائماً 24/7",
     
     // Home Hero Page

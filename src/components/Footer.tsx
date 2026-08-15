@@ -73,12 +73,16 @@ export default function Footer() {
 
             <div className="flex items-center gap-2.5 text-xs text-slate-400">
               <Phone className="w-4 h-4 text-brand-primary shrink-0" />
-              <span className="font-mono">{t.hqPhone}</span>
+              <a href="tel:+966542049512" className="font-mono hover:text-brand-primary transition-colors decoration-transparent">
+                {t.hqPhone}
+              </a>
             </div>
 
             <div className="flex items-center gap-2.5 text-xs text-slate-400">
               <Mail className="w-4 h-4 text-brand-primary shrink-0" />
-              <span className="font-mono">{t.hqEmail}</span>
+              <a href="mailto:Info@qawafilalmajdalmisaliya.com" className="font-mono hover:text-brand-primary transition-colors decoration-transparent">
+                {t.hqEmail}
+              </a>
             </div>
           </div>
 

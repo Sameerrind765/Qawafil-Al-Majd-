@@ -220,7 +220,9 @@ export default function Contact() {
                     <p className="font-bold text-slate-900 text-xs mb-0.5">
                       {lang === 'en' ? 'Phone & WhatsApp' : 'الهاتف والواتساب'}
                     </p>
-                    <p className="leading-relaxed font-mono text-slate-700">{t.hqPhone}</p>
+                    <a href="tel:+966542049512" className="leading-relaxed font-mono text-slate-700 hover:text-emerald-700 transition-colors block decoration-transparent">
+                      {t.hqPhone}
+                    </a>
                   </div>
                 </div>
 
@@ -233,7 +235,9 @@ export default function Contact() {
                     <p className="font-bold text-slate-900 text-xs mb-0.5">
                       {lang === 'en' ? 'Email Support' : 'البريد الإلكتروني'}
                     </p>
-                    <p className="leading-relaxed font-mono text-slate-700">{t.hqEmail}</p>
+                    <a href="mailto:Info@qawafilalmajdalmisaliya.com" className="leading-relaxed font-mono text-slate-700 hover:text-emerald-700 transition-colors block decoration-transparent">
+                      {t.hqEmail}
+                    </a>
                   </div>
                 </div>
 

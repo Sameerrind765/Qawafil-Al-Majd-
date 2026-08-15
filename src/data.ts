@@ -198,8 +198,8 @@ export const INITIAL_LOGS: SystemLog[] = [
 // ARABIC & ENGLISH TRANSLATION RESOURCE
 export const TRANSLATIONS = {
   en: {
-    brandName: 'Qawafil Al Majd Al Mithaliya',
-    brandSub: 'Perfect Caravans of Glory - Transport & Contracting Logistics Hub',
+    brandName: 'Qawafil Al Majd Al Misaliya',
+    brandSub: 'Qawafil Al Majd Al Misaliya - Transport & Logistics Services',
     dashboard: 'Dashboard',
     fleetTracking: 'Live Fleet Map',
     orderBooking: 'Lanes & Cargo Booking',
