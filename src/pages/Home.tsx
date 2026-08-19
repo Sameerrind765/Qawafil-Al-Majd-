@@ -188,7 +188,7 @@ export default function Home() {
       guaranteedRateNote: "Guaranteed locked rate with no fuel surcharges or peak fees.",
       bookLockedBtn: "Book At Locked Price",
 
-      coordTitle: "Hajj & Umrah Campaign Logistics Unit",
+      coordTitle: "Hajj & Umrah Campaign Transport Unit",
       coordSub: "Are you a pilgrim group leader, travel coordinator, or campaign operator?",
       coordDesc: "We provide coordinated heavy coach shuttles, 45-seat Mercedes Tourismo fleets, schedule management boards, and priority VIP airport lanes to ensure flawless operation for groups of all sizes.",
       coordBtn: "Contact Group Coordinator Desk",
@@ -1384,7 +1384,7 @@ export default function Home() {
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3.5 max-w-md mx-auto">
             {/* Quick action button opening direct WhatsApp coordination ticket */}
             <a
-              href={`https://wa.me/966542049512?text=${encodeURIComponent(lang === 'en' ? 'Assalamu Alaikum Qawafil Al Majd Al Misaliya! I am a group tour coordinator looking to arrange fleet transport for pilgrims.' : 'السلام عليكم قوافل المجد المثالية! أنا منسق حملات وأرغب في التنسيق اللوجستي لمجموعة من المعتمرين والحجاج.')}`}
+              href={`https://wa.me/966542049512?text=${encodeURIComponent(lang === 'en' ? 'Assalamu Alaikum Qawafil Al Majd Al Misaliya! I am a group tour coordinator looking to arrange fleet transport for pilgrims.' : 'السلام عليكم قوافل المجد المثالية! أنا منسق حملات وأرغب في تنسيق النقل لمجموعة من المعتمرين والحجاج.')}`}
               target="_blank"
               referrerPolicy="no-referrer"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#C0272D] hover:bg-[#a61f24] text-white font-extrabold text-xs px-6 py-3.5 rounded-xl shadow-md transition-colors decoration-transparent"

@@ -1,6 +1,5 @@
 import React from 'react';
-import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { LangProvider } from './context/LangContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -12,13 +11,12 @@ import Ziyarat from './pages/Ziyarat';
 import Contact from './pages/Contact';
 import AdminDashboard from './pages/AdminDashboard';
 
-function AppContent() {
+export function AppContent() {
   const location = useLocation();
   const isAdminPath = location.pathname === '/admin' || location.pathname === '/dashboard';
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
-      
+    <div className="min-h-screen flex flex-col bg-white">      
       {/* Navigation Bar - only show if not on admin paths */}
       {!isAdminPath && <Navbar />}
 
@@ -36,17 +34,18 @@ function AppContent() {
 
       {/* Brand Footer - only show if not on admin paths */}
       {!isAdminPath && <Footer />}
-
     </div>
   );
 }
 
-export default function App() {
+export default function App({ children }: { children?: React.ReactNode }) {
   return (
     <LangProvider>
-      <Router>
-        <AppContent />
-      </Router>
+      {children ? children : (
+        <HashRouter>
+          <AppContent />
+        </HashRouter>
+      )}
     </LangProvider>
   );
 }

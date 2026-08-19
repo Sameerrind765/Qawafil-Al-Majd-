@@ -3,11 +3,10 @@ import ratesData from './rates.json';
 export function getVehicleImageUrl(vehicleId: string): string {
   const images: Record<string, string> = {
     'camry': 'https://res.cloudinary.com/hre1igvz/image/upload/c_fill,g_auto,w_1164,h_672,dpr_auto,f_auto,q_auto/v1784725441/white-toyota-camry.jpg',
+    'fordTaurus': 'https://res.cloudinary.com/hre1igvz/image/upload/c_fill,g_auto,w_1164,h_672,dpr_auto,f_auto,q_auto/black-fordTaurus.jpg',
     'toyota-camry': 'https://res.cloudinary.com/hre1igvz/image/upload/c_fill,g_auto,w_1164,h_672,dpr_auto,f_auto,q_auto/v1784725441/white-toyota-camry.jpg',
     'h1_hyundai': 'https://res.cloudinary.com/hre1igvz/image/upload/c_fill,g_auto,w_1164,h_672,dpr_auto,f_auto,q_auto/v1784725441/white-hyundai-staria.jpg',
     'hyundai-staria': 'https://res.cloudinary.com/hre1igvz/image/upload/c_fill,g_auto,w_1164,h_672,dpr_auto,f_auto,q_auto/v1784725441/white-hyundai-staria.jpg',
-    'gmc_yukon_xl': 'https://res.cloudinary.com/hre1igvz/image/upload/c_fill,g_auto,w_1164,h_672,dpr_auto,f_auto,q_auto/v1784725441/white-gmc-yukon-xl.jpg',
-    'gmc-yukon-xl': 'https://res.cloudinary.com/hre1igvz/image/upload/c_fill,g_auto,w_1164,h_672,dpr_auto,f_auto,q_auto/v1784725441/white-gmc-yukon-xl.jpg',
     'gmc_yukon_xl_ac': 'https://res.cloudinary.com/hre1igvz/image/upload/c_fill,g_auto,w_1164,h_672,dpr_auto,f_auto,q_auto/v1784725441/white-gmc-yukon-xl.jpg',
     'hiace': 'https://res.cloudinary.com/hre1igvz/image/upload/c_fill,g_auto,w_1164,h_672,dpr_auto,f_auto,q_auto/v1784725441/white-toyota-hiace.jpg',
     'toyota-hiace': 'https://res.cloudinary.com/hre1igvz/image/upload/c_fill,g_auto,w_1164,h_672,dpr_auto,f_auto,q_auto/v1784725441/white-toyota-hiace.jpg',
@@ -59,21 +58,21 @@ export const vehiclesData: VehicleData[] = [
     emoji: "🚗"
   },
   {
-    id: "gmc_yukon_xl",
-    rateKey: "gmc_yukon_xl",
-    nameEn: "GMC Yukon XL",
-    nameAr: "جي إم سي يوكن XL",
-    typeEn: "Executive Luxury SUV",
-    typeAr: "رياضية فاخرة متعددة الاستخدام",
-    capacity: vRates.gmc_yukon_xl.capacity,
-    seats: 7,
-    price: Math.round(vRates.gmc_yukon_xl.baseRates.jeddahAirportToMakkahHotel * mult),
-    tagsEn: ["Royal Leather Seats", "Premium Sound System", "Spacious Bag Room", "Bottled Water"],
-    tagsAr: ["مقاعد جلدية فاخرة", "نظام صوتي متطور", "مساحة حقائب واسعة", "ضيافة مياه معدنية"],
-    classFilter: "vip",
+    id: "fordTaurus",
+    rateKey: "fordTaurus",
+    nameEn: "Ford Taurus",
+    nameAr: "فورد تورس",
+    typeEn: "Premium Sedan",
+    typeAr: "سيدان فاخرة",
+    capacity: vRates.fordTaurus.capacity,
+    seats: 3,
+    price: Math.round(vRates.fordTaurus.baseRates.jeddahAirportToMakkahHotel * mult),
+    tagsEn: ["A/C Climate Control", "USB Fast Chargers", "Bluetooth Audio", "Large Trunk"],
+    tagsAr: ["تكييف هواء", "شواحن USB سريعة", "نظام صوتي بلوتوث", "صندوق أمتعة كبير"],
+    classFilter: "business",
     isBusOrVan: false,
-    recommended: true,
-    emoji: "SUV"
+    recommended: false,
+    emoji: "🚘"
   },
   {
     id: "gmc_yukon_xl_ac",

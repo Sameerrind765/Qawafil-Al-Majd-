@@ -42,7 +42,7 @@ export default function Navbar() {
                   {t.brandName}
                 </span>
                 <span className="text-[10px] sm:text-[11px] text-brand-primary font-bold tracking-wide mt-1">
-                  {lang === 'en' ? "Transport & Logistics Services" : "للنقل والخدمات اللوجستية"}
+                  {lang === 'en' ? "Transport Services" : "خدمات النقل"}
                 </span>
               </div>
             </Link>

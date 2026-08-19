@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Vehicle } from '../types';
-import { SAUDI_LOGISTICS_HUBS } from '../data';
+import { SAUDI_TRANSPORT_HUBS } from '../data';
 import { MapPin, Truck, Radio, Compass, RefreshCw } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -86,8 +86,8 @@ export default function FleetMap({ vehicles, selectedVehicle, onSelectVehicle, l
             <path d="M 510, 360 L 632, 260 L 650, 290" stroke="#3b82f6" strokeWidth="1" opacity="0.35" />
           </g>
 
-          {/* Draw Saudi Logistics Hubs */}
-          {SAUDI_LOGISTICS_HUBS.map((hub) => {
+          {/* Draw Saudi Transport Hubs */}
+          {SAUDI_TRANSPORT_HUBS.map((hub) => {
             const pos = getCoordinates(hub.lat, hub.lng);
             const isHovered = hoveredHub === hub.city;
             return (

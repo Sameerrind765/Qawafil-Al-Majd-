@@ -22,7 +22,7 @@ export default function CreateOrderModal({ onClose, onSave, lang }: CreateOrderM
   const [weightOrVolume, setWeightOrVolume] = useState('19,000 Liters');
   const [notes, setNotes] = useState('');
 
-  // Auto-calculated estimated logistics price in SAR
+  // Auto-calculated estimated transport price in SAR
   const calculatePrice = () => {
     let base = 1200;
     if (vehicleType === 'Water Tanker') base = 950;
@@ -131,7 +131,7 @@ export default function CreateOrderModal({ onClose, onSave, lang }: CreateOrderM
             </select>
           </div>
 
-          {/* Logistics Route (Origin / Destination) */}
+          {/* Transport Route (Origin / Destination) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold text-slate-600 mb-1">

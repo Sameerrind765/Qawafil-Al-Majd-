@@ -50,7 +50,7 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
   throw new Error(JSON.stringify(errInfo));
 }
 
-// Service Methods for Qawafil Al Majd Al Mithaliya
+// Service Methods for Qawafil Al Majd Al Misaliya
 
 export async function fetchAllVehicles(): Promise<Vehicle[]> {
   const path = 'vehicles';

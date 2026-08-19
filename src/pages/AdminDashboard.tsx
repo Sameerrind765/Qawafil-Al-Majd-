@@ -150,7 +150,8 @@ export default function AdminDashboard() {
   const [selectedLead, setSelectedLead] = useState<HomepageLead | null>(null);
 
   // Transactions Ledger state
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const serverData = typeof window !== "undefined" ? (window as any).__INITIAL_DATA__?.initialData?.transactions : null;
+  const [transactions, setTransactions] = useState<Transaction[]>(serverData || []);
   const [transactionsLoading, setTransactionsLoading] = useState(false);
 
   // Lead handlers
@@ -769,7 +770,7 @@ export default function AdminDashboard() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          name: 'Qawafil Al Majd Al Mithaliya - Records Ledger',
+          name: 'Qawafil Al Majd Al Misaliya - Records Ledger',
           mimeType: 'application/vnd.google-apps.spreadsheet'
         })
       });
@@ -781,7 +782,7 @@ export default function AdminDashboard() {
 
       const file = await response.json();
       if (file.id) {
-        await saveGoogleSheetsConfig(file.id, 'Qawafil Al Majd Al Mithaliya - Records Ledger');
+        await saveGoogleSheetsConfig(file.id, 'Qawafil Al Majd Al Misaliya - Records Ledger');
         setSheetsLogs(prev => ({
           ...prev,
           spreadsheet: lang === 'en' ? `Created new spreadsheet with ID: ${file.id}` : `تم إنشاء جدول بيانات جديد بالمعرف: ${file.id}`

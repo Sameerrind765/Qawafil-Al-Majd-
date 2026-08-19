@@ -1,13 +1,13 @@
 import { Vehicle, CargoOrder, MaintenanceJob, SystemLog } from './types';
 
-// Coordinates of major logistics hubs in Saudi Arabia
-export const SAUDI_LOGISTICS_HUBS = [
-  { city: 'Riyadh', name: 'Riyadh HQ Logistics Center', lat: 24.7136, lng: 46.6753, arName: 'مركز لوجستيات الرياض الرئيسي' },
+// Coordinates of major transport hubs in Saudi Arabia
+export const SAUDI_TRANSPORT_HUBS = [
+  { city: 'Riyadh', name: 'Riyadh HQ Transport Center', lat: 24.7136, lng: 46.6753, arName: 'مركز نقل الرياض الرئيسي' },
   { city: 'Jeddah', name: 'Jeddah Seaport Container Terminal', lat: 21.5433, lng: 39.1728, arName: 'محطة حاويات ميناء جدة' },
   { city: 'Dammam', name: 'King Abdulaziz Port Dammam Hub', lat: 26.4207, lng: 50.0888, arName: 'ميناء الملك عبد العزيز بالدمام' },
   { city: 'Mecca', name: 'Mecca Pilgrimage Transport Station', lat: 21.3891, lng: 39.8579, arName: 'محطة نقل الحجاج بمكة المكرمة' },
   { city: 'Medina', name: 'Medina Regional Freight Terminal', lat: 24.4672, lng: 39.6111, arName: 'محطة شحن منطقة المدينة المنورة' },
-  { city: 'Jubail', name: 'Jubail Industrial Logistics Park', lat: 27.0112, lng: 49.6583, arName: 'منطقة الجبيل اللوجستية الصناعية' },
+  { city: 'Jubail', name: 'Jubail Industrial Transport Park', lat: 27.0112, lng: 49.6583, arName: 'منطقة الجبيل الصناعية' },
   { city: 'Yanbu', name: 'Yanbu Industrial Harbor Supply Hub', lat: 24.0891, lng: 38.0637, arName: 'مركز إمدادات ينبع الصناعي' }
 ];
 
@@ -133,7 +133,7 @@ export const INITIAL_CARGO_ORDERS: CargoOrder[] = [
   },
   {
     id: 'ORD-9024',
-    clientName: 'SABIC Petrochemical Logistics',
+    clientName: 'SABIC Petrochemical Transport',
     clientPhone: '+966 53 444 5555',
     vehicleType: 'Heavy Trailer',
     origin: 'Jubail Industrial Port',
@@ -199,7 +199,7 @@ export const INITIAL_LOGS: SystemLog[] = [
 export const TRANSLATIONS = {
   en: {
     brandName: 'Qawafil Al Majd Al Misaliya',
-    brandSub: 'Qawafil Al Majd Al Misaliya - Transport & Logistics Services',
+    brandSub: 'Qawafil Al Majd Al Misaliya - Transport Services',
     dashboard: 'Dashboard',
     fleetTracking: 'Live Fleet Map',
     orderBooking: 'Lanes & Cargo Booking',
@@ -227,7 +227,7 @@ export const TRANSLATIONS = {
     estimatedPrice: 'Est. Shipping Cost',
     priceCurrency: 'SAR (Saudi Riyal)',
     searchLabel: 'Search order, vehicle, or operator name...',
-    allCities: 'Saudi Ports & Logistics Hubs',
+    allCities: 'Saudi Ports & Transport Hubs',
     chatPlaceholder: 'Ping active vehicle operators on the lane...',
     sentMsg: 'Lanes Office',
     driverStatus: 'Driver Alert Node',
@@ -249,7 +249,7 @@ export const TRANSLATIONS = {
   },
   ar: {
     brandName: 'قوافل المجد المثالية',
-    brandSub: 'قوافل المجد المثالية للمقاولات والخدمات واللوجستيات',
+    brandSub: 'قوافل المجد المثالية للمقاولات والخدمات',
     dashboard: 'لوحة التحكم والمتابعة',
     fleetTracking: 'الخريطة المباشرة والمسارات',
     orderBooking: 'حجز الحمولات والطلبيات',
@@ -274,10 +274,10 @@ export const TRANSLATIONS = {
     origin: 'موقع الاستلام (المنشأ)',
     destination: 'موقع التسليم (الوجهة)',
     weightVol: 'الحجم / الوزن الكلي',
-    estimatedPrice: 'التكلفة اللوجستية المقدرة',
+    estimatedPrice: 'التكلفة المقدرة',
     priceCurrency: 'ريال سعودي',
     searchLabel: 'ابحث عن شحنة، رقم لوحة، أو اسم سائق...',
-    allCities: 'الموانئ والمراكز اللوجستية بالمملكة',
+    allCities: 'الموانئ ومراكز النقل بالمملكة',
     chatPlaceholder: 'أرسل تنبيهاً أو رسالة إلى ناقلات الشحن النشطة...',
     sentMsg: 'مكتب العمليات',
     driverStatus: 'تنبيه السائق المباشر',

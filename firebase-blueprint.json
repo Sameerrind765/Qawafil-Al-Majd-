@@ -2,7 +2,7 @@
   "entities": {
     "Vehicle": {
       "title": "Vehicle",
-      "description": "Represents a heavy vehicle, tanker, generator, or bus in the logistics fleet of Qawafil Al Majd Al Mithaliya.",
+      "description": "Represents a heavy vehicle, tanker, generator, or bus in the transport fleet of Qawafil Al Majd Al Misaliya.",
       "type": "object",
       "properties": {
         "id": { "type": "string", "description": "Unique asset identifier" },
@@ -19,7 +19,7 @@
     },
     "CargoOrder": {
       "title": "CargoOrder",
-      "description": "Represents a logistics delivery request, passenger journey booking, or heavy machinery transport order.",
+      "description": "Represents a transport delivery request, passenger journey booking, or heavy machinery transport order.",
       "type": "object",
       "properties": {
         "id": { "type": "string" },
@@ -139,11 +139,11 @@
     },
     "/vehicles/{vehicleId}": {
       "schema": "Vehicle",
-      "description": "Global list of physical vehicles and logistics fleets."
+      "description": "Global list of physical vehicles and transport fleets."
     },
     "/cargoOrders/{orderId}": {
       "schema": "CargoOrder",
-      "description": "Logistics and shipping requests placed by clients or system dispatch."
+      "description": "Transport and shipping requests placed by clients or system dispatch."
     },
     "/users/{uid}": {
       "schema": "UserProfile",

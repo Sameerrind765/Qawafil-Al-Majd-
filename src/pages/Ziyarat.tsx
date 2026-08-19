@@ -60,7 +60,7 @@ export default function Ziyarat() {
   const customSurrogate: VehicleData = {
     id: "custom-group-holy-caravan",
     nameEn: "Custom Holy Caravan (Multi-City)",
-    nameAr: "قافلة لوجستية مخصصة لعدة أيام وتنقلات بين المدن",
+    nameAr: "قافلة مخصصة لعدة أيام وتنقلات بين المدن",
     typeEn: "Group Dynamic Charter",
     typeAr: "حافلة ركاب للمجموعات الكبيرة",
     seats: 45,

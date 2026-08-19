@@ -1,6 +1,9 @@
 {
   "globalMultiplier": 1.0,
-  "kmFallbackRate": { "min": 1.75, "max": 2.0 },
+  "kmFallbackRate": {
+    "min": 1.75,
+    "max": 2.0
+  },
   "vehicles": {
     "h1_hyundai": {
       "name": "H1 Hyundai",
@@ -80,9 +83,9 @@
         "makkahHotelToJeddahAirport": 490
       }
     },
-    "gmc_yukon_xl": {
-      "name": "GMC Yukon XL",
-      "capacity": "4 - 7 Persons",
+    "camry": {
+      "name": "Camry Car",
+      "capacity": "2 - 3 Persons",
       "baseRates": {
         "fullGroundTransport": 2200,
         "fullGroundTransportWithZiyarat": 2790,
@@ -100,23 +103,24 @@
         "makkahHotelToJeddahAirport": 250
       }
     },
-    "camry": {
-      "name": "Camry Car",
+    "fordTaurus": {
+      "name": "Ford Taurus",
       "capacity": "2 - 3 Persons",
       "baseRates": {
-        "fullGroundTransport": 1290,
-        "fullGroundTransportWithZiyarat": 1890,
-        "jeddahAirportToMakkahHotel": 230,
-        "makkahHotelToMadinaHotel": 430,
-        "jeddahAirportToMadinaHotel": 430,
-        "madinaAirportToMadinaHotel": 190,
-        "madinaHotelToMadinaAirport": 150,
-        "makkahZiyarat": 230,
-        "madinaZiyarat": 230,
+        "fullGroundTransport": 2200,
+        "fullGroundTransportWithZiyarat": 2800,
+        "jeddahAirportToMakkahHotel": 400,
+        "madinaHotelToMakkahHotel": 700,
+        "makkahHotelToMadinaHotel": 700,
+        "jeddahAirportToMadinaHotel": 700,
+        "madinaAirportToMadinaHotel": 250,
+        "madinaHotelToMadinaAirport": 250,
+        "makkahZiyarat": 300,
+        "madinaZiyarat": 300,
         "makkahToTaifReturn": 480,
         "perHourRate": 90,
-        "madinaHotelToJeddahAirport": 430,
-        "makkahHotelToJeddahAirport": 230
+        "madinaHotelToJeddahAirport": 700,
+        "makkahHotelToJeddahAirport": 400
       }
     }
   }

@@ -26,9 +26,9 @@ const authT = {
     passwordPlaceholder: "••••••••",
     signingIn: "Signing in...",
     welcomeBack: "Operations Terminal Portal",
-    subtextSignIn: "Access the live telematics & fleet logistics control room.",
-    brandName: "Qawafil Al Majd Al Mithaliya",
-    brandSub: "Perfect Caravans of Glory - Transport & Contracting Logistics Hub",
+    subtextSignIn: "Access the live telematics & fleet control room.",
+    brandName: "Qawafil Al Majd Al Misaliya",
+    brandSub: "Qawafil Al Majd Al Misaliya - Transport & Contracting Hub",
   },
   ar: {
     signIn: "تسجيل الدخول",
@@ -38,9 +38,9 @@ const authT = {
     passwordPlaceholder: "••••••••",
     signingIn: "جاري الدخول...",
     welcomeBack: "منصة غرف العمليات والتحكم",
-    subtextSignIn: "الولوج إلى الراصد الملاحي وغرفة العمليات لوجستيات النقل.",
+    subtextSignIn: "الولوج إلى الراصد الملاحي وغرفة العمليات للنقل.",
     brandName: "قوافل المجد المثالية",
-    brandSub: "قوافل المجد المثالية للمقاولات والخدمات واللوجستيات",
+    brandSub: "قوافل المجد المثالية للمقاولات والخدمات",
   }
 };
 
@@ -154,9 +154,9 @@ export default function AuthScreen({ lang, setLang, onSuccess, unverifiedUserEma
         {/* Footer copyright */}
         <footer className="bg-white border-t border-slate-200 px-6 py-6 text-center text-xs text-slate-500 font-medium">
           <p className="font-sans font-bold uppercase tracking-wider mb-2 text-slate-700">
-            {lang === 'en' ? 'Qawafil Al Majd Al Mithaliya Integrated Portal' : 'البوابة اللوجستية المتكاملة لقوافل المجد المثالية'}
+            {lang === 'en' ? 'Qawafil Al Majd Al Misaliya Integrated Portal' : 'البوابة المتكاملة لقوافل المجد المثالية'}
           </p>
-          <p>© 2026 Qawafil Al Majd Al Mithaliya Contracting & Services Co. All rights reserved.</p>
+          <p>© 2026 Qawafil Al Majd Al Misaliya Contracting & Transport Co. All rights reserved.</p>
         </footer>
       </div>
     );
@@ -283,9 +283,9 @@ export default function AuthScreen({ lang, setLang, onSuccess, unverifiedUserEma
       {/* Footer copyright */}
       <footer className="bg-white border-t border-slate-200 px-6 py-6 text-center text-xs text-slate-500 font-medium">
         <p className="font-sans font-bold uppercase tracking-wider mb-2 text-slate-700">
-          {lang === 'en' ? 'Qawafil Al Majd Al Mithaliya Integrated Portal' : 'البوابة اللوجستية المتكاملة لقوافل المجد المثالية'}
+          {lang === 'en' ? 'Qawafil Al Majd Al Misaliya Integrated Portal' : 'البوابة المتكاملة لقوافل المجد المثالية'}
         </p>
-        <p>© 2026 Qawafil Al Majd Al Mithaliya Contracting & Services Co. All rights reserved.</p>
+        <p>© 2026 Qawafil Al Majd Al Misaliya Contracting & Transport Co. All rights reserved.</p>
       </footer>
     </div>
   );

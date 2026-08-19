@@ -44,13 +44,13 @@ export default function Fleet() {
           </div>
 
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight" id="fleet-page-title">
-            {lang === 'en' ? 'Explore Our Logistics Caravans' : 'تصفح أسطول قوافل النقل الفاخر واللوجستي'}
+            {lang === 'en' ? 'Explore Our Transport Caravans' : 'تصفح أسطول قوافل النقل الفاخر'}
           </h2>
 
           <p className="text-slate-500 text-xs sm:text-sm font-semibold max-w-lg mx-auto leading-relaxed mt-2">
             {lang === 'en' 
               ? 'Browse certified and maintained sedans, VIP SUVs, passenger minivans, and mass transit buses.'
-              : 'طيف متكامل من المركبات الحديثة المؤهلة ببطاقات تشغيل رسمية لضمان سلامة الركاب وإسناد اللوجستيات.'
+              : 'طيف متكامل من المركبات الحديثة المؤهلة ببطاقات تشغيل رسمية لضمان سلامة الركاب وإسناد النقل.'
             }
           </p>
         </div>

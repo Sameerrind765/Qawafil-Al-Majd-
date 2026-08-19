@@ -1,12 +1,14 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
+import cookieParser from "cookie-parser";
 import { createServer as createViteServer } from "vite";
 import multer from "multer";
 import axios from "axios";
 import { GoogleGenAI, Type } from "@google/genai";
 import { initializeApp as initAdminApp, getApps as getAdminApps, cert } from "firebase-admin/app";
 import { getFirestore as getAdminFirestore } from "firebase-admin/firestore";
+import { getAuth } from "firebase-admin/auth";
 import dotenv from "dotenv";
 import { v2 as cloudinary } from "cloudinary";
 
@@ -16,7 +18,8 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
-app.use(express.json({ limit: '10mb' })); // support base64 images
+app.use(express.json({ limit: '10mb' }));
+app.use(cookieParser());
 
 // Initialize Firebase Admin safely using config
 const configPath = path.join(process.cwd(), "firebase-applet-config.json");
@@ -645,21 +648,111 @@ app.get("/api/receipts", async (req, res) => {
   }
 });
 
-// VITE MIDDLEWARE INTERFACE / STANDALONE ROUTER
+// AUTH SESSION ENDPOINTS
+app.post("/api/auth/session", async (req, res) => {
+  const idToken = req.body.idToken?.toString();
+  if (!idToken) {
+    return res.status(401).send("Unauthorized");
+  }
+
+  // Set session expiration to 5 days.
+  const expiresIn = 60 * 60 * 24 * 5 * 1000;
+  
+  try {
+    const sessionCookie = await getAuth().createSessionCookie(idToken, { expiresIn });
+    const options = { maxAge: expiresIn, httpOnly: true, secure: process.env.NODE_ENV === 'production' };
+    res.cookie('session', sessionCookie, options);
+    res.end(JSON.stringify({ status: 'success' }));
+  } catch (error) {
+    res.status(401).send("Unauthorized Request!");
+  }
+});
+
+app.post("/api/auth/logout", (req, res) => {
+  res.clearCookie('session');
+  res.redirect('/');
+});
 async function startServer() {
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
+  const isProd = process.env.NODE_ENV === "production";
+  let vite: any;
+
+  if (!isProd) {
+    vite = await createViteServer({
       server: { middlewareMode: true },
-      appType: "spa",
+      appType: "custom",
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
+    const distPath = path.join(process.cwd(), 'dist', 'client');
+    app.use(express.static(distPath, { index: false }));
   }
+
+  // SSR Catch-all
+  app.use('*', async (req, res, next) => {
+    // ROLLBACK SWITCH
+    if (process.env.ENABLE_SSR !== 'true') {
+      const distPath = isProd ? path.join(process.cwd(), 'dist', 'client') : process.cwd();
+      const htmlPath = path.join(distPath, 'index.html');
+      if (fs.existsSync(htmlPath)) {
+        const html = fs.readFileSync(htmlPath, 'utf-8');
+        return res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
+      }
+      return res.status(404).end("Not found");
+    }
+
+    try {
+      const url = req.originalUrl;
+      let template, render;
+
+      if (!isProd) {
+        template = fs.readFileSync(path.resolve(process.cwd(), 'index.html'), 'utf-8');
+        template = await vite.transformIndexHtml(url, template);
+        render = (await vite.ssrLoadModule('/src/entry-server.tsx')).render;
+      } else {
+        template = fs.readFileSync(path.resolve(process.cwd(), 'dist', 'client', 'index.html'), 'utf-8');
+        render = (await import('./dist/server/entry-server.js')).render;
+      }
+
+      // -- FETCH DATA SERVER-SIDE (Firebase Admin) --
+      const sessionCookie = req.cookies.session || '';
+      let userState = null;
+      let initialData: any = {};
+
+      if (sessionCookie) {
+        try {
+          // Verify token & role
+          const decodedClaims = await getAuth().verifySessionCookie(sessionCookie, true);
+          userState = { uid: decodedClaims.uid, role: decodedClaims.role };
+          
+          if (url === '/admin' || url === '/dashboard') {
+            if (adminDb) {
+              const snapshot = await adminDb.collection('transactions').where('type', '==', 'receipt').limit(50).get();
+              initialData.transactions = snapshot.docs.map((d: any) => ({ id: d.id, ...d.data() }));
+            }
+          }
+        } catch (e) {
+          // invalid session
+          console.error("Invalid session", e);
+        }
+      }
+
+      // -- RENDER REACT TO HTML --
+      const appHtml = await render(url, userState, initialData);
+
+      // -- INJECT DATA FOR HYDRATION --
+      const stateScript = `<script>window.__INITIAL_DATA__ = ${JSON.stringify({ userState, initialData }).replace(/</g, '\\u003c')}</script>`;
+      
+      const html = template
+        .replace(`<!--ssr-outlet-->`, appHtml)
+        .replace(`<!--ssr-state-->`, stateScript);
+
+      res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
+    } catch (e: any) {
+      !isProd && vite.ssrFixStacktrace(e);
+      console.log(e.stack);
+      res.status(500).end(e.stack);
+    }
+  });
 
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server listening at http://localhost:${PORT}`);
@@ -667,4 +760,3 @@ async function startServer() {
 }
 
 startServer();
-

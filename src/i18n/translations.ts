@@ -1,13 +1,13 @@
 export const translations = {
   en: {
     brandName: "Qawafil Al Majd Al Misaliya",
-    brandSub: "Qawafil Al Majd Al Misaliya - Transport & Logistics Services",
+    brandSub: "Qawafil Al Majd Al Misaliya - Transport Services",
     navHome: "Home",
     navFleet: "Our Fleet",
     navZiyarat: "Ziyarat Tours",
     navContact: "Contact Us",
     navBookNow: "Book Now",
-    navWhatsappCTA: "Chat Logistics",
+    navWhatsappCTA: "Chat Support",
     langToggle: "العربية",
     currency: "SAR",
     seats: "Seats",
@@ -38,7 +38,7 @@ export const translations = {
     selectCityPlaceholder: "Select Pick-up Station",
     selectDropoffPlaceholder: "Select Destination Station",
     selectHoursPlaceholder: "Choose hours (Min 4)",
-    selectRoutePlaceholder: "Choose contract logistics type",
+    selectRoutePlaceholder: "Choose contract transport type",
     
     // Stations
     makkah: "Makkah Al-Mukarramah",
@@ -51,8 +51,8 @@ export const translations = {
     // Contract types
     routeDaily: "Daily Employee Shuttle Service",
     routeIntercity: "Heavy Cargo & Inter-City Transit",
-    routeSeasonal: "Seasonal Pilgrimage (Hajj / Umrah) Logistics",
-    routeCorporate: "Corporate Logistics & Machinery Charter",
+    routeSeasonal: "Seasonal Pilgrimage (Hajj / Umrah) Transport",
+    routeCorporate: "Corporate Transport & Machinery Charter",
     
     // Filter controls
     filterAll: "All Classes",
@@ -89,7 +89,7 @@ export const translations = {
     whatsappNumPlaceholder: "e.g., +966 50 123 4567",
     hotel: "Hotel Name / Pickup Location Details",
     hotelPlaceholder: "e.g., Hilton Suite Makkah, or Terminal 1 Jeddah Airport",
-    specialRequests: "Special Logistics Notes / Requests",
+    specialRequests: "Special Notes / Requests",
     specialRequestsPlaceholder: "e.g., Child booster seats, specific luggage volume, additional steps...",
     confirmReservationLetter: "Book Caravan Now",
     bookingSuccessTitle: "Booking Dispatched Successfully!",
@@ -137,13 +137,13 @@ export const translations = {
     hqWorkingHours: "Customer Care: 24/7 Always Available",
     
     // Home Hero Page
-    heroTitle: "Premium Saudi Fleet Logistics",
+    heroTitle: "Premium Saudi Fleet Transport",
     heroSubtitle: "Safe, licensed, and highly reliable transport services across Jeddah, Makkah, Madinah, and all Kingdom routes.",
     selectedFleetTitle: "Available Caravans & Vehicles"
   },
   ar: {
     brandName: "قوافل المجد المثالية",
-    brandSub: "قوافل المجد المثالية للنقل والخدمات اللوجستية والمقاولات",
+    brandSub: "قوافل المجد المثالية للنقل والمقاولات",
     navHome: "الرئيسية",
     navFleet: "أسطولنا",
     navZiyarat: "برامج الزيارات الشريفة",
@@ -162,7 +162,7 @@ export const translations = {
     tabPointToPoint: "من نقطة إلى نقطة",
     tabHourly: "بالساعة",
     tabByKm: "بالكيلومتر",
-    tabContract: "عقود لوجستية كاملة",
+    tabContract: "عقود نقل كاملة",
     
     labelFrom: "مدينة الانطلاق / التجميع",
     labelTo: "وجهة الوصول / المحطة",
@@ -173,7 +173,7 @@ export const translations = {
     labelStartPoint: "نقطة البداية المحددة",
     labelEstDistance: "المسافة التقديرية (كم)",
     labelRouteType: "نوع الاتفاقية والمسار",
-    labelDuration: "مدة التعاقد اللوجستي",
+    labelDuration: "مدة التعاقد",
     labelGroupSize: "الحجم المتوقع للمجموعة",
     labelBaseCity: "مدينة العمليات التشغيلية",
     
@@ -192,7 +192,7 @@ export const translations = {
     
     // Contract types
     routeDaily: "شاتل يومي منتظم لموظفي ومنتسبي الشركات",
-    routeIntercity: "شحن ثقيل ونقل بضائع لوجستية بين المدن",
+    routeIntercity: "شحن ثقيل ونقل بضائع بين المدن",
     routeSeasonal: "تنقلات دينية للمواسم (حج وعمرة) قوافل متكاملة",
     routeCorporate: "إسناد نقل تشغيلي لمشروعات النقل والمقاولات",
     
@@ -215,7 +215,7 @@ export const translations = {
     trust4Desc: "أنظمة تتبع حي وتواصل مستمر لضمان أعلى معايير السلامة التشغيلية.",
     
     // How it works
-    howTitle: "بروتوكول حجز المركبات والخدمات اللوجستية",
+    howTitle: "بروتوكول حجز المركبات",
     step1Title: "١. تحديد نوع المسار والخدمة",
     step1Desc: "اختر الخدمة المناسبة من حجز النقطة الواحدة، النقل بالساعة، المسافة الطويلة، أو العقود.",
     step2Title: "٢. اختيار الناقلة الملائمة",
@@ -279,7 +279,7 @@ export const translations = {
     hqWorkingHours: "خدمة العملاء: متاحة دائماً 24/7",
     
     // Home Hero Page
-    heroTitle: "قوافل المجد الفاخرة للحلول اللوجستية",
+    heroTitle: "قوافل المجد الفاخرة للنقل",
     heroSubtitle: "خدمات نقل مرخصة، آمنة وموثوقة تغطي مكة المكرمة، المدينة المنورة، جدة، وكافة مدن ومنافذ المملكة.",
     selectedFleetTitle: "الناقلات والأساطيل المتاحة حالياً"
   }
