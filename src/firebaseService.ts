@@ -1,5 +1,6 @@
 import { collection, doc, getDocs, getDoc, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { db, auth } from './firebase';
+import { db } from './firebase';
+import { auth } from './authFirebase';
 import { Vehicle, CargoOrder, Folder, UserFile, UserNote, TeamMember, UserProfile, HomepageLead, Transaction } from './types';
 import { INITIAL_VEHICLES, INITIAL_CARGO_ORDERS } from './data';
 
@@ -28,8 +29,8 @@ export interface FirestoreErrorInfo {
     }[];
   }
 }
-
-export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+export async function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null): Promise<never> {
+  const { auth } = await import('./authFirebase');
   const errInfo: FirestoreErrorInfo = {
     error: error instanceof Error ? error.message : String(error),
     authInfo: {
@@ -60,7 +61,7 @@ export async function fetchAllVehicles(): Promise<Vehicle[]> {
     querySnapshot.forEach((d) => {
       list.push(d.data() as Vehicle);
     });
-    
+
     if (list.length === 0) {
       // Seed initial data into localstorage and return fallback if nothing in cloud
       const local = localStorage.getItem('qawafil_vehicles');
@@ -70,7 +71,7 @@ export async function fetchAllVehicles(): Promise<Vehicle[]> {
       localStorage.setItem('qawafil_vehicles', JSON.stringify(INITIAL_VEHICLES));
       return INITIAL_VEHICLES;
     }
-    
+
     // Cache to localstorage for speed/safety
     localStorage.setItem('qawafil_vehicles', JSON.stringify(list));
     return list;
@@ -379,16 +380,16 @@ export async function saveLead(lead: HomepageLead): Promise<void> {
   const path = 'leads';
   try {
     await setDoc(doc(db, path, lead.id), cleanData(lead));
-    
+
     // Sync to local cache
     const current = localStorage.getItem('qawafil_leads');
     const list: HomepageLead[] = current ? JSON.parse(current) : [];
-    
+
     // Convert serverTimestamp FieldValue to ISO string for offline storage
     const normalizedLead = {
       ...lead,
-      createdAt: typeof lead.createdAt === 'object' && lead.createdAt !== null 
-        ? new Date().toISOString() 
+      createdAt: typeof lead.createdAt === 'object' && lead.createdAt !== null
+        ? new Date().toISOString()
         : lead.createdAt
     };
 
@@ -409,7 +410,7 @@ export async function updateLeadStatus(id: string, status: 'Pending' | 'Contacte
   const path = `leads/${id}`;
   try {
     await updateDoc(doc(db, 'leads', id), { status });
-    
+
     // Update cache
     const current = localStorage.getItem('qawafil_leads');
     if (current) {
@@ -429,7 +430,7 @@ export async function deleteLead(id: string): Promise<void> {
   const path = `leads/${id}`;
   try {
     await deleteDoc(doc(db, 'leads', id));
-    
+
     // Update cache
     const current = localStorage.getItem('qawafil_leads');
     if (current) {
@@ -468,7 +469,7 @@ export async function createOrUpdateTransaction(transaction: Transaction): Promi
   const path = 'transactions';
   try {
     await setDoc(doc(db, path, transaction.id), cleanData(transaction));
-    
+
     // Sync cache
     const current = localStorage.getItem('qawafil_transactions');
     const list: Transaction[] = current ? JSON.parse(current) : [];
@@ -488,7 +489,7 @@ export async function deleteTransaction(id: string): Promise<void> {
   const path = `transactions/${id}`;
   try {
     await deleteDoc(doc(db, 'transactions', id));
-    
+
     // Sync cache
     const current = localStorage.getItem('qawafil_transactions');
     if (current) {

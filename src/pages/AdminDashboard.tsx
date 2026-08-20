@@ -46,7 +46,8 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { collection, getDocs, doc, query, orderBy, getDoc, setDoc, updateDoc, deleteDoc, where } from 'firebase/firestore';
-import { db, auth } from '../firebase';
+import { db } from '../firebase';
+import { auth } from '../authFirebase';   
 import { onAuthStateChanged, signOut, User, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut as authSignOut, getAuth, GoogleAuthProvider, signInWithPopup, linkWithPopup, reauthenticateWithPopup } from 'firebase/auth';
 import { initializeApp, deleteApp } from 'firebase/app';
 import firebaseConfig from '../../firebase-applet-config.json';

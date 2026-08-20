@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { 
   signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
   signOut
 } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth } from '../authFirebase';
 import { Truck, Globe, Mail, Lock, Eye, EyeOff, RefreshCcw } from 'lucide-react';
 
 interface AuthScreenProps {
