@@ -14,26 +14,41 @@ const LangContext = createContext<LangContextType | undefined>(undefined);
 
 export function LangProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<Lang>(() => {
-    const saved = localStorage.getItem('qawafil_lang');
-    return (saved === 'en' || saved === 'ar') ? saved : 'en';
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('qawafil_lang');
+        return (saved === 'en' || saved === 'ar') ? saved : 'en';
+      } catch (e) {
+        return 'en';
+      }
+    }
+    return 'en';
   });
 
   const setLang = (newLang: Lang) => {
     setLangState(newLang);
-    localStorage.setItem('qawafil_lang', newLang);
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem('qawafil_lang', newLang);
+      } catch (e) {
+        // ignore in restricted or SSR environments
+      }
+    }
   };
 
   const dir = lang === 'ar' ? 'rtl' : 'ltr';
 
   useEffect(() => {
-    document.documentElement.dir = dir;
-    document.documentElement.lang = lang;
-    if (dir === 'rtl') {
-      document.body.classList.add('rtl');
-      document.body.classList.remove('ltr');
-    } else {
-      document.body.classList.add('ltr');
-      document.body.classList.remove('rtl');
+    if (typeof document !== 'undefined') {
+      document.documentElement.dir = dir;
+      document.documentElement.lang = lang;
+      if (dir === 'rtl') {
+        document.body.classList.add('rtl');
+        document.body.classList.remove('ltr');
+      } else {
+        document.body.classList.add('ltr');
+        document.body.classList.remove('rtl');
+      }
     }
   }, [lang, dir]);
 

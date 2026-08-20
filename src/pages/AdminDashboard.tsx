@@ -564,10 +564,24 @@ export default function AdminDashboard() {
 
   // --- Google Sheets Sync States & Handlers ---
   const [googleToken, setGoogleToken] = useState<string | null>(() => {
-    return sessionStorage.getItem('google_sheets_token') || null;
+    if (typeof window !== 'undefined' && typeof sessionStorage !== 'undefined') {
+      try {
+        return sessionStorage.getItem('google_sheets_token') || null;
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
   });
   const [googleUserEmail, setGoogleUserEmail] = useState<string | null>(() => {
-    return sessionStorage.getItem('google_sheets_email') || null;
+    if (typeof window !== 'undefined' && typeof sessionStorage !== 'undefined') {
+      try {
+        return sessionStorage.getItem('google_sheets_email') || null;
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
   });
   const [googleAuthError, setGoogleAuthError] = useState<string | null>(null);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
