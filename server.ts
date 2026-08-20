@@ -684,134 +684,56 @@ app.post("/api/auth/logout", (req, res) => {
 });
 async function startServer() {
   const isProd = process.env.NODE_ENV === "production";
-  let vite: any;
 
   if (!isProd) {
-    vite = await createViteServer({
+    // Development: Use Vite SPA middleware for instant HMR and cross-platform compatibility
+    const vite = await createViteServer({
       server: { middlewareMode: true },
-      appType: "custom",
+      appType: "spa",
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), 'dist', 'client');
-    app.use(express.static(distPath, { index: false }));
-  }
+    // Production: Serve static client assets and handle SSR or static index fallback
+    const distClientPath = path.join(process.cwd(), 'dist', 'client');
+    const distServerPath = path.join(process.cwd(), 'dist', 'server', 'entry-server.js');
+    app.use(express.static(distClientPath, { index: false }));
 
-  // SSR Catch-all route
-  app.use('*', async (req, res, next) => {
-    const url = req.originalUrl;
-    // Don't intercept API routes or direct file requests
-    if (url.startsWith('/api') || url.startsWith('/@') || url.includes('.')) {
-      return next();
-    }
-
-    const isSSREnabled = process.env.DISABLE_SSR !== 'true';
-
-    try {
-      let template = '';
-      let render: any = null;
-
-      if (!isProd) {
-        // Dev: transform raw index.html via Vite
-        const rawTemplate = fs.readFileSync(path.resolve(process.cwd(), 'index.html'), 'utf-8');
-        template = await vite.transformIndexHtml(url, rawTemplate);
-        if (isSSREnabled) {
-          try {
-            const entryServerPath = path.resolve(process.cwd(), 'src', 'entry-server.tsx');
-            const ssrModule = await vite.ssrLoadModule(entryServerPath);
-            render = ssrModule.render;
-          } catch (ssrDevErr) {
-            console.warn('[SSR Dev] entry-server.tsx fallback to CSR:', (ssrDevErr as any)?.message || ssrDevErr);
-          }
-        }
-      } else {
-        // Prod: read built client HTML and load server entry bundle
-        const clientHtmlPath = path.resolve(process.cwd(), 'dist', 'client', 'index.html');
-        if (fs.existsSync(clientHtmlPath)) {
-          template = fs.readFileSync(clientHtmlPath, 'utf-8');
-        }
-        if (isSSREnabled) {
-          try {
-            const { pathToFileURL } = await import('url');
-            const serverEntryPath = path.resolve(process.cwd(), 'dist', 'server', 'entry-server.js');
-            if (fs.existsSync(serverEntryPath)) {
-              // @ts-ignore
-              const ssrModule = await import(pathToFileURL(serverEntryPath).href);
-              render = ssrModule.render;
-            }
-          } catch (ssrProdErr) {
-            console.error('[SSR Prod] Error loading entry-server.js, falling back to CSR:', ssrProdErr);
-          }
-        }
+    app.use('*', async (req, res, next) => {
+      const url = req.originalUrl;
+      if (url.startsWith('/api') || url.startsWith('/@') || url.includes('.')) {
+        return next();
       }
 
-      // If SSR is disabled or render is unavailable, serve clean client template
-      if (!render || !template) {
-        const fallbackHtml = template
-          .replace('<!--ssr-outlet-->', '')
-          .replace('<!--ssr-state-->', '');
-        return res.status(200).set({ 'Content-Type': 'text/html' }).end(fallbackHtml);
+      const clientHtmlPath = path.resolve(distClientPath, 'index.html');
+      if (!fs.existsSync(clientHtmlPath)) {
+        return res.status(404).send('Production build not found. Please run "npm run build".');
       }
 
-      // -- FETCH DATA SERVER-SIDE (Firebase Admin) --
-      const sessionCookie = req.cookies?.session || '';
-      let userState = null;
-      let initialData: any = {};
+      const template = fs.readFileSync(clientHtmlPath, 'utf-8');
 
-      if (sessionCookie && adminApp) {
+      // Attempt SSR if enabled and server bundle exists
+      if (process.env.DISABLE_SSR !== 'true' && fs.existsSync(distServerPath)) {
         try {
-          const decodedClaims = await getAuth().verifySessionCookie(sessionCookie, true);
-          userState = { uid: decodedClaims.uid, role: (decodedClaims as any).role };
-          
-          if ((url === '/admin' || url === '/dashboard') && adminDb) {
-            const snapshot = await adminDb.collection('transactions').where('type', '==', 'receipt').limit(50).get();
-            initialData.transactions = snapshot.docs.map((d: any) => ({ id: d.id, ...d.data() }));
+          const { pathToFileURL } = await import('url');
+          // @ts-ignore
+          const ssrModule = await import(pathToFileURL(distServerPath).href);
+          if (ssrModule && typeof ssrModule.render === 'function') {
+            const appHtml = await ssrModule.render(url);
+            const html = template.replace('<!--ssr-outlet-->', () => appHtml);
+            return res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
           }
-        } catch (e) {
-          // Invalid session, ignore and continue
+        } catch (ssrErr) {
+          console.warn('[SSR Production Warning] Falling back to CSR:', (ssrErr as any)?.message || ssrErr);
         }
       }
 
-      // -- RENDER REACT TO HTML --
-      let appHtml = '';
-      try {
-        appHtml = await render(url, userState, initialData);
-      } catch (renderErr) {
-        console.error('[SSR Render Error] Falling back to CSR template:', renderErr);
-        const fallbackHtml = template
-          .replace('<!--ssr-outlet-->', '')
-          .replace('<!--ssr-state-->', '');
-        return res.status(200).set({ 'Content-Type': 'text/html' }).end(fallbackHtml);
-      }
-
-      // -- INJECT DATA FOR HYDRATION --
-      const stateScript = `<script>window.__INITIAL_DATA__ = ${JSON.stringify({ userState, initialData }).replace(/</g, '\\u003c')}</script>`;
-      
-      const html = template
-        .replace('<!--ssr-outlet-->', () => appHtml)
-        .replace('<!--ssr-state-->', () => stateScript);
-
-      return res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
-    } catch (e: any) {
-      if (!isProd && vite) {
-        vite.ssrFixStacktrace(e);
-      }
-      console.error('[SSR Catch-all Error]:', e);
-      try {
-        const fallbackPath = isProd 
-          ? path.resolve(process.cwd(), 'dist', 'client', 'index.html')
-          : path.resolve(process.cwd(), 'index.html');
-        if (fs.existsSync(fallbackPath)) {
-          const raw = fs.readFileSync(fallbackPath, 'utf-8');
-          const clean = !isProd && vite ? await vite.transformIndexHtml(url, raw) : raw;
-          return res.status(200).set({ 'Content-Type': 'text/html' }).end(clean);
-        }
-      } catch (fbErr) {
-        // pass to next error handler
-      }
-      next(e);
-    }
-  });
+      // Default CSR response
+      const fallbackHtml = template
+        .replace('<!--ssr-outlet-->', '')
+        .replace('<!--ssr-state-->', '');
+      return res.status(200).set({ 'Content-Type': 'text/html' }).end(fallbackHtml);
+    });
+  }
 
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server listening at http://localhost:${PORT}`);
