@@ -24,6 +24,7 @@ app.use(cookieParser());
 // Initialize Firebase Admin safely using config
 const configPath = path.join(process.cwd(), "firebase-applet-config.json");
 let adminDb: any = null;
+let adminApp: any = null;
 
 (async () => {
   try {
@@ -50,7 +51,6 @@ let adminDb: any = null;
       console.log(`Firebase Applet Config project ID: "${configData.projectId}"`);
       
       const apps = getAdminApps();
-      let adminApp;
       let credentialConfig: any = undefined;
 
       const serviceAccountJson = 

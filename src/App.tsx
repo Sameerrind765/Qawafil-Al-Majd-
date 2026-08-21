@@ -1,18 +1,16 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { LangProvider } from './context/LangContext';
 import Navbar from './components/Navbar';
-import { lazy, Suspense } from 'react';
+import Footer from './components/Footer';
 
-// Pages
+// Public SEO-critical pages statically imported
 import Home from './pages/Home';
-// import Fleet from './pages/Fleet';
-// import Ziyarat from './pages/Ziyarat';
-// import Contact from './pages/Contact';
-const Footer = lazy(() => import('./components/Footer'));
-const Fleet = lazy(() => import('./pages/Fleet'));
-const Contact = lazy(() => import('./pages/Contact'));
-const Ziyarat = lazy(() => import('./pages/Ziyarat'));
+import Fleet from './pages/Fleet';
+import Ziyarat from './pages/Ziyarat';
+import Contact from './pages/Contact';
+
+// Only keep AdminDashboard lazy — it's genuinely large AND shouldn't be indexed
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 
 export function AppContent() {
@@ -26,23 +24,44 @@ export function AppContent() {
 
       {/* Dynamic Route views */}
       <main className="flex-1 flex flex-col">
-        <Suspense fallback={<div>Loading...</div>}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/fleet" element={<Fleet />} />
-            <Route path="/ziyarat" element={<Ziyarat />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/dashboard" element={<AdminDashboard />} />
-          </Routes>
-        </Suspense>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/fleet" element={<Fleet />} />
+          <Route path="/ziyarat" element={<Ziyarat />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route
+            path="/admin"
+            element={
+              <Suspense
+                fallback={
+                  <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">
+                    <div className="animate-spin rounded-full h-10 w-10 border-4 border-amber-500 border-t-transparent" />
+                  </div>
+                }
+              >
+                <AdminDashboard />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <Suspense
+                fallback={
+                  <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">
+                    <div className="animate-spin rounded-full h-10 w-10 border-4 border-amber-500 border-t-transparent" />
+                  </div>
+                }
+              >
+                <AdminDashboard />
+              </Suspense>
+            }
+          />
+        </Routes>
       </main>
 
       {/* Brand Footer - only show if not on admin paths */}
-        <Suspense fallback={<div>null</div>}>
-
       {!isAdminPath && <Footer />}
-      </Suspense>
     </div>
   );
 }

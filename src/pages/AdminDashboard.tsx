@@ -1230,7 +1230,7 @@ export default function AdminDashboard() {
   };
 
   // Auto record/synthesize lead credits for the ledger dynamically
-  const leadCredits = React.useMemo(() => {
+  const leadCredits: Transaction[] = React.useMemo(() => {
     return leads
       .filter(l => l.status === 'Closed')
       .map(l => ({
@@ -1270,7 +1270,7 @@ export default function AdminDashboard() {
     .reduce((acc, t) => acc + (t.amount || 0), 0);
 
   const totalLedgerDebits = allTransactions
-    .filter(t => t.type === 'debit' || t.type === 'receipt')
+    .filter(t => t.type === 'debit')
     .reduce((acc, t) => acc + (t.amount || 0), 0);
 
   const ledgerNetBalance = totalLedgerCredits - totalLedgerDebits;
@@ -2302,7 +2302,7 @@ export default function AdminDashboard() {
                             (tx.referenceId || '').toLowerCase().includes(searchTxQuery.toLowerCase()) ||
                             (tx.createdBy || '').toLowerCase().includes(searchTxQuery.toLowerCase());
 
-                          const matchesType = filterTxType === 'all' || tx.type === filterTxType || (filterTxType === 'debit' && tx.type === 'receipt');
+                          const matchesType = filterTxType === 'all' || tx.type === filterTxType;
                           const matchesCategory = filterTxCat === 'all' || tx.category === filterTxCat;
 
                           return matchesSearch && matchesType && matchesCategory;
@@ -2359,7 +2359,7 @@ export default function AdminDashboard() {
                               (tx.referenceId || '').toLowerCase().includes(searchTxQuery.toLowerCase()) ||
                               (tx.createdBy || '').toLowerCase().includes(searchTxQuery.toLowerCase());
 
-                            const matchesType = filterTxType === 'all' || tx.type === filterTxType || (filterTxType === 'debit' && tx.type === 'receipt');
+                            const matchesType = filterTxType === 'all' || tx.type === filterTxType;
                             const matchesCategory = filterTxCat === 'all' || tx.category === filterTxCat;
 
                             return matchesSearch && matchesType && matchesCategory;
@@ -2413,8 +2413,8 @@ export default function AdminDashboard() {
                                             setFilterLeadsStatus('all');
                                             setActiveTab('leads');
                                           } else if (tx.category === 'Fuel') {
-                                            // Highlight or open roster view
-                                            setActiveTab('roster');
+                                            // Open receipts view
+                                            setActiveTab('receipts');
                                           }
                                         }}
                                         className="inline-flex items-center gap-1 mt-1 font-mono text-[9px] bg-indigo-50 hover:bg-indigo-110 text-indigo-700 px-1.5 py-0.5 rounded border border-indigo-150 cursor-pointer transition-colors active:scale-95"
