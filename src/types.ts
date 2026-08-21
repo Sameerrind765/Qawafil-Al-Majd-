@@ -113,5 +113,7 @@ export interface Transaction {
   createdBy: string; // User Name / Dispatched Name
   isReceipt?: boolean;
   image_url?: string;
+  driver_id?: string;
+  driver_name?: string;
 }
 
