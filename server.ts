@@ -66,64 +66,120 @@ let adminApp: any = null;
           // 1. Check if it's an existing file path
           if (fs.existsSync(trimmed)) {
             console.log(`Firebase Admin SDK: Loading credentials from file path: ${trimmed}`);
-            parsedAccount = JSON.parse(fs.readFileSync(trimmed, "utf-8"));
-          } else {
-            // 2. Strip surrounding single or double quotes if added by shell/.env parser
-            if (
-              (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-              (trimmed.startsWith("'") && trimmed.endsWith("'"))
-            ) {
-              trimmed = trimmed.substring(1, trimmed.length - 1).trim();
+            try {
+              parsedAccount = JSON.parse(fs.readFileSync(trimmed, "utf-8"));
+            } catch (e) {
+              console.warn(`Failed to parse file at ${trimmed}:`, e);
             }
+          }
 
-            // 3. If escaped quotes are present throughout (e.g., \"type\": \"service_account\")
-            if (trimmed.startsWith('\\"') && trimmed.endsWith('\\"')) {
-              trimmed = trimmed.substring(2, trimmed.length - 2).trim();
-            }
+          // 2. Multi-strategy parser for string-based credentials
+          if (!parsedAccount) {
+            const parseAttempts = [
+              // Strategy A: Direct parse
+              () => JSON.parse(trimmed),
 
-            // 4. Check for Base64 encoded JSON
-            if (!trimmed.startsWith("{") && !trimmed.startsWith('\\"')) {
-              try {
+              // Strategy B: Double-encoded JSON (where the string itself was stringified with quotes)
+              () => {
+                const firstPass = JSON.parse(trimmed);
+                return typeof firstPass === 'string' ? JSON.parse(firstPass) : firstPass;
+              },
+
+              // Strategy C: Strip outer single or double quotes manually
+              () => {
+                let cleaned = trimmed;
+                if (
+                  (cleaned.startsWith('"') && cleaned.endsWith('"')) ||
+                  (cleaned.startsWith("'") && cleaned.endsWith("'"))
+                ) {
+                  cleaned = cleaned.slice(1, -1).trim();
+                }
+                return JSON.parse(cleaned);
+              },
+
+              // Strategy D: Unescape escaped quotes (\" -> ")
+              () => {
+                let cleaned = trimmed;
+                if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+                  cleaned = cleaned.slice(1, -1);
+                }
+                cleaned = cleaned.replace(/\\"/g, '"');
+                return JSON.parse(cleaned);
+              },
+
+              // Strategy E: Base64 decode
+              () => {
                 const decoded = Buffer.from(trimmed, 'base64').toString('utf-8');
-                if (decoded.trim().startsWith("{")) {
-                  parsedAccount = JSON.parse(decoded);
-                  console.log("Firebase Admin SDK: Successfully decoded Base64 service account credentials.");
-                }
-              } catch (_) {}
-            }
+                return JSON.parse(decoded);
+              },
 
-            // 5. Direct JSON parse (with unescaping if needed)
-            if (!parsedAccount) {
-              if (trimmed.startsWith("{")) {
-                try {
-                  parsedAccount = JSON.parse(trimmed);
-                } catch {
-                  // Attempt fixing double-escaped newlines or quotes
-                  const unescaped = trimmed.replace(/\\n/g, '\n').replace(/\\"/g, '"');
-                  parsedAccount = JSON.parse(unescaped);
+              // Strategy F: Regex field extractor (bulletproof fallback when JSON has syntax/escaping corruptions)
+              () => {
+                const extractField = (fieldName: string): string | null => {
+                  // Match "fieldName": "value" or \"fieldName\": \"value\"
+                  const regex = new RegExp(`(?:\\\\?"?${fieldName}\\\\?"?\\s*:\\s*\\\\?"?)([^"\\\\]*(?:\\\\.[^"\\\\]*)*)(?:\\\\?"?)`, 'i');
+                  const match = trimmed.match(regex);
+                  return match ? match[1] : null;
+                };
+
+                const projectId = extractField('project_id');
+                const clientEmail = extractField('client_email');
+                
+                // Extract private key specifically
+                let privateKey: string | null = null;
+                const pkMatch = trimmed.match(/-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----/);
+                if (pkMatch) {
+                  privateKey = pkMatch[0];
+                } else {
+                  const pkField = extractField('private_key');
+                  if (pkField) privateKey = pkField;
                 }
-              } else if (trimmed.includes('"type"') || trimmed.includes('\\"type\\"')) {
-                // If quotes were somehow escaped
-                const unescaped = trimmed.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
-                const jsonStart = unescaped.indexOf('{');
-                const jsonEnd = unescaped.lastIndexOf('}');
-                if (jsonStart !== -1 && jsonEnd !== -1) {
-                  parsedAccount = JSON.parse(unescaped.substring(jsonStart, jsonEnd + 1));
+
+                if (projectId && clientEmail && privateKey) {
+                  return {
+                    type: extractField('type') || 'service_account',
+                    project_id: projectId,
+                    private_key_id: extractField('private_key_id') || '',
+                    private_key: privateKey,
+                    client_email: clientEmail,
+                    client_id: extractField('client_id') || '',
+                    auth_uri: 'https://accounts.google.com/o/oauth2/auth',
+                    token_uri: 'https://oauth2.googleapis.com/token'
+                  };
                 }
+                return null;
+              }
+            ];
+
+            for (const attempt of parseAttempts) {
+              try {
+                const res = attempt();
+                if (res && typeof res === 'object' && (res.project_id || res.projectId)) {
+                  parsedAccount = res;
+                  break;
+                }
+              } catch (_) {
+                // Try next strategy
               }
             }
           }
 
-          if (parsedAccount && parsedAccount.project_id && parsedAccount.private_key) {
-            // Ensure private_key linebreaks are properly formatted
-            if (typeof parsedAccount.private_key === 'string' && parsedAccount.private_key.includes('\\n')) {
-              parsedAccount.private_key = parsedAccount.private_key.replace(/\\n/g, '\n');
+          if (parsedAccount && (parsedAccount.project_id || parsedAccount.projectId)) {
+            const pid = parsedAccount.project_id || parsedAccount.projectId;
+            let pKey = parsedAccount.private_key || parsedAccount.privateKey;
+
+            if (typeof pKey === 'string') {
+              // Ensure private_key has real newlines instead of literal \n or escaped slashes
+              pKey = pKey.replace(/\\n/g, '\n').replace(/\\r/g, '').trim();
+              parsedAccount.private_key = pKey;
             }
-            credentialConfig = cert(parsedAccount);
-            console.log(`Firebase Admin SDK: Successfully loaded credentials for project [${parsedAccount.project_id}].`);
-          } else if (parsedAccount) {
-            credentialConfig = cert(parsedAccount);
-            console.log("Firebase Admin SDK: Attempting to initialize with parsed service account credentials.");
+
+            credentialConfig = cert({
+              projectId: pid,
+              clientEmail: parsedAccount.client_email || parsedAccount.clientEmail,
+              privateKey: pKey
+            });
+            console.log(`Firebase Admin SDK: Successfully loaded credentials for project [${pid}].`);
           } else {
             console.warn("Firebase Admin SDK: Credential string provided but could not be parsed into a valid service account JSON object.");
           }
