@@ -152,8 +152,8 @@ export default function BookingModal({ isOpen, onClose, selectedVehicle, booking
     }
 
     const msg = lang === 'en'
-      ? `Assalamu Alaikum Qawafil Al Majd Al Misaliya! I want to confirm my booking reservation for:\n\n- *Vehicle:* ${vName}\n- *Rate:* SAR ${vPrice}${routeInfo}\n- *My Name:* ${fullName}\n- *WhatsApp:* ${phone}\n- *Pickup Details:* ${pickupHotel}\n- *Notes:* ${specialRequests}\n\nPlease dispatch, thank you.`
-      : `السلام عليكم قوافل المجد المثالية! أرغب في تأكيد حجز الرحلة:\n\n- *المركبة المطلوبة:* ${vName}\n- *التسعيرة المقدرة:* ${vPrice} ريال${routeInfo}\n- *الاسم الكريم:* ${fullName}\n- *رقم التواصل:* ${phone}\n- *موقع الاستلام:* ${pickupHotel}\n- *متطلبات خاصة:* ${specialRequests}\n\nيرجى تأكيد التفويج والخدمة البرية، شكراً لكم.`;
+      ? `Assalamu Alaikum Qawafil Al Majd Al Misaliya! I want to confirm my booking reservation for:\n\n- *Vehicle:* ${vName}\n- *Rate:* SAR ${vPrice}${routeInfo}\n- *My Name:* ${fullName}\n- *WhatsApp:* ${phone}\n- *Pickup Details:* ${pickupHotel}\n- *Notes:* ${specialRequests}\n\nPlease confirm booking and assign driver, thank you.`
+      : `السلام عليكم قوافل المجد المثالية! أرغب في تأكيد حجز الرحلة:\n\n- *المركبة المطلوبة:* ${vName}\n- *التسعيرة المقدرة:* ${vPrice} ريال${routeInfo}\n- *الاسم الكريم:* ${fullName}\n- *رقم التواصل:* ${phone}\n- *موقع الاستلام:* ${pickupHotel}\n- *متطلبات خاصة:* ${specialRequests}\n\nيرجى تأكيد الحجز وتعيين السائق، بارك الله فيكم.`;
     return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
   };
 
@@ -231,7 +231,7 @@ export default function BookingModal({ isOpen, onClose, selectedVehicle, booking
                   id="success-whatsapp-dispatch-btn"
                 >
                   <MessageSquare className="w-4 h-4" />
-                  <span>{lang === 'en' ? "Open WhatsApp Dispatch" : "متابعة التفويج عبر وتساب"}</span>
+                  <span>{lang === 'en' ? "Open WhatsApp Support" : "التواصل الفوري عبر وتساب"}</span>
                 </a>
 
                 <button

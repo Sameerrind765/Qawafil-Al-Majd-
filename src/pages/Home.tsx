@@ -102,7 +102,7 @@ export default function Home() {
       else multiplier = 1.15;
     }
 
-    if (luggage === 'Excess / Heavy Cargo' || luggage === 'أمتعة إضافية / ثقيلة') {
+    if (luggage === 'Extra Bags / Family Luggage' || luggage === 'أمتعة إضافية / حقائب كبيرة') {
       multiplier *= 1.12;
     } else if (luggage === 'Medium / Large Bags' || luggage === 'حقائب متوسطة / كبيرة') {
       multiplier *= 1.04;
@@ -175,9 +175,9 @@ export default function Home() {
       nameLabel: "Your Contact Name",
       phoneLabel: "WhatsApp Number",
       stationLabel: "Pickup Station / Hotel Detail",
-      dispatchBtn: "Confirm & Dispatch on WhatsApp",
-      dispatchSuccessTitle: "Inquiry Shared Successfully!",
-      dispatchSuccessMsg: "Jazakallah. Your booking inquiry details have been registered at our 24/7 central control desk. Press the button below to initiate instantaneous WhatsApp dispatch and confirm your driver.",
+      dispatchBtn: "Confirm & Request on WhatsApp",
+      dispatchSuccessTitle: "Inquiry Submitted Successfully!",
+      dispatchSuccessMsg: "Jazakallah Khayran. Your booking inquiry details have been registered at our 24/7 central reservations desk. Press the button below to connect on WhatsApp and confirm your driver.",
       openWhatsApp: "Open Mobile WhatsApp Connection",
       noPrepay: "✓ Zero Online Prepayment Required • Instant Confirmation",
       
@@ -196,7 +196,7 @@ export default function Home() {
       
       fleetTitle: "Explore Meticulously Selected Fleet",
       fleetSub: "All caravans are 100% compliant with Saudi Transport General Authority (TGA) regulations, ensuring absolute safety.",
-      safetyActive: "Active Fleet Telemetry Monitoring Line",
+      safetyActive: "24/7 Active Safety & Support Line",
       
       hajjAirport: "Airport Pickups & Hotel Shuttles",
       makkahHistoric: "Makkah Sacred Landmarks Tour",
@@ -214,9 +214,9 @@ export default function Home() {
       nameLabel: "اسم التواصل الكريم",
       phoneLabel: "رقم الواتساب النشط",
       stationLabel: "نقطة الاستلام / تفاصيل الفندق",
-      dispatchBtn: "تأكيد وتوجيه الرحلة عبر وتساب",
+      dispatchBtn: "تأكيد الحجز عبر وتساب",
       dispatchSuccessTitle: "تم حفظ وتسجيل طلبك بنجاح!",
-      dispatchSuccessMsg: "جزاك الله خيراً. تم تسجيل مسار طلبك في لوحة مركز العمليات لـ قوافل المجد. اضغط على الزر أدناه لبدء تفريج العربة والتواصل الفوري مع مأمور غرف التنسيق عبر وتساب لحسم التفاصيل.",
+      dispatchSuccessMsg: "جزاك الله خيراً. تم تسجيل مسار طلبك في لوحة خدمة العملاء لـ قوافل المجد. اضغط على الزر أدناه للتواصل الفوري مع منسق الحجوزات عبر وتساب لتأكيد الموعد وتعيين السائق.",
       openWhatsApp: "التواصل الفوري عبر الواتساب",
       noPrepay: "✓ لا يتطلب دفع مسبق أونلاين • تأكيد تشغيلي فوري",
 
@@ -291,8 +291,8 @@ export default function Home() {
     const pickupDetail = leadCustomStation || "Not specified yet";
 
     const msg = lang === 'en'
-      ? `Assalamu Alaikum Qawafil Al Majd Al Misaliya! I want to confirm my quick landing reservation:\n\n- *Requested Service:* ${serviceName}\n- *Caravan Level:* ${caravanClass}\n- *My Name:* ${leadName}\n- *WhatsApp:* ${leadPhone}\n- *Pickup Details:* ${pickupDetail}\n\nPlease dispatch, Jazakallah Khayran.`
-      : `السلام عليكم قوافل المجد المثالية! أرغب في تأكيد حجز تفويج سريع بري عبر الموقع:\n\n- *الخدمة المطلوبة:* ${serviceName}\n- *فئة ومستوى الناقلة:* ${caravanClass}\n- *الاسم الكريم:* ${leadName}\n- *رقم التواصل:* ${leadPhone}\n- *تفاصيل الاستلام:* ${pickupDetail}\n\nيرجى تأكيد الحجز وتوجيه السائق، بارك الله فيكم.`;
+      ? `Assalamu Alaikum Qawafil Al Majd Al Misaliya! I would like to confirm my transport booking:\n\n- *Requested Service:* ${serviceName}\n- *Caravan Level:* ${caravanClass}\n- *My Name:* ${leadName}\n- *WhatsApp:* ${leadPhone}\n- *Pickup Details:* ${pickupDetail}\n\nPlease confirm availability and assign driver, Jazakallah Khayran.`
+      : `السلام عليكم قوافل المجد المثالية! أرغب في تأكيد حجز رحلتي عبر الموقع:\n\n- *الخدمة المطلوبة:* ${serviceName}\n- *فئة ومستوى الناقلة:* ${caravanClass}\n- *الاسم الكريم:* ${leadName}\n- *رقم التواصل:* ${leadPhone}\n- *تفاصيل الاستلام:* ${pickupDetail}\n\nيرجى تأكيد الحجز وتعيين السائق، بارك الله فيكم.`;
 
     return `https://wa.me/${whatsappNum}?text=${encodeURIComponent(msg)}`;
   };
@@ -643,13 +643,13 @@ export default function Home() {
                               className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-2 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#C0272D] cursor-pointer"
                             >
                               {[
-                                "Standard",
+                                "Standard Bags",
                                 "Medium / Large Bags",
-                                "Excess / Heavy Cargo"
+                                "Extra Bags / Family Luggage"
                               ].map((l, idx) => (
                                 <option key={idx} value={l}>
                                   {lang === 'ar' 
-                                    ? (l === "Standard" ? "حقائب قياسية" : l === "Medium / Large Bags" ? "حقائب كبيرة" : "أمتعة جماعية إضافية")
+                                    ? (l === "Standard Bags" ? "حقائب قياسية" : l === "Medium / Large Bags" ? "حقائب كبيرة" : "أمتعة عائلية إضافية")
                                     : l}
                                 </option>
                               ))}
@@ -711,13 +711,13 @@ export default function Home() {
                               className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-2 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#C0272D] cursor-pointer"
                             >
                               {[
-                                "Standard",
+                                "Standard Bags",
                                 "Medium / Large Bags",
-                                "Excess / Heavy Cargo"
+                                "Extra Bags / Family Luggage"
                               ].map((l, idx) => (
                                 <option key={idx} value={l}>
                                   {lang === 'ar' 
-                                    ? (l === "Standard" ? "حقائب قياسية" : l === "Medium / Large Bags" ? "حقائب كبيرة" : "أمتعة جماعية إضافية")
+                                    ? (l === "Standard Bags" ? "حقائب قياسية" : l === "Medium / Large Bags" ? "حقائب كبيرة" : "أمتعة عائلية إضافية")
                                     : l}
                                 </option>
                               ))}
@@ -1427,7 +1427,7 @@ export default function Home() {
               🛡 SAFE CARAVANS SHIELD01
             </div>
             <div className="text-xs font-black tracking-wider text-slate-500 font-sans">
-              ⚡ LIVE GPS TELEMETRY
+              ✨ 24/7 LIVE SUPPORT & ASSISTANCE
             </div>
           </div>
         </div>

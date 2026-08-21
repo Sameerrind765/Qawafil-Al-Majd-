@@ -23,12 +23,12 @@ export default function DriverChat({ vehicles, selectedVehicle, lang }: DriverCh
   const [msgInput, setMsgInput] = useState('');
   const [chatHistory, setChatHistory] = useState<Record<string, ChatMessage[]>>({
     'QMF-101': [
-      { id: '1', sender: 'Dispatch Office', text: 'Muhammad, please update your ETA for the King Salman road deliverable.', timestamp: '14:20', isDispatch: true },
-      { id: '2', sender: 'Mohammed Al-Sharif', text: 'Copy that. Delayed at exit 8 customs checkpoint, moving in 10 minutes.', timestamp: '14:24', isDispatch: false }
+      { id: '1', sender: 'Operations Desk', text: 'Muhammad, please update your ETA for the pilgrims pickup at Jeddah Airport.', timestamp: '14:20', isDispatch: true },
+      { id: '2', sender: 'Mohammed Al-Sharif', text: 'Copy that. Arriving at Terminal 1 arrival gate in 10 minutes.', timestamp: '14:24', isDispatch: false }
     ],
     'QMF-103': [
-      { id: '1', sender: 'Dispatch Office', text: 'Osama, heavy traffic expected near Mecca bypass. Reroute via highway 40.', timestamp: '13:00', isDispatch: true },
-      { id: '2', sender: 'Osama Ibrahim', text: 'Rerouting now. Nav lock active.', timestamp: '13:05', isDispatch: false }
+      { id: '1', sender: 'Operations Desk', text: 'Osama, please confirm group drop-off at Makkah Clock Tower Hotel.', timestamp: '13:00', isDispatch: true },
+      { id: '2', sender: 'Osama Ibrahim', text: 'All pilgrims safely checked in at hotel lobby. Moving to stand-by.', timestamp: '13:05', isDispatch: false }
     ]
   });
 
@@ -41,7 +41,7 @@ export default function DriverChat({ vehicles, selectedVehicle, lang }: DriverCh
 
     const newMsg: ChatMessage = {
       id: String(Date.now()),
-      sender: lang === 'en' ? 'Dispatch Main Office' : 'مكتب التوجيه المركزي',
+      sender: lang === 'en' ? 'Operations Center' : 'مركز العمليات والتنسيق',
       text: msgInput,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       isDispatch: true
@@ -60,15 +60,15 @@ export default function DriverChat({ vehicles, selectedVehicle, lang }: DriverCh
     // Trigger driver auto simulation reply in 2.5 seconds to feel fully interactive!
     setTimeout(() => {
       const responses = lang === 'en' ? [
-        "Status acknowledged. On the road.",
-        "Potable water pressure normal. Arriving soon.",
-        "Traffic cleared, cargo is secure.",
-        "Understood dispatch, following path lock."
+        "Status acknowledged. On schedule.",
+        "Pilgrims are comfortable, high-speed A/C running.",
+        "Traffic cleared, vehicle arriving on time.",
+        "Understood coordinator, following holy sites route."
       ] : [
-        "تم الاستلام، في الطريق حالياً.",
-        "ضغط ناقلة المياه مستقر، نقترب من الموقع.",
-        "الطريق سالك والشحنة مؤمنة بالكامل.",
-        "علم، متبع المسار المخطط."
+        "تم الاستلام، في الطريق حسب الجدول.",
+        "ضيوف الرحمن بأتم الراحة والتكييف يعمل بكفاءة.",
+        "الطريق سالك والوصول في الموعد المحدد بإذن الله.",
+        "علم يا منسق، نلتزم بالمسار المعتمد."
       ];
       
       const randomResponse = responses[Math.floor(Math.random() * responses.length)];

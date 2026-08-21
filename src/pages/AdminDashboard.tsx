@@ -181,7 +181,7 @@ export default function AdminDashboard() {
               referenceId: leadId,
               date: new Date().toISOString().split('T')[0],
               createdAt: new Date().toISOString(),
-              createdBy: userData?.name || 'Dispatcher'
+              createdBy: userData?.name || 'Operations Lead'
             };
             await createOrUpdateTransaction(tx);
             setTransactions(prev => [tx, ...prev]);
@@ -205,7 +205,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // Dispatchers list (Superadmin exclusive)
+  // Staff & Admin list (Superadmin exclusive)
   const [adminsList, setAdminsList] = useState<any[]>([]);
   const [adminsLoading, setAdminsLoading] = useState(false);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
@@ -1207,7 +1207,7 @@ export default function AdminDashboard() {
       setInviteSuccess(
         lang === 'en'
           ? `Successfully invited ${inviteName.trim()}! An activation/reset link has been sent to their email.`
-          : `تم دعوة المأمور بنجاح! تم إرسال رابط التفعيل الخاص به بالبريد.`
+          : `تم دعوة المنسق بنجاح! تم إرسال رابط التفعيل الخاص به بالبريد.`
       );
       
       setInviteName('');
@@ -1217,7 +1217,7 @@ export default function AdminDashboard() {
       await fetchAdmins();
     } catch (err: any) {
       console.error("Invite error:", err);
-      setInviteError(err.message || "Error creating dispatcher account");
+      setInviteError(err.message || "Error creating coordinator account");
     } finally {
       if (secondaryApp) {
         try {
@@ -1375,7 +1375,7 @@ export default function AdminDashboard() {
               </p>
               {userData && (
                 <span className="text-[10px] bg-slate-800 text-slate-300 font-bold px-2 py-0.5 rounded border border-slate-700">
-                  {lang === 'en' ? `Logged in: ${userData.name || 'Dispatcher'} (${role === 'superadmin' ? 'Superadmin' : role === 'admin' ? 'Coordinator' : 'Observer'})` : `مسجل كـ: ${userData.name || 'مأمور'} (${role === 'superadmin' ? 'مدير عام' : role === 'admin' ? 'منسق' : 'مراقب'})`}
+                  {lang === 'en' ? `Logged in: ${userData.name || 'Coordinator'} (${role === 'superadmin' ? 'Superadmin' : role === 'admin' ? 'Coordinator' : 'Observer'})` : `مسجل كـ: ${userData.name || 'منسق'} (${role === 'superadmin' ? 'مدير عام' : role === 'admin' ? 'منسق' : 'مراقب'})`}
                 </span>
               )}
             </div>
@@ -1391,7 +1391,7 @@ export default function AdminDashboard() {
                 id="header-invite-admin-trigger-btn"
               >
                 <Plus className="w-3.5 h-3.5 text-white" />
-                <span>{lang === 'en' ? 'Invite Dispatcher' : 'دعوة مأمور جديد'}</span>
+                <span>{lang === 'en' ? 'Invite Team Member' : 'دعوة منسق جديد'}</span>
               </button>
             )}
 
@@ -1507,7 +1507,7 @@ export default function AdminDashboard() {
 
         </div>
 
-        {/* 3. CHART & TELEMETRY NAVIGATION TAB STRIP */}
+        {/* 3. CHART & FLEET NAVIGATION TAB STRIP */}
         <div className="flex flex-wrap items-center justify-between border-b border-slate-200 pb-3.5 mb-6 gap-4">
           <div className="flex flex-wrap items-center gap-1.5" id="dashboard-nav-pills">
             <button
@@ -1727,10 +1727,10 @@ export default function AdminDashboard() {
                               Closed: 'bg-emerald-100 text-emerald-800 border-emerald-200'
                             };
                           
-                            // Helper WhatsApp url for dispatcher
+                            // Helper WhatsApp url for trip coordinator
                             const dispatchMsg = lang === 'en'
-                              ? `Assalamu Alaikum ${lead.name}, this is Qawafil Al Majd dispatch control desk. We received your quick request for "${lead.service}" using "${lead.caravan}" on date "${lead.date || '—'}" at time "${lead.time || '—'}". We are ready to dispatch your driver.`
-                              : `السلام عليكم يا ${lead.name}، معكم مركز العمليات لشركة قوافل المجد لخدمات المعتمرين وزوار معالم الحرم. تلقينا طلب رحلتكم لـ "${lead.service}" باستخدام "${lead.caravan}" بتاريخ "${lead.date || '—'}" ووقت "${lead.time || '—'}". نود تأكيد تفريج العربة لكم وربطكم بالسائق.`;
+                              ? `Assalamu Alaikum ${lead.name}, this is Qawafil Al Majd customer service desk. We received your request for "${lead.service}" with "${lead.caravan}" on date "${lead.date || '—'}" at time "${lead.time || '—'}". We are pleased to confirm your vehicle and assign your driver.`
+                              : `السلام عليكم يا ${lead.name}، معكم فريق خدمة العملاء لشركة قوافل المجد لخدمات المعتمرين والزوار. تلقينا طلب رحلتكم لـ "${lead.service}" باستخدام "${lead.caravan}" بتاريخ "${lead.date || '—'}" ووقت "${lead.time || '—'}". يسعدنا تأكيد حجزكم وتعيين السائق لخدمتكم.`;
                             
                             const waUrl = `https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(dispatchMsg)}`;
 
@@ -3276,10 +3276,10 @@ export default function AdminDashboard() {
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h3 className="text-base font-extrabold text-slate-900">
-                  {lang === 'en' ? 'Administrative Logins Directory' : 'دليل حسابات وموظفي غرف العمليات للتحكم'}
+                  {lang === 'en' ? 'Administrative Logins Directory' : 'دليل حسابات وموظفي غرف العمليات والتنسيق'}
                 </h3>
                 <p className="text-xs text-slate-500 font-medium font-sans">
-                  {lang === 'en' ? 'Create, enable, or revoke dispatcher node access privileges.' : 'إدارة أدوار وصلاحيات وتراخيص دخول المأمورين وغرف التحكم.'}
+                  {lang === 'en' ? 'Manage coordinator and admin access permissions.' : 'إدارة أدوار وصلاحيات وتراخيص دخول المنسقين والمشرفين.'}
                 </p>
               </div>
 
@@ -3291,7 +3291,7 @@ export default function AdminDashboard() {
                 id="invite-admin-trigger-btn"
               >
                 <Plus className="w-4 h-4" />
-                <span>{lang === 'en' ? 'Invite Dispatcher Account' : 'دعوة مأمور تشغيل جديد'}</span>
+                <span>{lang === 'en' ? 'Invite Team Member' : 'دعوة منسق جديد'}</span>
               </button>
             </div>
 
@@ -3300,7 +3300,7 @@ export default function AdminDashboard() {
                 <table className="w-full text-left border-collapse" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200 text-[10px] text-slate-500 font-extrabold uppercase tracking-wider">
-                      <th className="py-4 px-6 font-semibold">{lang === 'en' ? 'User Name' : 'اسم المأمور'}</th>
+                      <th className="py-4 px-6 font-semibold">{lang === 'en' ? 'User Name' : 'اسم المنسق / المشرف'}</th>
                       <th className="py-4 px-6 font-semibold">{lang === 'en' ? 'Email Address' : 'البريد الإلكتروني'}</th>
                       <th className="py-4 px-6 font-semibold">{lang === 'en' ? 'Authorized Role' : 'الدور التشغيلي'}</th>
                       <th className="py-4 px-6 font-semibold">{lang === 'en' ? 'Node License State' : 'حالة الحساب'}</th>
@@ -3317,7 +3317,7 @@ export default function AdminDashboard() {
                     ) : adminsList.length === 0 ? (
                       <tr>
                         <td colSpan={5} className="py-8 text-center text-slate-400 font-medium">
-                          {lang === 'en' ? 'No other admin users exist in directory.' : 'لا توجد حسابات مأمورين مسجلة بالدليل.'}
+                          {lang === 'en' ? 'No other admin users exist in directory.' : 'لا توجد حسابات منسقين مسجلة بالدليل.'}
                         </td>
                       </tr>
                     ) : (
@@ -3404,7 +3404,7 @@ export default function AdminDashboard() {
             
             <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
               <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-tight">
-                {lang === 'en' ? 'Invite Command Dispatcher' : 'دعوة مأمور تشغيل لغرفة العمليات'}
+                {lang === 'en' ? 'Invite Team Coordinator' : 'دعوة منسق أو مشرف جديد'}
               </h3>
               <button 
                 onClick={() => {

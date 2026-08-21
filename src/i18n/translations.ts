@@ -13,7 +13,7 @@ export const translations = {
     seats: "Seats",
     perDay: "Day",
     search: "Search Available Fleet",
-    loading: "Dispatching telemetry...",
+    loading: "Loading available vehicles...",
     success: "Success",
     
     // SearchWidget
@@ -50,9 +50,9 @@ export const translations = {
     
     // Contract types
     routeDaily: "Daily Employee Shuttle Service",
-    routeIntercity: "Heavy Cargo & Inter-City Transit",
+    routeIntercity: "Inter-City Group & Private Transit",
     routeSeasonal: "Seasonal Pilgrimage (Hajj / Umrah) Transport",
-    routeCorporate: "Corporate Transport & Machinery Charter",
+    routeCorporate: "Corporate & Delegation Transport",
     
     // Filter controls
     filterAll: "All Classes",
@@ -69,17 +69,17 @@ export const translations = {
     trust2Desc: "English and Arabic speaking professionals with deep holy site route knowledge.",
     trust3Title: "Upfront Transparent Rates",
     trust3Desc: "Fixed flat-rate pricing with zero hidden surcharges or peak-time inflation.",
-    trust4Title: "24/7 Operations Room",
-    trust4Desc: "Active GPS telemetry tracking and responsive emergency assistance at all times.",
+    trust4Title: "24/7 Operations Desk",
+    trust4Desc: "Real-time trip coordination and responsive customer assistance at all times.",
     
     // How it works
     howTitle: "Seamless Booking Protocol",
     step1Title: "1. Specify Route Detail",
     step1Desc: "Select from point-to-point, hourly, distance-based, or corporate contract options above.",
     step2Title: "2. Choose Your Caravan",
-    step2Desc: "Filter and view our certified coaches, VIP sedans, family minivans, or heavy transit.",
-    step3Title: "3. Direct Dispatch",
-    step3Desc: "Lock your reservation. Instant confirmation is sent straight to our 24/7 operations room.",
+    step2Desc: "Filter and view our certified coaches, VIP sedans, family minivans, or executive transit.",
+    step3Title: "3. Fast Booking Confirmation",
+    step3Desc: "Lock your reservation. Instant confirmation is sent straight to our 24/7 operations team.",
     
     // BookingModal
     bookTitle: "Reserve Transport Vehicle",
@@ -92,8 +92,8 @@ export const translations = {
     specialRequests: "Special Notes / Requests",
     specialRequestsPlaceholder: "e.g., Child booster seats, specific luggage volume, additional steps...",
     confirmReservationLetter: "Book Caravan Now",
-    bookingSuccessTitle: "Booking Dispatched Successfully!",
-    bookingSuccessDesc: "Jazakallah Khayran. Our 24/7 operations desk has received your logs. An operator will instantly reach out to your WhatsApp to verify and dispatch your ride.",
+    bookingSuccessTitle: "Booking Confirmed Successfully!",
+    bookingSuccessDesc: "Jazakallah Khayran. Our 24/7 customer service desk has received your request. A coordinator will instantly reach out to your WhatsApp to confirm your ride and assign your driver.",
     closeWindow: "Return to Portal",
     
     // Ziyarat
@@ -106,7 +106,7 @@ export const translations = {
     customTour: "Custom Multi-Day Multi-City Pilgrim Caravan",
     customTourDesc: "Tailored luxury group itineraries connecting Jeddah, Makkah, and Madinah with flexible stopovers.",
     packageIncludes: "Package contains professional local driver, full high-speed A/C, cold mineral water, and toll charges.",
-    customPackageIncludes: "Package contains multi-day bus allocation, toll handling, 24/7 dedicated dispatch supervisor.",
+    customPackageIncludes: "Package contains multi-day bus allocation, toll handling, 24/7 dedicated trip coordinator.",
     durationHours: "Duration: ~4 Hours per tour",
     durationFlexible: "Schedule: Flexible / Multi-Day",
     flatTourPrice: "FLAT TOUR PRICE",
@@ -155,7 +155,7 @@ export const translations = {
     seats: "مقاعد",
     perDay: "يوم",
     search: "البحث في الأسطول المتاح",
-    loading: "جاري إرسال الإشارات الرقمية...",
+    loading: "جاري تحميل المركبات المتاحة...",
     success: "تم بنجاح",
     
     // SearchWidget
@@ -192,9 +192,9 @@ export const translations = {
     
     // Contract types
     routeDaily: "شاتل يومي منتظم لموظفي ومنتسبي الشركات",
-    routeIntercity: "شحن ثقيل ونقل بضائع بين المدن",
+    routeIntercity: "تنقلات خاصة وعائلية بين المدن",
     routeSeasonal: "تنقلات دينية للمواسم (حج وعمرة) قوافل متكاملة",
-    routeCorporate: "إسناد نقل تشغيلي لمشروعات النقل والمقاولات",
+    routeCorporate: "إسناد نقل للوفود والمؤسسات",
     
     // Filter controls
     filterAll: "جميع الفئات",
@@ -211,8 +211,8 @@ export const translations = {
     trust2Desc: "كوادر مهنية ومحترفة تتحدث العربية والإنجليزية بمعرفة دقيقة بجميع مسارات المشاعر.",
     trust3Title: "تسعير ثابت واضح معلن",
     trust3Desc: "أسعار ثابتة للمسارات لا تخضع للرسوم الإضافية الخفية أو زيادة أسعار الذروة.",
-    trust4Title: "غرفة تحكم ومتابعة 24/7",
-    trust4Desc: "أنظمة تتبع حي وتواصل مستمر لضمان أعلى معايير السلامة التشغيلية.",
+    trust4Title: "خدمة عملاء وتنسيق 24/7",
+    trust4Desc: "متابعة مستمرة لرحلات المعتمرين والزوار لضمان أعلى معايير الراحة والسلامة.",
     
     // How it works
     howTitle: "بروتوكول حجز المركبات",
@@ -220,8 +220,8 @@ export const translations = {
     step1Desc: "اختر الخدمة المناسبة من حجز النقطة الواحدة، النقل بالساعة، المسافة الطويلة، أو العقود.",
     step2Title: "٢. اختيار الناقلة الملائمة",
     step2Desc: "تصفح أسطول مركباتنا المجهز من سيارات صالون فاخرة، ميني فان عائلي، أو حافلات ركاب.",
-    step3Title: "٣. التفويج والمتابعة الفورية",
-    step3Desc: "أكد طلبك لتنتقل الإشارة فوراً إلى أقرب مركبة تشغيلية عبر تطبيق تتبع العمليات.",
+    step3Title: "٣. التأكيد الفوري للرحلة",
+    step3Desc: "أكد طلبك ليصل مباشرة إلى فريق خدمة العملاء للتنسيق وتعيين السائق فوراً.",
     
     // BookingModal
     bookTitle: "طلب حجز وتخصيص مركبة",
@@ -234,8 +234,8 @@ export const translations = {
     specialRequests: "ملاحظات أو متطلبات خاصة بالخدمة",
     specialRequestsPlaceholder: "مثال: مقاعد أطفال، حمولة حقائب مخصصة، رغبة في نقاط توقف معينة...",
     confirmReservationLetter: "إرسال طلب حجز الناقلة",
-    bookingSuccessTitle: "تم توجيه الرحلة وجاري معالجتها!",
-    bookingSuccessDesc: "جزاك الله خيراً. تلقى مركز العمليات طلبك التشغيلي بنجاح. سيقوم مأمور العمليات بالتواصل المباشر معك عبر الواتساب لتأكيد الخدمة وتوجيه السائق.",
+    bookingSuccessTitle: "تم تسجيل طلبك بنجاح!",
+    bookingSuccessDesc: "جزاك الله خيراً. تلقى فريق خدمة العملاء طلبك بنجاح. سيقوم المنسق بالتواصل المباشر معك عبر الواتساب لتأكيد موعد الرحلة وتعيين السائق.",
     closeWindow: "العودة للمنصة",
     
     // Ziyarat

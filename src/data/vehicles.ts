@@ -135,7 +135,7 @@ export const vehiclesData: VehicleData[] = [
     capacity: vRates.coaster.capacity,
     seats: 18,
     price: Math.round(vRates.coaster.baseRates.jeddahAirportToMakkahHotel * mult),
-    tagsEn: ["Powerful Central A/C", "PA Microphone", "Emergency Exit", "Massive Cargo Trunk"],
+    tagsEn: ["Powerful Central A/C", "PA Microphone", "Emergency Exit", "Massive Luggage Trunk"],
     tagsAr: ["تكييف مركزي قوي", "ميكروفون إرشادي", "مخارج طوارئ آمنة", "صندوق أمتعة ضخم جداً"],
     classFilter: "group",
     isBusOrVan: true,

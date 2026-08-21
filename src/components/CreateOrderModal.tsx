@@ -163,17 +163,17 @@ export default function CreateOrderModal({ onClose, onSave, lang }: CreateOrderM
             </div>
           </div>
 
-          {/* Cargo payload info */}
+          {/* Trip and passenger info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold text-slate-600 mb-1">
-                {lang === 'en' ? 'Descriptive Cargo Type' : 'نوع البضاعة / الشحنة'}
+                {lang === 'en' ? 'Trip / Group Type' : 'نوع الرحلة / الفوج'}
               </label>
               <input
                 type="text"
                 value={cargoType}
                 onChange={(e) => setCargoType(e.target.value)}
-                placeholder="e.g. Sweet Water / Fuel / Iron rods"
+                placeholder="e.g. Umrah Group (45 Pax) / VIP Family Tour"
                 className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30"
               />
             </div>
@@ -185,7 +185,7 @@ export default function CreateOrderModal({ onClose, onSave, lang }: CreateOrderM
                 type="text"
                 value={weightOrVolume}
                 onChange={(e) => setWeightOrVolume(e.target.value)}
-                placeholder="e.g. 19k Liters / 20 Tons"
+                placeholder="e.g. 45 Passengers / 50 Bags"
                 className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30"
               />
             </div>
@@ -194,13 +194,13 @@ export default function CreateOrderModal({ onClose, onSave, lang }: CreateOrderM
           {/* Special Operator Notes */}
           <div>
             <label className="block text-xs font-bold text-slate-600 mb-1">
-              {lang === 'en' ? 'Special Dispatch Notes' : 'تعليمات تشغيلية خاصة'}
+              {lang === 'en' ? 'Special Trip Instructions' : 'تعليمات وتوجيهات خاصة بالرحلة'}
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
-              placeholder="Provide directions, gate codes, or temperature requirements..."
+              placeholder="Provide flight details, hotel lobby contacts, or special luggage requests..."
               className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 font-semibold focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 resize-none"
             />
           </div>

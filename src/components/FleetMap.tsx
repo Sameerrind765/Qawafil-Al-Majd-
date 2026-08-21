@@ -41,7 +41,7 @@ export default function FleetMap({ vehicles, selectedVehicle, onSelectVehicle, l
         <div className="flex items-center gap-2">
           <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
           <span className="font-sans text-xs text-slate-800 uppercase tracking-wider font-bold">
-            {lang === 'en' ? 'Live Telemetry System' : 'الراصد الملاحي المباشر'}
+            {lang === 'en' ? 'Live GPS Route Tracker' : 'الراصد الملاحي المباشر'}
           </span>
         </div>
         <div className="flex items-center gap-3 text-[10px] text-slate-500 font-bold font-mono">
@@ -51,7 +51,7 @@ export default function FleetMap({ vehicles, selectedVehicle, onSelectVehicle, l
           </span>
           <span className="flex items-center gap-1">
             <span className="w-2.5 h-2.5 rounded bg-brand-primary inline-block" />
-            {lang === 'en' ? 'Active Trucks' : 'الناقلات'}
+            {lang === 'en' ? 'Active Vehicles' : 'المركبات'}
           </span>
           <span className="flex items-center gap-1">
             <span className="w-2.5 h-2.5 rounded bg-rose-500 inline-block" />
