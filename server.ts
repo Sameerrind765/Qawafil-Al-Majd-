@@ -694,7 +694,9 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     // Production: Serve static client assets and handle SSR or static index fallback
-    const distClientPath = path.join(process.cwd(), 'dist', 'client');
+    const distClientPath = fs.existsSync(path.join(process.cwd(), 'dist', 'client', 'index.html'))
+      ? path.join(process.cwd(), 'dist', 'client')
+      : path.join(process.cwd(), 'dist');
     const distServerPath = path.join(process.cwd(), 'dist', 'server', 'entry-server.js');
     app.use(express.static(distClientPath, { index: false }));
 
