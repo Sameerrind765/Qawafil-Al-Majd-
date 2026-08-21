@@ -58,6 +58,37 @@ let adminApp: any = null;
         process.env.GOOGLE_CREDS_JSON || 
         process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
+      // Function to clean and perfectly format PEM RSA private key
+      const formatPrivateKey = (key: string): string => {
+        if (!key || typeof key !== 'string') return '';
+        let cleaned = key.trim();
+        // Remove surrounding quotes if present
+        if ((cleaned.startsWith('"') && cleaned.endsWith('"')) || (cleaned.startsWith("'") && cleaned.endsWith("'"))) {
+          cleaned = cleaned.slice(1, -1);
+        }
+        // Normalize any variation of escaped newlines (\n, \\n, \\\n, etc.)
+        cleaned = cleaned.replace(/\\+n/g, '\n').replace(/\\+r/g, '').replace(/\\"/g, '"');
+        cleaned = cleaned.replace(/\r/g, '');
+
+        const beginMarker = '-----BEGIN PRIVATE KEY-----';
+        const endMarker = '-----END PRIVATE KEY-----';
+
+        if (cleaned.includes('BEGIN') && cleaned.includes('END')) {
+          const startIdx = cleaned.indexOf('-----BEGIN');
+          const headerEnd = cleaned.indexOf('KEY-----', startIdx) + 'KEY-----'.length;
+          const endIdx = cleaned.indexOf('-----END');
+          const header = cleaned.substring(startIdx, headerEnd);
+          const footerStart = endIdx;
+          const footerEnd = cleaned.indexOf('KEY-----', footerStart) + 'KEY-----'.length;
+          const footer = cleaned.substring(footerStart, footerEnd);
+
+          const body = cleaned.substring(headerEnd, footerStart).replace(/[\s\r\n\\]+/g, '');
+          const chunked = body.match(/.{1,64}/g)?.join('\n') || body;
+          return `${header}\n${chunked}\n${footer}\n`;
+        }
+        return cleaned;
+      };
+
       if (rawServiceAccount) {
         try {
           let trimmed = rawServiceAccount.trim();
@@ -75,19 +106,28 @@ let adminApp: any = null;
 
           // 2. Multi-strategy parser for string-based credentials
           if (!parsedAccount) {
+            // Clean common shell escaping characters: leading backslashes (\{, \", etc.)
+            let sanitized = trimmed;
+            if (sanitized.startsWith('\\{')) {
+              sanitized = sanitized.replace(/^\\+/, '');
+            }
+            if (sanitized.endsWith('\\}')) {
+              sanitized = sanitized.replace(/\\+$/, '');
+            }
+
             const parseAttempts = [
               // Strategy A: Direct parse
-              () => JSON.parse(trimmed),
+              () => JSON.parse(sanitized),
 
-              // Strategy B: Double-encoded JSON (where the string itself was stringified with quotes)
+              // Strategy B: Double-encoded JSON
               () => {
-                const firstPass = JSON.parse(trimmed);
+                const firstPass = JSON.parse(sanitized);
                 return typeof firstPass === 'string' ? JSON.parse(firstPass) : firstPass;
               },
 
-              // Strategy C: Strip outer single or double quotes manually
+              // Strategy C: Strip outer single or double quotes
               () => {
-                let cleaned = trimmed;
+                let cleaned = sanitized;
                 if (
                   (cleaned.startsWith('"') && cleaned.endsWith('"')) ||
                   (cleaned.startsWith("'") && cleaned.endsWith("'"))
@@ -97,37 +137,35 @@ let adminApp: any = null;
                 return JSON.parse(cleaned);
               },
 
-              // Strategy D: Unescape escaped quotes (\" -> ")
+              // Strategy D: Unescape escaped quotes (\" -> ") and fix JSON
               () => {
-                let cleaned = trimmed;
+                let cleaned = sanitized;
                 if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
                   cleaned = cleaned.slice(1, -1);
                 }
-                cleaned = cleaned.replace(/\\"/g, '"');
+                cleaned = cleaned.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
                 return JSON.parse(cleaned);
               },
 
               // Strategy E: Base64 decode
               () => {
-                const decoded = Buffer.from(trimmed, 'base64').toString('utf-8');
+                const decoded = Buffer.from(sanitized, 'base64').toString('utf-8');
                 return JSON.parse(decoded);
               },
 
-              // Strategy F: Regex field extractor (bulletproof fallback when JSON has syntax/escaping corruptions)
+              // Strategy F: Direct regex field extraction (when full JSON string has escape errors)
               () => {
                 const extractField = (fieldName: string): string | null => {
-                  // Match "fieldName": "value" or \"fieldName\": \"value\"
                   const regex = new RegExp(`(?:\\\\?"?${fieldName}\\\\?"?\\s*:\\s*\\\\?"?)([^"\\\\]*(?:\\\\.[^"\\\\]*)*)(?:\\\\?"?)`, 'i');
-                  const match = trimmed.match(regex);
+                  const match = sanitized.match(regex);
                   return match ? match[1] : null;
                 };
 
                 const projectId = extractField('project_id');
                 const clientEmail = extractField('client_email');
                 
-                // Extract private key specifically
                 let privateKey: string | null = null;
-                const pkMatch = trimmed.match(/-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----/);
+                const pkMatch = sanitized.match(/-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----/);
                 if (pkMatch) {
                   privateKey = pkMatch[0];
                 } else {
@@ -166,25 +204,38 @@ let adminApp: any = null;
 
           if (parsedAccount && (parsedAccount.project_id || parsedAccount.projectId)) {
             const pid = parsedAccount.project_id || parsedAccount.projectId;
-            let pKey = parsedAccount.private_key || parsedAccount.privateKey;
-
-            if (typeof pKey === 'string') {
-              // Ensure private_key has real newlines instead of literal \n or escaped slashes
-              pKey = pKey.replace(/\\n/g, '\n').replace(/\\r/g, '').trim();
-              parsedAccount.private_key = pKey;
-            }
+            let rawKey = parsedAccount.private_key || parsedAccount.privateKey;
+            const formattedKey = formatPrivateKey(rawKey);
+            parsedAccount.private_key = formattedKey;
 
             credentialConfig = cert({
               projectId: pid,
               clientEmail: parsedAccount.client_email || parsedAccount.clientEmail,
-              privateKey: pKey
+              privateKey: formattedKey
             });
-            console.log(`Firebase Admin SDK: Successfully loaded credentials for project [${pid}].`);
+            console.log(`Firebase Admin SDK: Successfully loaded and formatted credentials for project [${pid}].`);
+
+            // If GOOGLE_APPLICATION_CREDENTIALS was set to the raw JSON string, write it to a valid file
+            // so downstream Google Cloud / Firestore libraries don't crash with ENAMETOOLONG
+            try {
+              const tempKeyPath = path.join(process.cwd(), '.firebase-service-account.json');
+              fs.writeFileSync(tempKeyPath, JSON.stringify(parsedAccount, null, 2), 'utf-8');
+              process.env.GOOGLE_APPLICATION_CREDENTIALS = tempKeyPath;
+            } catch {
+              // Delete it from env if write fails so ADC doesn't try to lstat the JSON string
+              delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
+            }
           } else {
             console.warn("Firebase Admin SDK: Credential string provided but could not be parsed into a valid service account JSON object.");
+            if (process.env.GOOGLE_APPLICATION_CREDENTIALS && !fs.existsSync(process.env.GOOGLE_APPLICATION_CREDENTIALS)) {
+              delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
+            }
           }
         } catch (credErr: any) {
           console.error("Firebase Admin SDK: Failed to parse/load service account credentials! Error:", credErr.message || credErr);
+          if (process.env.GOOGLE_APPLICATION_CREDENTIALS && !fs.existsSync(process.env.GOOGLE_APPLICATION_CREDENTIALS)) {
+            delete process.env.GOOGLE_APPLICATION_CREDENTIALS;
+          }
         }
       } else {
         console.warn("Firebase Admin SDK: No service account credentials found in environment variables. Falling back to Application Default Credentials (ADC).");
