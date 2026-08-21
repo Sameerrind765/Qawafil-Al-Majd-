@@ -2,8 +2,8 @@ node_modules/
 build/
 dist/
 coverage/
+secrets/
 .DS_Store
 *.log
 .env*
-!.env.example
-secrets/
+!.env.example*
