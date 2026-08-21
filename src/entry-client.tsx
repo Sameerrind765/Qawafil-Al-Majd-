@@ -5,8 +5,13 @@ import './index.css';
 
 const rootElement = document.getElementById('root')!;
 
-// If there's content inside the root element, we assume it's SSR'd and we should hydrate it.
-if (rootElement.innerHTML.trim() !== '') {
+// Only hydrate if there is actual rendered DOM child elements from SSR and not just comments/whitespace
+const hasSSRMarkup =
+  rootElement &&
+  rootElement.firstElementChild !== null &&
+  !rootElement.innerHTML.includes('<!--ssr-outlet-->');
+
+if (hasSSRMarkup) {
   hydrateRoot(
     rootElement,
     <StrictMode>

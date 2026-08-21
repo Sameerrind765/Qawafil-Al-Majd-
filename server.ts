@@ -53,27 +53,85 @@ let adminApp: any = null;
       const apps = getAdminApps();
       let credentialConfig: any = undefined;
 
-      const serviceAccountJson = 
+      const rawServiceAccount = 
         process.env.FIREBASE_SERVICE_ACCOUNT_KEY || 
         process.env.GOOGLE_CREDS_JSON || 
         process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
-      if (serviceAccountJson) {
+      if (rawServiceAccount) {
         try {
-          if (serviceAccountJson.trim().startsWith("{")) {
-            credentialConfig = cert(JSON.parse(serviceAccountJson));
-            console.log("Firebase Admin SDK: Attempting to initialize with Parsed JSON service account credentials.");
-          } else if (fs.existsSync(serviceAccountJson)) {
-            credentialConfig = cert(JSON.parse(fs.readFileSync(serviceAccountJson, "utf-8")));
-            console.log(`Firebase Admin SDK: Attempting to initialize with service account file path: ${serviceAccountJson}`);
+          let trimmed = rawServiceAccount.trim();
+          let parsedAccount: any = null;
+
+          // 1. Check if it's an existing file path
+          if (fs.existsSync(trimmed)) {
+            console.log(`Firebase Admin SDK: Loading credentials from file path: ${trimmed}`);
+            parsedAccount = JSON.parse(fs.readFileSync(trimmed, "utf-8"));
           } else {
-            console.warn("Firebase Admin SDK: Credential string provided but it is not valid JSON and does not point to an existing file.");
+            // 2. Strip surrounding single or double quotes if added by shell/.env parser
+            if (
+              (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+              (trimmed.startsWith("'") && trimmed.endsWith("'"))
+            ) {
+              trimmed = trimmed.substring(1, trimmed.length - 1).trim();
+            }
+
+            // 3. If escaped quotes are present throughout (e.g., \"type\": \"service_account\")
+            if (trimmed.startsWith('\\"') && trimmed.endsWith('\\"')) {
+              trimmed = trimmed.substring(2, trimmed.length - 2).trim();
+            }
+
+            // 4. Check for Base64 encoded JSON
+            if (!trimmed.startsWith("{") && !trimmed.startsWith('\\"')) {
+              try {
+                const decoded = Buffer.from(trimmed, 'base64').toString('utf-8');
+                if (decoded.trim().startsWith("{")) {
+                  parsedAccount = JSON.parse(decoded);
+                  console.log("Firebase Admin SDK: Successfully decoded Base64 service account credentials.");
+                }
+              } catch (_) {}
+            }
+
+            // 5. Direct JSON parse (with unescaping if needed)
+            if (!parsedAccount) {
+              if (trimmed.startsWith("{")) {
+                try {
+                  parsedAccount = JSON.parse(trimmed);
+                } catch {
+                  // Attempt fixing double-escaped newlines or quotes
+                  const unescaped = trimmed.replace(/\\n/g, '\n').replace(/\\"/g, '"');
+                  parsedAccount = JSON.parse(unescaped);
+                }
+              } else if (trimmed.includes('"type"') || trimmed.includes('\\"type\\"')) {
+                // If quotes were somehow escaped
+                const unescaped = trimmed.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+                const jsonStart = unescaped.indexOf('{');
+                const jsonEnd = unescaped.lastIndexOf('}');
+                if (jsonStart !== -1 && jsonEnd !== -1) {
+                  parsedAccount = JSON.parse(unescaped.substring(jsonStart, jsonEnd + 1));
+                }
+              }
+            }
+          }
+
+          if (parsedAccount && parsedAccount.project_id && parsedAccount.private_key) {
+            // Ensure private_key linebreaks are properly formatted
+            if (typeof parsedAccount.private_key === 'string' && parsedAccount.private_key.includes('\\n')) {
+              parsedAccount.private_key = parsedAccount.private_key.replace(/\\n/g, '\n');
+            }
+            credentialConfig = cert(parsedAccount);
+            console.log(`Firebase Admin SDK: Successfully loaded credentials for project [${parsedAccount.project_id}].`);
+          } else if (parsedAccount) {
+            credentialConfig = cert(parsedAccount);
+            console.log("Firebase Admin SDK: Attempting to initialize with parsed service account credentials.");
+          } else {
+            console.warn("Firebase Admin SDK: Credential string provided but could not be parsed into a valid service account JSON object.");
           }
         } catch (credErr: any) {
-          console.error("Firebase Admin SDK: Failed to parse/load service account credentials! Error:", credErr);
+          console.error("Firebase Admin SDK: Failed to parse/load service account credentials! Error:", credErr.message || credErr);
         }
       } else {
-        console.warn("Firebase Admin SDK: No service account credentials found in environment variables. Falling back to Application Default Credentials (ADC). This will only succeed inside Google Cloud environments (like AI Studio previews) but will fail on external servers like Railway unless credentials are provided.");
+        console.warn("Firebase Admin SDK: No service account credentials found in environment variables. Falling back to Application Default Credentials (ADC).");
       }
 
       if (apps.length === 0) {
@@ -698,11 +756,11 @@ async function startServer() {
       ? path.join(process.cwd(), 'dist', 'client')
       : path.join(process.cwd(), 'dist');
     const distServerPath = path.join(process.cwd(), 'dist', 'server', 'entry-server.js');
-    app.use(express.static(distClientPath, { index: false }));
+    app.use(express.static(distClientPath));
 
-    app.use('*', async (req, res, next) => {
+    app.get('*', async (req, res, next) => {
       const url = req.originalUrl;
-      if (url.startsWith('/api') || url.startsWith('/@') || url.includes('.')) {
+      if (url.startsWith('/api')) {
         return next();
       }
 

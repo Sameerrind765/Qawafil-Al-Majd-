@@ -13,17 +13,21 @@ interface LangContextType {
 const LangContext = createContext<LangContextType | undefined>(undefined);
 
 export function LangProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Lang>(() => {
-    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-      try {
+  const [lang, setLangState] = useState<Lang>('en');
+
+  // Hydrate saved language safely on client after mount
+  useEffect(() => {
+    try {
+      if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
         const saved = localStorage.getItem('qawafil_lang');
-        return (saved === 'en' || saved === 'ar') ? saved : 'en';
-      } catch (e) {
-        return 'en';
+        if (saved === 'en' || saved === 'ar') {
+          setLangState(saved);
+        }
       }
+    } catch (e) {
+      // ignore in restricted environments
     }
-    return 'en';
-  });
+  }, []);
 
   const setLang = (newLang: Lang) => {
     setLangState(newLang);
