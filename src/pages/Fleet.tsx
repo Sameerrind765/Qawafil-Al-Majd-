@@ -3,6 +3,7 @@ import { useLang } from '../context/LangContext';
 import { vehiclesData, VehicleData } from '../data/vehicles';
 import VehicleCard from '../components/VehicleCard';
 import BookingModal from '../components/BookingModal';
+import SEO from '../components/SEO';
 import { Sparkles, Compass, ShieldCheck } from 'lucide-react';
 
 export default function Fleet() {
@@ -34,6 +35,14 @@ export default function Fleet() {
 
   return (
     <div className="flex-1 py-12 bg-slate-50 font-sans select-none">
+      <SEO 
+        title={lang === 'ar' ? 'أسطول المركبات والحافلات الفاخرة' : 'Fleet & Luxury Vehicles'}
+        description={lang === 'ar' 
+          ? 'استعرض أسطول سيارات وحافلات قوافل المجد: تويوتا كامري، هيونداي H1، جي إم سي يوكون VIP، حافلات سياحية 45 راكب بأحدث الموديلات لنقل المعتمرين والزوار.'
+          : 'Explore Qawafil Al Majd fleet: Toyota Camry, Hyundai H1, GMC Yukon VIP, HiAce, and 45-seater luxury coaches for Makkah, Madinah, and Jeddah transfers.'
+        }
+        canonicalPath="/fleet"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Title stage */}

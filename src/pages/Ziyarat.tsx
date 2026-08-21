@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLang } from '../context/LangContext';
 import BookingModal from '../components/BookingModal';
+import SEO from '../components/SEO';
 import { VehicleData } from '../data/vehicles';
 import { 
   Clock, 
@@ -135,6 +136,14 @@ export default function Ziyarat() {
 
   return (
     <div className="flex-1 py-6 sm:py-8 bg-[#f8f9fa] font-sans select-none">
+      <SEO 
+        title={lang === 'ar' ? 'برامج جولات الزيارات والمشاعر المقدسة' : 'Ziyarat & Sacred Holy Tours'}
+        description={lang === 'ar'
+          ? 'برامج زيارات المعالم الإسلامية والمشاعر المقدسة في مكة المكرمة (جبل النور، غار حراء، عرفات) والمدينة المنورة (مسجد قباء، جبل أحد، المسجد النبوي) مع مرشدين محليين وسيارات VIP.'
+          : 'Spiritual guided Ziyarat tours in Makkah (Ghar Hira, Jabal al-Nour, Arafat) and Madinah (Quba Mosque, Mount Uhud, Masjid an-Nabawi) with certified drivers and guides.'
+        }
+        canonicalPath="/ziyarat"
+      />
       <div className="max-w-2xl mx-auto px-3 sm:px-4">
         
         {/* Title and Intro Header */}

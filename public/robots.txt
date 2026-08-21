@@ -1,0 +1,13 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Allow: /fleet
+Allow: /ziyarat
+Allow: /contact
+
+# Disallow admin & authentication panels
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /api/
+
+Sitemap: https://qawafil-al-majd.com/sitemap.xml

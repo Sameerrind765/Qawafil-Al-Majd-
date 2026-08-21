@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useLang } from '../context/LangContext';
 import { TRANSLATIONS } from '../data';
 import { HomepageLead, Transaction } from '../types';
+import SEO from '../components/SEO';
 import { 
   fetchAllLeads,
   updateLeadStatus,
@@ -1346,6 +1347,10 @@ export default function AdminDashboard() {
 
   return (
     <div className="flex-1 bg-slate-50 font-sans select-none pb-16">
+      <SEO 
+        title={lang === 'ar' ? 'بوابة التحكم والإدارة' : 'Operations & Admin Portal'}
+        noIndex={true}
+      />
       
       {/* 1. TOP HEADER BANNER BAR */}
       <div className="bg-brand-bg-dark text-white px-4 sm:px-6 lg:px-8 py-10 relative overflow-hidden">

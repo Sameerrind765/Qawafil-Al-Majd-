@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLang } from '../context/LangContext';
+import SEO from '../components/SEO';
 import { Mail, Phone, MapPin, MessageSquare, Send, CheckCircle2, Headphones, Clock } from 'lucide-react';
 
 export default function Contact() {
@@ -41,6 +42,14 @@ export default function Contact() {
 
   return (
     <div className="flex-1 py-10 sm:py-16 bg-[#f8f9fa] font-sans select-none">
+      <SEO 
+        title={lang === 'ar' ? 'تواصل معنا وحجز الرحلات' : 'Contact & Dispatch Desk'}
+        description={lang === 'ar'
+          ? 'تواصل مع مركز عمليات قوافل المجد المثالية لنقل المعتمرين والزوار. خدمة عملاء ودعم واتساب على مدار الساعة 24/7 في مكة المكرمة وجدة والمدينة المنورة.'
+          : 'Get in touch with Qawafil Al Majd Al Misaliya 24/7 operations & dispatch center. Direct WhatsApp support, custom pilgrim quote requests, and hotel transfers.'
+        }
+        canonicalPath="/contact"
+      />
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         
         {/* Header */}

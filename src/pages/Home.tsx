@@ -3,6 +3,7 @@ import { useLang } from '../context/LangContext';
 import { vehiclesData, VehicleData, getVehicleImageUrl } from '../data/vehicles';
 import BookingModal from '../components/BookingModal';
 import VehicleCard from '../components/VehicleCard';
+import SEO from '../components/SEO';
 import { saveLead } from '../firebaseService';
 import { HomepageLead } from '../types';
 
@@ -393,6 +394,9 @@ export default function Home() {
 
   return (
     <div className="flex-1 font-sans text-slate-800 bg-[#fbf9f6] select-none" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+      <SEO 
+        canonicalPath="/"
+      />
       
       {/* 1. LUXURIOUS HERO CONVERSION STAGE */}
       <section className="relative bg-brand-bg-dark text-white border-b border-rose-950 overflow-hidden py-16 lg:py-24">
