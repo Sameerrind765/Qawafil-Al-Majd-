@@ -850,22 +850,180 @@ app.post("/api/auth/logout", (req, res) => {
 
 // SEO Static Files (robots.txt & sitemap.xml)
 app.get("/robots.txt", (req, res) => {
-  const robotsPath = path.join(process.cwd(), 'public', 'robots.txt');
-  if (fs.existsSync(robotsPath)) {
-    res.type('text/plain').sendFile(robotsPath);
-  } else {
-    res.type('text/plain').send("User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /dashboard\nSitemap: https://qawafil-al-majd.com/sitemap.xml");
-  }
+  const host = (req.headers['x-forwarded-host'] as string) || req.headers.host || 'qawafil-al-majd.com';
+  const protocol = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
+  const siteUrl = `${protocol}://${host}`;
+  
+  res.type('text/plain').send(
+`# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Allow: /fleet
+Allow: /ziyarat
+Allow: /contact
+Allow: /rates.json
+Allow: /assets/
+
+# Disallow internal admin & auth endpoints
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /api/
+
+Sitemap: ${siteUrl}/sitemap.xml`
+  );
 });
 
 app.get("/sitemap.xml", (req, res) => {
-  const sitemapPath = path.join(process.cwd(), 'public', 'sitemap.xml');
-  if (fs.existsSync(sitemapPath)) {
-    res.type('application/xml').sendFile(sitemapPath);
-  } else {
-    res.status(404).send("Sitemap not found");
-  }
+  const host = (req.headers['x-forwarded-host'] as string) || req.headers.host || 'qawafil-al-majd.com';
+  const protocol = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
+  const siteUrl = `${protocol}://${host}`;
+  const today = new Date().toISOString().split('T')[0];
+
+  const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- Homepage -->
+  <url>
+    <loc>${siteUrl}/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="${siteUrl}/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="${siteUrl}/?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${siteUrl}/"/>
+  </url>
+
+  <!-- Fleet & Caravans -->
+  <url>
+    <loc>${siteUrl}/fleet</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="${siteUrl}/fleet?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="${siteUrl}/fleet?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${siteUrl}/fleet"/>
+  </url>
+
+  <!-- Ziyarat & Holy Sites Tours -->
+  <url>
+    <loc>${siteUrl}/ziyarat</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="${siteUrl}/ziyarat?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="${siteUrl}/ziyarat?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${siteUrl}/ziyarat"/>
+  </url>
+
+  <!-- Contact & Booking Desk -->
+  <url>
+    <loc>${siteUrl}/contact</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="${siteUrl}/contact?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="${siteUrl}/contact?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${siteUrl}/contact"/>
+  </url>
+</urlset>`;
+
+  res.type('application/xml').send(sitemapXml);
 });
+
+// Helper for SEO metadata and crawler fallback per route
+function getRouteSEO(pathname: string, origin: string) {
+  const cleanPath = pathname.replace(/\/$/, '') || '/';
+  
+  switch (cleanPath) {
+    case '/fleet':
+      return {
+        title: 'Luxury Fleet & VIP Buses | Qawafil Al Majd Al Misaliya | أسطول المركبات والحافلات',
+        description: 'Explore the premium fleet of Qawafil Al Majd: Mercedes VIP buses, Toyota Coaster, GMC Yukon VIP, and Hyundai Staria for Umrah pilgrims and corporate delegations across Makkah, Madinah, and Jeddah.',
+        keywords: 'Umrah buses, VIP coach rental, Makkah luxury transport, GMC Yukon Makkah, Coaster bus Madinah, pilgrim transport fleet',
+        canonical: `${origin}/fleet`,
+        noIndex: false,
+        fallbackHtml: `
+          <div style="font-family: system-ui, sans-serif; padding: 2rem; max-width: 1000px; margin: auto;">
+            <h1>Luxury Fleet & VIP Caravans - Qawafil Al Majd Al Misaliya</h1>
+            <p>Certified luxury transportation fleet compliant with Saudi Transport General Authority (TGA). Available for Umrah pilgrims, Ziyarat tours, and inter-city transfers.</p>
+            <ul>
+              <li><strong>Mercedes Tourismo VIP Bus (49/53 Pax):</strong> Luxurious coach with reclining ergonomic seats, individual A/C, and large luggage capacity.</li>
+              <li><strong>Toyota Coaster (18 Pax):</strong> Medium group transit for family Umrah and Ziyarat holy sites tours.</li>
+              <li><strong>GMC Yukon XL / VIP SUV (6-7 Pax):</strong> Executive private transfers between Jeddah Airport and Makkah hotels.</li>
+              <li><strong>Hyundai Staria / HiAce (9-12 Pax):</strong> Family and group transport with high-speed climate control.</li>
+            </ul>
+            <p><a href="/contact">Contact Reservations Desk</a> | <a href="/ziyarat">Explore Ziyarat Tours</a> | <a href="/">Return to Home</a></p>
+          </div>
+        `
+      };
+    case '/ziyarat':
+      return {
+        title: 'Guided Holy Sites Ziyarat Tours (Makkah & Madinah) | Qawafil Al Majd | جولات المزارات والمعالم المقدسة',
+        description: 'Book private guided Ziyarat tours in Makkah (Jabal Al-Noor, Cave of Hira, Mina, Arafat, Muzdalifah) and Madinah (Masjid Quba, Mount Uhud, Masjid Al-Qiblatayn, Seven Mosques) with Qawafil Al Majd.',
+        keywords: 'Ziyarat Makkah, Ziyarat Madinah, Jabal Al-Noor tour, Masjid Quba visit, Mount Uhud tour, pilgrim historical sites, Umrah holy tours',
+        canonical: `${origin}/ziyarat`,
+        noIndex: false,
+        fallbackHtml: `
+          <div style="font-family: system-ui, sans-serif; padding: 2rem; max-width: 1000px; margin: auto;">
+            <h1>Sacred Ziyarat & Holy Landmark Tours</h1>
+            <p>Comfortable, air-conditioned guided tours to significant Islamic landmarks in Makkah Al-Mukarramah and Al-Madinah Al-Munawwarah.</p>
+            <h2>Makkah Historic Landmarks</h2>
+            <p>Jabal Al-Noor (Cave of Hira), Cave of Thawr, Mina, Arafat, and Muzdalifah historical paths.</p>
+            <h2>Madinah Holy Sites</h2>
+            <p>Masjid Quba (first mosque in Islam), Mount Uhud & Martyrs cemetery, Masjid Al-Qiblatayn, and the Seven Mosques battle site.</p>
+            <p><a href="/fleet">View Transport Fleet</a> | <a href="/contact">Book Custom Pilgrim Tour</a></p>
+          </div>
+        `
+      };
+    case '/contact':
+      return {
+        title: 'Contact & 24/7 Booking Desk | Qawafil Al Majd Al Misaliya | تواصل معنا وحجز الرحلات',
+        description: 'Contact Qawafil Al Majd Al Misaliya 24/7 customer service and booking desk. Instant WhatsApp reservation for airport transfers, VIP buses, and Umrah transport in Saudi Arabia.',
+        keywords: 'Qawafil Al Majd contact, Umrah transport booking, Jeddah airport pickup WhatsApp, Makkah hotel transfer contact',
+        canonical: `${origin}/contact`,
+        noIndex: false,
+        fallbackHtml: `
+          <div style="font-family: system-ui, sans-serif; padding: 2rem; max-width: 1000px; margin: auto;">
+            <h1>Contact Qawafil Al Majd Al Misaliya</h1>
+            <p>24/7 Customer Service and Reservations Desk for Umrah pilgrims and visitors in Makkah, Madinah, and Jeddah.</p>
+            <p>Direct WhatsApp booking support with zero upfront prepayment required.</p>
+            <p><a href="/">Book Online Now</a> | <a href="/fleet">Our Fleet</a> | <a href="/ziyarat">Ziyarat Packages</a></p>
+          </div>
+        `
+      };
+    case '/admin':
+      return {
+        title: 'Operations & Admin Portal | Qawafil Al Majd',
+        description: 'Internal operations management portal for Qawafil Al Majd Al Misaliya.',
+        keywords: 'admin',
+        canonical: `${origin}/admin`,
+        noIndex: true,
+        fallbackHtml: '<div style="padding: 2rem; text-align: center;"><h1>Operations Portal</h1><p>Please log in to continue.</p></div>'
+      };
+    default:
+      return {
+        title: 'Qawafil Al Majd Al Misaliya | Premium Fleet, Umrah & Ziyarat Transport | قوافل المجد المثالية',
+        description: 'Qawafil Al Majd Al Misaliya offers luxury VIP buses, family minivans, and executive transport for Umrah pilgrims, Ziyarat tours, and airport transfers across Makkah, Madinah, and Jeddah, Saudi Arabia.',
+        keywords: 'Qawafil Al Majd, Umrah transport, Hajj VIP bus, Makkah to Madinah transport, Jeddah airport transfer, Ziyarat tours Madinah, pilgrim transport Saudi Arabia, قوافل المجد المثالية, نقل معتمرين',
+        canonical: `${origin}/`,
+        noIndex: false,
+        fallbackHtml: `
+          <div style="font-family: system-ui, sans-serif; padding: 2rem; max-width: 1000px; margin: auto;">
+            <h1>Qawafil Al Majd Al Misaliya - Pilgrim & Visitor Transport</h1>
+            <p>Specialized luxury transport services for Umrah pilgrims, visitors, and delegations across Makkah Al-Mukarramah, Al-Madinah Al-Munawwarah, and Jeddah.</p>
+            <h2>Popular Services:</h2>
+            <ul>
+              <li>Jeddah King Abdulaziz Airport to Makkah Hotels Transfer</li>
+              <li>Makkah to Madinah Inter-City VIP Coach Service</li>
+              <li>Madinah Airport to Prophet's Mosque Area Transfer</li>
+              <li>Guided Historical Ziyarat Tours in Makkah & Madinah</li>
+            </ul>
+            <p><a href="/fleet">View Vehicles & Buses</a> | <a href="/ziyarat">Ziyarat Tours</a> | <a href="/contact">Contact Support</a></p>
+          </div>
+        `
+      };
+  }
+}
+
 async function startServer() {
   const isProd = process.env.NODE_ENV === "production";
 
@@ -895,7 +1053,28 @@ async function startServer() {
         return res.status(404).send('Production build not found. Please run "npm run build".');
       }
 
-      const template = fs.readFileSync(clientHtmlPath, 'utf-8');
+      let template = fs.readFileSync(clientHtmlPath, 'utf-8');
+
+      // Compute dynamic host & origin for accurate canonical tags
+      const host = (req.headers['x-forwarded-host'] as string) || req.headers.host || 'qawafil-al-majd.com';
+      const protocol = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
+      const origin = `${protocol}://${host}`;
+      const pathname = req.path;
+
+      const routeSeo = getRouteSEO(pathname, origin);
+
+      // Dynamically replace head metadata to prevent "Duplicate without user-selected canonical"
+      template = template
+        .replace(/<title>.*?<\/title>/i, `<title>${routeSeo.title}</title>`)
+        .replace(/<meta name="title" content=".*?" \/>/i, `<meta name="title" content="${routeSeo.title}" />`)
+        .replace(/<meta name="description" content=".*?" \/>/i, `<meta name="description" content="${routeSeo.description}" />`)
+        .replace(/<meta property="og:title" content=".*?" \/>/i, `<meta property="og:title" content="${routeSeo.title}" />`)
+        .replace(/<meta property="og:description" content=".*?" \/>/i, `<meta property="og:description" content="${routeSeo.description}" />`)
+        .replace(/<meta property="og:url" content=".*?" \/>/i, `<meta property="og:url" content="${routeSeo.canonical}" />`)
+        .replace(/<meta name="twitter:title" content=".*?" \/>/i, `<meta name="twitter:title" content="${routeSeo.title}" />`)
+        .replace(/<meta name="twitter:description" content=".*?" \/>/i, `<meta name="twitter:description" content="${routeSeo.description}" />`)
+        .replace(/<link rel="canonical" href=".*?" \/>/i, `<link rel="canonical" href="${routeSeo.canonical}" />`)
+        .replace(/<meta name="robots" content=".*?" \/>/i, `<meta name="robots" content="${routeSeo.noIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}" />`);
 
       // Attempt SSR if enabled and server bundle exists
       if (process.env.DISABLE_SSR !== 'true' && fs.existsSync(distServerPath)) {
@@ -913,9 +1092,9 @@ async function startServer() {
         }
       }
 
-      // Default CSR response
+      // Default CSR response with crawler-friendly semantic fallback HTML
       const fallbackHtml = template
-        .replace('<!--ssr-outlet-->', '')
+        .replace('<!--ssr-outlet-->', routeSeo.fallbackHtml)
         .replace('<!--ssr-state-->', '');
       return res.status(200).set({ 'Content-Type': 'text/html' }).end(fallbackHtml);
     });
