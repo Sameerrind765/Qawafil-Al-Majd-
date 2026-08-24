@@ -38,22 +38,22 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2.5 text-xs">
               <li>
-                <Link to="/" className="text-slate-400 hover:text-brand-primary transition-colors decoration-transparent font-bold">
+                <Link to={{ pathname: '/', search: `?lang=${lang}` }} className="text-slate-400 hover:text-brand-primary transition-colors decoration-transparent font-bold">
                   {t.navHome}
                 </Link>
               </li>
               <li>
-                <Link to="/fleet" className="text-slate-400 hover:text-brand-primary transition-colors decoration-transparent font-bold">
+                <Link to={{ pathname: '/fleet', search: `?lang=${lang}` }} className="text-slate-400 hover:text-brand-primary transition-colors decoration-transparent font-bold">
                   {t.navFleet}
                 </Link>
               </li>
               <li>
-                <Link to="/ziyarat" className="text-slate-400 hover:text-brand-primary transition-colors decoration-transparent font-bold">
+                <Link to={{ pathname: '/ziyarat', search: `?lang=${lang}` }} className="text-slate-400 hover:text-brand-primary transition-colors decoration-transparent font-bold">
                   {t.navZiyarat}
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-slate-400 hover:text-brand-primary transition-colors decoration-transparent font-bold">
+                <Link to={{ pathname: '/contact', search: `?lang=${lang}` }} className="text-slate-400 hover:text-brand-primary transition-colors decoration-transparent font-bold">
                   {t.navContact}
                 </Link>
               </li>

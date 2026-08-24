@@ -2,41 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <!-- Homepage -->
   <url>
-    <loc>https://qawafil-al-majd.com/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <loc>http://qawafilalmajdalmisaliya.com/</loc>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://qawafil-al-majd.com/?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://qawafil-al-majd.com/?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="en" href="http://qawafilalmajdalmisaliya.com/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="http://qawafilalmajdalmisaliya.com/?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="http://qawafilalmajdalmisaliya.com/"/>
   </url>
 
   <!-- Fleet & Caravans -->
   <url>
-    <loc>https://qawafil-al-majd.com/fleet</loc>
-    <lastmod>2026-08-21</lastmod>
+    <loc>http://qawafilalmajdalmisaliya.com/fleet</loc>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://qawafil-al-majd.com/fleet?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://qawafil-al-majd.com/fleet?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="en" href="http://qawafilalmajdalmisaliya.com/fleet?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="http://qawafilalmajdalmisaliya.com/fleet?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="http://qawafilalmajdalmisaliya.com/fleet"/>
   </url>
 
   <!-- Ziyarat & Holy Sites Tours -->
   <url>
-    <loc>https://qawafil-al-majd.com/ziyarat</loc>
-    <lastmod>2026-08-21</lastmod>
+    <loc>http://qawafilalmajdalmisaliya.com/ziyarat</loc>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://qawafil-al-majd.com/ziyarat?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://qawafil-al-majd.com/ziyarat?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="en" href="http://qawafilalmajdalmisaliya.com/ziyarat?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="http://qawafilalmajdalmisaliya.com/ziyarat?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="http://qawafilalmajdalmisaliya.com/ziyarat"/>
   </url>
 
   <!-- Contact & Booking -->
   <url>
-    <loc>https://qawafil-al-majd.com/contact</loc>
-    <lastmod>2026-08-21</lastmod>
+    <loc>http://qawafilalmajdalmisaliya.com/contact</loc>
+    <lastmod>2026-08-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://qawafil-al-majd.com/contact?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://qawafil-al-majd.com/contact?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="en" href="http://qawafilalmajdalmisaliya.com/contact?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="http://qawafilalmajdalmisaliya.com/contact?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="http://qawafilalmajdalmisaliya.com/contact"/>
   </url>
 </urlset>

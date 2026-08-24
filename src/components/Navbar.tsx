@@ -33,7 +33,7 @@ export default function Navbar() {
           
           {/* Logo Section */}
           <div className="flex items-center gap-3">
-            <Link to="/" className="flex items-center gap-2 group decoration-transparent">
+            <Link to={{ pathname: '/', search: `?lang=${lang}` }} className="flex items-center gap-2 group decoration-transparent">
               <div className="w-11 h-11 rounded-xl bg-brand-primary flex items-center justify-center text-white font-bold shadow-md shadow-brand-primary/20 group-hover:bg-brand-dark transition-colors duration-200">
                 <Truck className="w-6 h-6" />
               </div>
@@ -55,7 +55,7 @@ export default function Navbar() {
               return (
                 <Link
                   key={item.path}
-                  to={item.path}
+                  to={{ pathname: item.path, search: `?lang=${lang}` }}
                   className={`px-3 py-2 rounded-lg text-sm font-bold transition-all duration-200 decoration-transparent ${
                     isActive 
                       ? 'text-brand-primary bg-brand-light' 
@@ -126,7 +126,7 @@ export default function Navbar() {
               return (
                 <Link
                   key={item.path}
-                  to={item.path}
+                  to={{ pathname: item.path, search: `?lang=${lang}` }}
                   onClick={() => setMobileMenuOpen(false)}
                   className={`block px-4 py-3 rounded-xl text-sm font-bold decoration-transparent transition-all duration-200 ${
                     isActive 

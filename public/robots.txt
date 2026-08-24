@@ -10,4 +10,4 @@ Disallow: /admin
 Disallow: /dashboard
 Disallow: /api/
 
-Sitemap: https://qawafil-al-majd.com/sitemap.xml
+Sitemap: http://qawafilalmajdalmisaliya.com/sitemap.xml

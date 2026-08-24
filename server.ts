@@ -850,8 +850,8 @@ app.post("/api/auth/logout", (req, res) => {
 
 // SEO Static Files (robots.txt & sitemap.xml)
 app.get("/robots.txt", (req, res) => {
-  const host = (req.headers['x-forwarded-host'] as string) || req.headers.host || 'qawafil-al-majd.com';
-  const protocol = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
+  const host = (req.headers['x-forwarded-host'] as string) || req.headers.host || 'qawafilalmajdalmisaliya.com';
+  const protocol = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'http';
   const siteUrl = `${protocol}://${host}`;
   
   res.type('text/plain').send(
@@ -874,8 +874,8 @@ Sitemap: ${siteUrl}/sitemap.xml`
 });
 
 app.get("/sitemap.xml", (req, res) => {
-  const host = (req.headers['x-forwarded-host'] as string) || req.headers.host || 'qawafil-al-majd.com';
-  const protocol = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
+  const host = (req.headers['x-forwarded-host'] as string) || req.headers.host || 'qawafilalmajdalmisaliya.com';
+  const protocol = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'http';
   const siteUrl = `${protocol}://${host}`;
   const today = new Date().toISOString().split('T')[0];
 
@@ -1056,8 +1056,8 @@ async function startServer() {
       let template = fs.readFileSync(clientHtmlPath, 'utf-8');
 
       // Compute dynamic host & origin for accurate canonical tags
-      const host = (req.headers['x-forwarded-host'] as string) || req.headers.host || 'qawafil-al-majd.com';
-      const protocol = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
+      const host = (req.headers['x-forwarded-host'] as string) || req.headers.host || 'qawafilalmajdalmisaliya.com';
+      const protocol = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'http';
       const origin = `${protocol}://${host}`;
       const pathname = req.path;
 
