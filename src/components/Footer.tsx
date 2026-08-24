@@ -1,7 +1,8 @@
 import React from 'react';
 import { useLang } from '../context/LangContext';
-import { Truck, Mail, Phone, MapPin, ExternalLink, ShieldAlert } from 'lucide-react';
+import { Mail, Phone, MapPin, ExternalLink, ShieldAlert } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { BrandLogo } from './BrandLogo';
 
 export default function Footer() {
   const { lang, t } = useLang();
@@ -16,9 +17,7 @@ export default function Footer() {
           {/* Brand Division description */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-brand-primary flex items-center justify-center text-white font-bold border border-brand-primary/10">
-                <Truck className="w-5 h-5" />
-              </div>
+              <BrandLogo className="w-11 h-11" lang={lang} />
               <span className="text-lg font-black text-white tracking-widest uppercase">
                 {t.brandName}
               </span>

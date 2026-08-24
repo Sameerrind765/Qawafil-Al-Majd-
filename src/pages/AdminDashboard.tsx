@@ -16,6 +16,7 @@ import {
 
 // Subcomponents
 import AuthScreen from '../components/AuthScreen';
+import { BrandLogo } from '../components/BrandLogo';
 
 // Recharts for statistics
 import { 
@@ -1359,25 +1360,28 @@ export default function AdminDashboard() {
         <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full bg-brand-primary opacity-5 filter blur-3xl animate-pulse" />
         
         <div className="max-w-7xl mx-auto relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-brand-primary" />
-              <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-rose-200">
-                {tr.brandSub}
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight mt-1">
-              🛠️ {tr.dashboard}
-            </h1>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
-              <p className="text-xs text-slate-400 font-semibold">
-                Saudi Land Transportation & Pilgrim Management Control Desk
-              </p>
-              {userData && (
-                <span className="text-[10px] bg-slate-800 text-slate-300 font-bold px-2 py-0.5 rounded border border-slate-700">
-                  {lang === 'en' ? `Logged in: ${userData.name || 'Coordinator'} (${role === 'superadmin' ? 'Superadmin' : role === 'admin' ? 'Coordinator' : 'Observer'})` : `مسجل كـ: ${userData.name || 'منسق'} (${role === 'superadmin' ? 'مدير عام' : role === 'admin' ? 'منسق' : 'مراقب'})`}
+          <div className="flex items-center gap-4">
+            <BrandLogo className="w-14 h-14 shrink-0 shadow-lg shadow-black/40 rounded-2xl" lang={lang} />
+            <div>
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-brand-primary" />
+                <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-rose-200">
+                  {tr.brandSub}
                 </span>
-              )}
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight mt-0.5">
+                {tr.dashboard}
+              </h1>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                <p className="text-xs text-slate-400 font-semibold">
+                  Saudi Land Transportation & Pilgrim Management Control Desk
+                </p>
+                {userData && (
+                  <span className="text-[10px] bg-slate-800 text-slate-300 font-bold px-2 py-0.5 rounded border border-slate-700">
+                    {lang === 'en' ? `Logged in: ${userData.name || 'Coordinator'} (${role === 'superadmin' ? 'Superadmin' : role === 'admin' ? 'Coordinator' : 'Observer'})` : `مسجل كـ: ${userData.name || 'منسق'} (${role === 'superadmin' ? 'مدير عام' : role === 'admin' ? 'منسق' : 'مراقب'})`}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 

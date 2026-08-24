@@ -4,7 +4,8 @@ import {
   signOut
 } from 'firebase/auth';
 import { auth } from '../authFirebase';
-import { Truck, Globe, Mail, Lock, Eye, EyeOff, RefreshCcw } from 'lucide-react';
+import { Globe, Mail, Lock, Eye, EyeOff, RefreshCcw } from 'lucide-react';
+import { BrandLogo } from './BrandLogo';
 
 interface AuthScreenProps {
   lang: 'en' | 'ar';
@@ -87,9 +88,7 @@ export default function AuthScreen({ lang, setLang, onSuccess, unverifiedUserEma
         {/* Top Banner similar to Dashboard */}
         <header className="bg-white border-b border-slate-200 shadow-sm px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-brand-primary flex items-center justify-center text-white font-bold border border-brand-primary shadow-lg shadow-brand-primary/10">
-              <Truck className="w-6 h-6" />
-            </div>
+            <BrandLogo className="w-11 h-11" lang={lang} />
             <div>
               <h1 className="text-lg font-extrabold tracking-tight text-slate-800 font-display uppercase">
                 {t.brandName}
@@ -166,9 +165,7 @@ export default function AuthScreen({ lang, setLang, onSuccess, unverifiedUserEma
       {/* Top Banner similar to Dashboard */}
       <header className="bg-white border-b border-slate-200 shadow-sm px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-brand-primary flex items-center justify-center text-white font-bold border border-brand-primary shadow-lg shadow-brand-primary/10">
-            <Truck className="w-6 h-6" />
-          </div>
+          <BrandLogo className="w-11 h-11" lang={lang} />
           <div>
             <h1 className="text-lg font-extrabold tracking-tight text-slate-800 font-display uppercase">
               {t.brandName}

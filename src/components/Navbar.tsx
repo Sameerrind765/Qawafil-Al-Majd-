@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useLang } from '../context/LangContext';
 import { Link, useLocation } from 'react-router-dom';
-import { Truck, Globe, Menu, X, MessageSquare } from 'lucide-react';
+import { Globe, Menu, X, MessageSquare } from 'lucide-react';
+import { BrandLogo } from './BrandLogo';
 
 export default function Navbar() {
   const { lang, setLang, t } = useLang();
@@ -33,10 +34,8 @@ export default function Navbar() {
           
           {/* Logo Section */}
           <div className="flex items-center gap-3">
-            <Link to={{ pathname: '/', search: `?lang=${lang}` }} className="flex items-center gap-2 group decoration-transparent">
-              <div className="w-11 h-11 rounded-xl bg-brand-primary flex items-center justify-center text-white font-bold shadow-md shadow-brand-primary/20 group-hover:bg-brand-dark transition-colors duration-200">
-                <Truck className="w-6 h-6" />
-              </div>
+            <Link to={{ pathname: '/', search: `?lang=${lang}` }} className="flex items-center gap-2.5 group decoration-transparent">
+              <BrandLogo className="w-12 h-12 transition-transform duration-200 group-hover:scale-105" lang={lang} />
               <div className="flex flex-col">
                 <span className="text-base sm:text-lg lg:text-xl font-extrabold text-slate-900 tracking-tight leading-none">
                   {t.brandName}
