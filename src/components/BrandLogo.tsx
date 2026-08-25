@@ -16,6 +16,12 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
     <div className={`relative inline-flex items-center justify-center shrink-0 select-none overflow-hidden ${className}`}>
       <img
         src="/assets/logo.svg"
+        onError={(e) => {
+          const target = e.currentTarget;
+          if (!target.src.endsWith('/logo.png')) {
+            target.src = '/logo.png';
+          }
+        }}
         alt="Qawafil Al Majd Logo"
         className="w-full h-full object-contain drop-shadow-sm"
         referrerPolicy="no-referrer"

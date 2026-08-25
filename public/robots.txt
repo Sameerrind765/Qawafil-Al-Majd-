@@ -1,13 +1,18 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Allow: /
+Allow: /favicon.ico
+Allow: /favicon*.png
+Allow: /apple-touch-icon.png
+Allow: /site.webmanifest
 Allow: /fleet
 Allow: /ziyarat
 Allow: /contact
+Allow: /assets/
 
 # Disallow admin & authentication panels
 Disallow: /admin
 Disallow: /dashboard
 Disallow: /api/
 
-Sitemap: http://qawafilalmajdalmisaliya.com/sitemap.xml
+Sitemap: https://qawafilalmajdalmisaliya.com/sitemap.xml
