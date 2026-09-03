@@ -69,39 +69,91 @@ export const DESTINATION_OPTIONS: LocationOption[] = [
   { id: 'custom', city: 'special', nameEn: 'Custom Destination...', nameAr: 'وجهة وصول مخصصة...' }
 ];
 
-export interface FullCircuitOption {
-  id: 'standard_circuit' | 'circuit_with_ziyarat';
-  rateKey: 'fullGroundTransport' | 'fullGroundTransportWithZiyarat';
+export interface PackageOption {
+  id: 'standard_circuit' | 'circuit_with_ziyarat' | 'makkah_ziyarat' | 'madina_ziyarat' | 'both_ziyarat';
+  rateKey: 'fullGroundTransport' | 'fullGroundTransportWithZiyarat' | 'makkahZiyarat' | 'madinaZiyarat' | 'bothZiyarat';
+  category: 'circuit' | 'ziyarat';
   nameEn: string;
   nameAr: string;
   descriptionEn: string;
   descriptionAr: string;
+  badgeEn?: string;
+  badgeAr?: string;
   stopsEn: string[];
   stopsAr: string[];
 }
 
-export const FULL_CIRCUIT_OPTIONS: FullCircuitOption[] = [
+export const PACKAGE_OPTIONS: PackageOption[] = [
   {
     id: 'standard_circuit',
     rateKey: 'fullGroundTransport',
-    nameEn: 'Full Ground Transport Package',
-    nameAr: 'باقة التفويج والتنقل الشامل',
-    descriptionEn: 'Complete multi-city pilgrim ground itinerary connecting arrival to departure.',
+    category: 'circuit',
+    nameEn: 'Full Ground Circuit (Jeddah-Makkah-Madinah-Airport)',
+    nameAr: 'التفويج القياسي الشامل (جدة-مكة-المدينة-المطار)',
+    descriptionEn: 'Complete multi-city pilgrim ground transfer connecting arrival to departure.',
     descriptionAr: 'خطة التفويج الكامل لنقل ضيوف الرحمن من الوصول حتى المغادرة.',
-    stopsEn: ['Jeddah Airport Arrival', 'Makkah Haram Stay', 'Intercity Madinah Transfer', 'Madinah / Jeddah Airport Departure'],
-    stopsAr: ['استقبال مطار جدة', 'الإقامة بفندق مكة', 'التفويج إلى المدينة المنورة', 'التوديع للمطار للمغادرة']
+    badgeEn: 'Full Circuit',
+    badgeAr: 'تفويج شامل',
+    stopsEn: ['Jeddah Airport Arrival', 'Makkah Haram Hotel Stay', 'Intercity Madinah Transfer', 'Madinah / Jeddah Airport Departure'],
+    stopsAr: ['استقبال مطار جدة', 'الإقامة بفندق الحرم بمكة', 'التفويج للمدينة المنورة', 'توديع المطار للمغادرة']
   },
   {
     id: 'circuit_with_ziyarat',
     rateKey: 'fullGroundTransportWithZiyarat',
-    nameEn: 'Full Ground Transport + Ziyarat (All-Inclusive)',
-    nameAr: 'باقة التفويج الشامل + المزارات الدينية',
+    category: 'circuit',
+    nameEn: 'Full Ground Circuit + Holy Sites Ziyarat',
+    nameAr: 'التفويج الشامل + المزارات الدينية بمكة والمدينة',
     descriptionEn: 'All-inclusive multi-city transport including private guided tours to holy sites in Makkah & Madinah.',
     descriptionAr: 'خطة النقل الشاملة متضمنة جولات المزارات والمعالم التاريخية في مكة والمدينة.',
-    stopsEn: ['Jeddah Arrival', 'Makkah Hotels', 'Makkah Ziyarat (Arafat, Mina)', 'Madinah Transfer', 'Madinah Ziyarat (Uhud, Quba)', 'Airport Transfer'],
+    badgeEn: 'All-Inclusive',
+    badgeAr: 'شامل المزارات',
+    stopsEn: ['Jeddah Arrival', 'Makkah Hotels', 'Makkah Ziyarat (Arafat, Mina, Thawr)', 'Madinah Transfer', 'Madinah Ziyarat (Uhud, Quba)', 'Airport Transfer'],
     stopsAr: ['استقبال جدة', 'فنادق مكة', 'مزارات مكة (عرفات، منى، ثور)', 'الانتقال للمدينة', 'مزارات المدينة (أحد، قباء)', 'توصيل المطار']
+  },
+  {
+    id: 'makkah_ziyarat',
+    rateKey: 'makkahZiyarat',
+    category: 'ziyarat',
+    nameEn: 'Makkah Holy Sites Ziyarat Tour',
+    nameAr: 'جولة مزارات مكة المكرمة والمعالم المقدسة',
+    descriptionEn: 'Dedicated private tour to Jabal Al-Noor (Cave Hira), Jabal Thawr, Mount Arafat, Mina, and Muzdalifah.',
+    descriptionAr: 'جولة دينية خاصة لزيارة جبل النور وغار حراء وجبل ثور وعرفات ومزدلفة ومنى.',
+    badgeEn: 'Makkah Ziyarat',
+    badgeAr: 'مزارات مكة',
+    stopsEn: ['Jabal Al-Noor (Cave Hira)', 'Jabal Thawr', 'Mount Arafat & Namirah', 'Muzdalifah & Mina', 'Jannat Al-Mualla'],
+    stopsAr: ['جبل النور (غار حراء)', 'جبل ثور', 'جبل عرفات ومسجد نمرة', 'مشاعر مزدلفة ومنى', 'مقبرة المعلاة التاريخية']
+  },
+  {
+    id: 'madina_ziyarat',
+    rateKey: 'madinaZiyarat',
+    category: 'ziyarat',
+    nameEn: 'Madinah Noble Sites Ziyarat Tour',
+    nameAr: 'جولة مزارات المدينة المنورة والمعالم النبوية',
+    descriptionEn: 'Guided pilgrimage tour to Masjid Quba, Mount Uhud, Martyrs Cemetery, Masjid Al-Qiblatayn, and the Seven Mosques.',
+    descriptionAr: 'جولة دينية لزيارة مسجد قباء وجبل أحد ومقبرة الشهداء ومسجد القبلتين والمساجد السبعة.',
+    badgeEn: 'Madinah Ziyarat',
+    badgeAr: 'مزارات المدينة',
+    stopsEn: ['Masjid Quba (First Mosque)', 'Mount Uhud & Martyrs Cemetery', 'Masjid Al-Qiblatayn', 'Seven Mosques (Khandaq)', 'Date Farms & Wells'],
+    stopsAr: ['مسجد قباء الشريف', 'جبل أحد ومقبرة الشهداء', 'مسجد القبلتين', 'المساجد السبعة وموقع الخندق', 'مزارع النخيل والآبار']
+  },
+  {
+    id: 'both_ziyarat',
+    rateKey: 'bothZiyarat',
+    category: 'ziyarat',
+    nameEn: 'Dual Holy Cities Ziyarat Package (Makkah & Madinah)',
+    nameAr: 'باقة المزارات الشريفة المزدوجة (مكة المكرمة والمدينة المنورة)',
+    descriptionEn: 'Complete guided religious landmarks package covering sacred historical sites in both Makkah and Madinah.',
+    descriptionAr: 'باقة شاملة متكاملة لزيارة المعالم والمزارات الدينية والتاريخية في كل من مكة والمدينة.',
+    badgeEn: 'Dual Ziyarat',
+    badgeAr: 'مزارات الحرمين',
+    stopsEn: ['Makkah Holy Sites (Hira, Thawr, Arafat)', 'Madinah Noble Sites (Quba, Uhud, Qiblatayn)', 'Private Chauffeur Escort', 'Flexible Hotel Pickups'],
+    stopsAr: ['مزارات مكة المكرمة (حراء، ثور، عرفات)', 'مزارات المدينة المنورة (قباء، أحد، القبلتين)', 'سائق خاص ومرافقة مريحة', 'استقبال مرن من الفندق']
   }
 ];
+
+// Backward compatibility aliases
+export type FullCircuitOption = PackageOption;
+export const FULL_CIRCUIT_OPTIONS = PACKAGE_OPTIONS;
 
 export interface RouteMatchResult {
   isCityToCity: boolean;
@@ -247,6 +299,12 @@ export function getCityRoutePrice(vehicleRateKey: string | undefined, rateKey: s
   if (!vehicleRateKey) return 0;
   const vehicle = rates.vehicles[vehicleRateKey];
   if (!vehicle || !vehicle.baseRates) return 0;
+
+  if (rateKey === 'bothZiyarat') {
+    const makkah = vehicle.baseRates.makkahZiyarat || 0;
+    const madina = vehicle.baseRates.madinaZiyarat || 0;
+    return Math.round((makkah + madina) * (rates.globalMultiplier || 1.0));
+  }
 
   const basePrice = vehicle.baseRates[rateKey];
   if (typeof basePrice === 'number') {

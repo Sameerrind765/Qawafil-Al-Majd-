@@ -18,7 +18,7 @@ export const translations = {
     
     // SearchWidget
     tabPointToPoint: "Point to Point",
-    tabCircuit: "Full Circuit",
+    tabCircuit: "Packages",
     tabByKm: "By KM",
     tabContract: "Full Contract",
     
@@ -160,7 +160,7 @@ export const translations = {
     
     // SearchWidget
     tabPointToPoint: "من نقطة إلى نقطة",
-    tabCircuit: "التفويج الشامل",
+    tabCircuit: "الباقات",
     tabByKm: "بالكيلومتر",
     tabContract: "عقود نقل كاملة",
     

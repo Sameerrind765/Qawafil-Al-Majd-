@@ -110,7 +110,7 @@ export default function SearchWidget({ onSearch }: SearchWidgetProps) {
           id="tab-circuit"
         >
           <Compass className="w-4 h-4 shrink-0" />
-          <span>{lang === 'en' ? 'Full Circuit' : 'التفويج الشامل'}</span>
+          <span>{lang === 'en' ? 'Packages' : 'الباقات'}</span>
         </button>
 
         <button
@@ -236,12 +236,12 @@ export default function SearchWidget({ onSearch }: SearchWidgetProps) {
           </div>
         )}
 
-        {/* FULL CIRCUIT TAB FIELD LAYOUT */}
+        {/* PACKAGES TAB FIELD LAYOUT */}
         {activeTab === 'circuit' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-purple-50/40 p-3 rounded-2xl border border-purple-100">
             <div className="space-y-1.5">
               <label className="text-xs font-bold block font-mono tracking-wider text-purple-950 uppercase">
-                {lang === 'en' ? 'Circuit Package' : 'نوع باقة التفويج'}
+                {lang === 'en' ? 'Select Package' : 'اختر باقة الرحلة أو المزارات'}
               </label>
               <div className="relative">
                 <Compass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-700" />
@@ -252,10 +252,19 @@ export default function SearchWidget({ onSearch }: SearchWidgetProps) {
                   required
                 >
                   <option value="standard_circuit">
-                    {lang === 'en' ? 'Standard Ground Circuit (Jeddah-Makkah-Madinah-Airport)' : 'التفويج القياسي (جدة-مكة-المدينة-المطار)'}
+                    {lang === 'en' ? 'Full Ground Circuit (Jeddah-Makkah-Madinah-Airport)' : 'التفويج القياسي الشامل (جدة-مكة-المدينة-المطار)'}
                   </option>
                   <option value="circuit_with_ziyarat">
                     {lang === 'en' ? 'All-Inclusive Circuit + Holy Sites Ziyarat' : 'التفويج الشامل + زيارات المزارات الدينية'}
+                  </option>
+                  <option value="makkah_ziyarat">
+                    {lang === 'en' ? 'Makkah Holy Sites Ziyarat Tour (Hira, Thawr, Arafat)' : 'جولة مزارات مكة المكرمة (حراء، ثور، عرفات)'}
+                  </option>
+                  <option value="madina_ziyarat">
+                    {lang === 'en' ? 'Madinah Noble Sites Ziyarat Tour (Quba, Uhud, Khandaq)' : 'جولة مزارات المدينة المنورة (قباء، أحد، الخندق)'}
+                  </option>
+                  <option value="both_ziyarat">
+                    {lang === 'en' ? 'Dual Holy Cities Ziyarat Package (Makkah & Madinah)' : 'باقة المزارات المزدوجة (مكة المكرمة والمدينة)'}
                   </option>
                 </select>
               </div>

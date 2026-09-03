@@ -24,12 +24,13 @@ import {
   rates, 
   PICKUP_OPTIONS, 
   DESTINATION_OPTIONS, 
+  PACKAGE_OPTIONS,
   FULL_CIRCUIT_OPTIONS,
   resolveCityToCityRoute, 
   getCityRoutePrice, 
   getVehicleKmPrice,
   getVehicleKmFallbackRate,
-  FullCircuitOption
+  PackageOption
 } from '../data/ratesService';
 
 interface VehicleCardProps {
@@ -51,7 +52,7 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
 
   // 3 Distinct Trip Modes:
   // 'city': Standard City-to-City preset routes
-  // 'circuit': Full Circuit / Full Ground Transport package (Exclusive mode)
+  // 'circuit': Packages (Full Ground Transport & Ziyarat Tours)
   // 'custom': Custom Destination with distance-based per-km calculation
   const [tripMode, setTripMode] = useState<'city' | 'circuit' | 'custom'>('city');
 
@@ -59,8 +60,8 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
   const [pickupId, setPickupId] = useState<string>('jeddah_airport');
   const [destinationId, setDestinationId] = useState<string>('makkah_hotel');
 
-  // Full Circuit selection
-  const [circuitOptionId, setCircuitOptionId] = useState<'standard_circuit' | 'circuit_with_ziyarat'>('standard_circuit');
+  // Package selection
+  const [packageOptionId, setPackageOptionId] = useState<string>('standard_circuit');
 
   // Custom trip inputs
   const [customDestinationText, setCustomDestinationText] = useState<string>('');
@@ -71,17 +72,17 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
     return getVehicleKmFallbackRate(vehicle.rateKey);
   }, [vehicle.rateKey]);
 
-  // Selected circuit object
-  const selectedCircuit = useMemo(() => {
-    return FULL_CIRCUIT_OPTIONS.find(c => c.id === circuitOptionId) || FULL_CIRCUIT_OPTIONS[0];
-  }, [circuitOptionId]);
+  // Selected package object
+  const selectedPackage = useMemo(() => {
+    return PACKAGE_OPTIONS.find(c => c.id === packageOptionId) || PACKAGE_OPTIONS[0];
+  }, [packageOptionId]);
 
   // Dynamic Calculation based on mode and city-to-city logic
   const { computedPrice, isEstimated, routeLabel, distanceKm } = useMemo(() => {
-    // 1. FULL CIRCUIT MODE (Exclusive)
+    // 1. PACKAGE MODE (Exclusive)
     if (tripMode === 'circuit') {
-      const price = getCityRoutePrice(vehicle.rateKey, selectedCircuit.rateKey);
-      const label = lang === 'en' ? selectedCircuit.nameEn : selectedCircuit.nameAr;
+      const price = getCityRoutePrice(vehicle.rateKey, selectedPackage.rateKey);
+      const label = lang === 'en' ? selectedPackage.nameEn : selectedPackage.nameAr;
       return {
         computedPrice: price || vehicle.price,
         isEstimated: false,
@@ -135,12 +136,12 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
     tripMode, 
     pickupId, 
     destinationId, 
-    circuitOptionId, 
+    packageOptionId, 
     customDestinationText, 
     customDistanceKm, 
     vehicle.rateKey, 
     vehicle.price, 
-    selectedCircuit, 
+    selectedPackage, 
     lang
   ]);
 
@@ -152,7 +153,7 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
   const getWhatsAppURL = () => {
     let modeText = '';
     if (tripMode === 'circuit') {
-      modeText = `[Full Circuit Package: ${selectedCircuit.nameEn}]`;
+      modeText = `[Package: ${selectedPackage.nameEn}]`;
     } else if (tripMode === 'custom') {
       modeText = `[Custom Trip: ${customDistanceKm} KM @ ${kmRate} SAR/KM]`;
     } else {
@@ -249,8 +250,8 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
             {isEstimated 
               ? (lang === 'en' ? 'KM ESTIMATED' : 'حساب بالمسافة') 
               : tripMode === 'circuit'
-                ? (lang === 'en' ? 'CIRCUIT PACKAGE' : 'باقة تفويج شاملة')
-                : (lang === 'en' ? 'CITY FLAT RATE' : 'سعر مدينة لمدينة')}
+                ? (lang === 'en' ? 'PACKAGE DEAL' : 'باقة رحلات')
+                : (lang === 'en' ? 'FIXED FARE' : 'سعر ثابت')}
           </span>
         </div>
       </div>
@@ -282,7 +283,7 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
 
           <div className="border-t border-slate-100 my-3" />
 
-          {/* TRIP MODE SELECTOR TABS: City Route | Full Circuit | Custom Trip */}
+          {/* TRIP MODE SELECTOR TABS: City Route | Packages | Custom Trip */}
           <div className="flex items-center p-1 bg-slate-100/80 rounded-xl mb-3 text-[10px] font-extrabold">
             <button
               type="button"
@@ -307,7 +308,7 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
                   : 'text-slate-600 hover:text-purple-700'
               }`}
             >
-              {lang === 'en' ? 'Full Circuit' : 'التفويج الشامل'}
+              {lang === 'en' ? 'Packages' : 'الباقات'}
             </button>
             <button
               type="button"
@@ -326,50 +327,67 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
           </div>
 
           {/* ========================================================================= */}
-          {/* 1. EXCLUSIVE FULL CIRCUIT MODE (Hides all other routes and dropdowns)     */}
+          {/* 1. EXCLUSIVE PACKAGES & ZIYARAT MODE                                      */}
           {/* ========================================================================= */}
           {tripMode === 'circuit' && (
             <div className="bg-purple-50/70 border border-purple-200 rounded-2xl p-3 mb-3.5 space-y-2.5 transition-all animate-fadeIn">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-black text-purple-900 uppercase tracking-wider flex items-center gap-1.5">
                   <Compass className="w-3.5 h-3.5 text-purple-700" />
-                  <span>{lang === 'en' ? 'Full Ground Transport Package' : 'باقة التفويج والانتقال الشامل'}</span>
+                  <span>{lang === 'en' ? 'Travel & Ziyarat Packages' : 'باقات التنقل والمزارات الشريفة'}</span>
                 </span>
                 <span className="text-[9px] font-extrabold text-purple-700 bg-white px-2 py-0.5 rounded-full border border-purple-200">
-                  {lang === 'en' ? 'Exclusive Mode' : 'حزمة حصرية'}
+                  {lang === 'en' ? 'Special Package' : 'باقة مميزة'}
                 </span>
               </div>
 
               {/* Package selector options */}
-              <div className="space-y-1.5">
-                {FULL_CIRCUIT_OPTIONS.map((circ) => {
-                  const isSelected = circuitOptionId === circ.id;
-                  const price = getCityRoutePrice(vehicle.rateKey, circ.rateKey);
+              <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1">
+                {PACKAGE_OPTIONS.map((pkg) => {
+                  const isSelected = packageOptionId === pkg.id;
+                  const price = getCityRoutePrice(vehicle.rateKey, pkg.rateKey);
+                  const isZiyarat = pkg.category === 'ziyarat';
+
                   return (
                     <div
-                      key={circ.id}
-                      onClick={() => setCircuitOptionId(circ.id)}
-                      className={`p-2 rounded-xl border cursor-pointer transition-all ${
+                      key={pkg.id}
+                      onClick={() => setPackageOptionId(pkg.id)}
+                      className={`p-2.5 rounded-xl border cursor-pointer transition-all ${
                         isSelected 
-                          ? 'bg-white border-purple-500 shadow-xs ring-1 ring-purple-400' 
-                          : 'bg-white/60 border-purple-200/80 hover:bg-white'
+                          ? isZiyarat
+                            ? 'bg-white border-emerald-500 shadow-xs ring-1 ring-emerald-400'
+                            : 'bg-white border-purple-500 shadow-xs ring-1 ring-purple-400' 
+                          : 'bg-white/70 border-purple-100 hover:bg-white'
                       }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5">
-                          <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${isSelected ? 'border-purple-600 bg-purple-600 text-white' : 'border-slate-300'}`}>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className={`w-3.5 h-3.5 rounded-full border shrink-0 flex items-center justify-center ${
+                            isSelected 
+                              ? isZiyarat ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-purple-600 bg-purple-600 text-white' 
+                              : 'border-slate-300'
+                          }`}>
                             {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                           </div>
-                          <span className="text-xs font-black text-slate-800">
-                            {lang === 'en' ? circ.nameEn : circ.nameAr}
+                          <span className="text-xs font-black text-slate-850 truncate">
+                            {lang === 'en' ? pkg.nameEn : pkg.nameAr}
                           </span>
                         </div>
-                        <span className="text-xs font-black text-purple-800">
-                          {price} SAR
-                        </span>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <span className={`text-[8.5px] font-black px-1.5 py-0.5 rounded ${
+                            isZiyarat 
+                              ? 'bg-emerald-100 text-emerald-800' 
+                              : 'bg-purple-100 text-purple-800'
+                          }`}>
+                            {lang === 'en' ? pkg.badgeEn : pkg.badgeAr}
+                          </span>
+                          <span className={`text-xs font-black ${isZiyarat ? 'text-emerald-800' : 'text-purple-800'}`}>
+                            {price} SAR
+                          </span>
+                        </div>
                       </div>
-                      <p className="text-[9.5px] text-slate-500 mt-1 pl-5">
-                        {lang === 'en' ? circ.descriptionEn : circ.descriptionAr}
+                      <p className="text-[9.5px] text-slate-500 mt-1 pl-5 leading-tight">
+                        {lang === 'en' ? pkg.descriptionEn : pkg.descriptionAr}
                       </p>
                     </div>
                   );
@@ -377,14 +395,14 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
               </div>
 
               {/* Itinerary route stops */}
-              <div className="bg-white rounded-xl p-2 border border-purple-100">
-                <span className="text-[9px] font-black text-purple-900 uppercase tracking-wider block mb-1">
-                  {lang === 'en' ? 'Included Itinerary Transfers:' : 'المحطات المشمولة في خطة التفويج:'}
+              <div className="bg-white rounded-xl p-2.5 border border-purple-100">
+                <span className="text-[9px] font-black text-purple-900 uppercase tracking-wider block mb-1.5">
+                  {lang === 'en' ? 'Included Itinerary & Holy Sites:' : 'المحطات والمزارات المشمولة في الباقة:'}
                 </span>
-                <div className="grid grid-cols-2 gap-1 text-[9px] font-bold text-slate-600">
-                  {(lang === 'en' ? selectedCircuit.stopsEn : selectedCircuit.stopsAr).map((stop, idx) => (
-                    <div key={idx} className="flex items-center gap-1 truncate">
-                      <CheckCircle2 className="w-2.5 h-2.5 text-purple-600 shrink-0" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-[9.5px] font-bold text-slate-600">
+                  {(lang === 'en' ? selectedPackage.stopsEn : selectedPackage.stopsAr).map((stop, idx) => (
+                    <div key={idx} className="flex items-center gap-1.5 truncate">
+                      <CheckCircle2 className={`w-3 h-3 shrink-0 ${selectedPackage.category === 'ziyarat' ? 'text-emerald-600' : 'text-purple-600'}`} />
                       <span className="truncate">{stop}</span>
                     </div>
                   ))}
@@ -599,13 +617,13 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
               destination: tripMode === 'custom' 
                 ? (customDestinationText || 'Custom Destination') 
                 : tripMode === 'circuit' 
-                  ? selectedCircuit.nameEn 
+                  ? selectedPackage.nameEn 
                   : destinationId,
               routeName: routeLabel,
               computedPrice,
               isEstimated,
               distanceKm: tripMode === 'custom' ? customDistanceKm : undefined,
-              circuitPackageId: tripMode === 'circuit' ? circuitOptionId : undefined
+              circuitPackageId: tripMode === 'circuit' ? packageOptionId : undefined
             })}
             className="bg-brand-primary hover:bg-brand-dark text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:translate-y-[-1px] active:translate-y-[1px] transition-all duration-200 cursor-pointer flex items-center gap-1.5 group-hover:scale-[1.02]"
             id={`book-btn-${vehicle.id}`}

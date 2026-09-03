@@ -10,7 +10,7 @@ import {
   getVehicleKmFallbackRate, 
   resolveCityToCityRoute, 
   getCityRoutePrice,
-  FULL_CIRCUIT_OPTIONS
+  PACKAGE_OPTIONS
 } from '../data/ratesService';
 
 // Lucide Icons
@@ -24,7 +24,6 @@ import {
   Users, 
   Star, 
   ArrowRight, 
-  Calculator, 
   ShieldCheck, 
   Layers, 
   Clock, 
@@ -60,10 +59,10 @@ export default function Home() {
 
   // New customized tabbed booking form states
   const [heroWorkflow, setHeroWorkflow] = useState<'precise' | 'quick'>('precise');
-  const [tripType, setTripType] = useState<'Point to Point' | 'Full Circuit' | 'By KM' | 'Full Contract'>('Point to Point');
+  const [tripType, setTripType] = useState<'Point to Point' | 'Packages' | 'By KM' | 'Full Contract'>('Point to Point');
   const [fromLocation, setFromLocation] = useState('Jeddah Airport (KAIA)');
   const [toLocation, setToLocation] = useState('Makkah Hotel (near Haram)');
-  const [circuitType, setCircuitType] = useState<'standard_circuit' | 'circuit_with_ziyarat'>('standard_circuit');
+  const [packageOptionId, setPackageOptionId] = useState<string>('standard_circuit');
   const [distanceKm, setDistanceKm] = useState('100');
   const [contractDays, setContractDays] = useState('7 Days');
   const [bookingDate, setBookingDate] = useState('2026-06-15');
@@ -82,13 +81,12 @@ export default function Home() {
   } | undefined>(undefined);
 
   const getDynamicVehiclePrice = (vehicle: VehicleData): number => {
-    if (tripType === 'Full Circuit') {
-      const rateKey = circuitType === 'circuit_with_ziyarat' 
-        ? 'fullGroundTransportWithZiyarat' 
-        : 'fullGroundTransport';
+    if (tripType === 'Packages') {
+      const selectedPkg = PACKAGE_OPTIONS.find(p => p.id === packageOptionId);
+      const rateKey = selectedPkg ? selectedPkg.rateKey : 'fullGroundTransport';
       const circuitPrice = getCityRoutePrice(vehicle.rateKey, rateKey);
       if (circuitPrice > 0) return circuitPrice;
-      return vehicle.price * 4;
+      return vehicle.price * 3;
     }
 
     if (tripType === 'By KM') {
@@ -129,11 +127,12 @@ export default function Home() {
     let finalFrom = fromLocation;
     let finalTo = toLocation;
 
-    if (tripType === 'Full Circuit') {
-      finalFrom = lang === 'en' ? 'Jeddah / Madinah Arrival' : 'وصول جدة أو المدينة';
-      finalTo = circuitType === 'circuit_with_ziyarat'
-        ? (lang === 'en' ? 'Full Circuit + Holy Sites Ziyarat' : 'التفويج الشامل + المزارات الدينية')
-        : (lang === 'en' ? 'Standard Ground Circuit (Jeddah-Makkah-Madinah-Airport)' : 'التفويج القياسي (جدة-مكة-المدينة-المطار)');
+    if (tripType === 'Packages') {
+      const selectedPkg = PACKAGE_OPTIONS.find(p => p.id === packageOptionId);
+      finalFrom = lang === 'en' ? 'Jeddah / Madinah / Makkah Hotel' : 'جدة / مكة / المدينة المنورة';
+      finalTo = selectedPkg
+        ? (lang === 'en' ? selectedPkg.nameEn : selectedPkg.nameAr)
+        : (lang === 'en' ? 'Travel & Ziyarat Package' : 'باقة الرحلة والمزارات');
     } else if (tripType === 'By KM') {
       finalTo = lang === 'en' ? `Distance Drive (${distanceKm} KM)` : `مسار مخصص (${distanceKm} كم)`;
     } else if (tripType === 'Full Contract') {
@@ -141,7 +140,7 @@ export default function Home() {
     }
 
     setBookingDetails({
-      tripType: lang === 'en' ? tripType : (tripType === 'Point to Point' ? 'نقطة إلى نقطة' : tripType === 'Full Circuit' ? 'التفويج الشامل' : tripType === 'By KM' ? 'بالكيلو' : 'عقد كامل'),
+      tripType: lang === 'en' ? tripType : (tripType === 'Point to Point' ? 'نقطة إلى نقطة' : tripType === 'Packages' ? 'الباقات' : tripType === 'By KM' ? 'بالكيلو' : 'عقد كامل'),
       fromLocation: finalFrom,
       toLocation: finalTo,
       date: bookingDate,
@@ -177,11 +176,6 @@ export default function Home() {
   const [leadSuccessVisible, setLeadSuccessVisible] = useState(false);
   const [leadLoading, setLeadLoading] = useState(false);
 
-  // Quote Calculator states
-  const [calcSource, setCalcSource] = useState('Jeddah (Airport / Hotels)');
-  const [calcTarget, setCalcTarget] = useState('Makkah Al-Mukarramah');
-  const [calcClass, setCalcClass] = useState<'economy' | 'business' | 'vip' | 'group'>('business');
-  
   // Bilingual copywriting database
   const localCopy = {
     en: {
@@ -198,14 +192,6 @@ export default function Home() {
       openWhatsApp: "Open Mobile WhatsApp Connection",
       noPrepay: "✓ Zero Online Prepayment Required • Instant Confirmation",
       
-      calculatorTitle: "Interactive Route Quote Calculator",
-      calculatorSub: "Select your route configuration to view dynamic, guaranteed flat rates.",
-      pickupCity: "Pick-up Hub",
-      destinationCity: "Destination Hub",
-      estimatedRate: "Estimated Flat Rate",
-      guaranteedRateNote: "Guaranteed locked rate with no fuel surcharges or peak fees.",
-      bookLockedBtn: "Book At Locked Price",
-
       coordTitle: "Hajj & Umrah Campaign Transport Unit",
       coordSub: "Are you a pilgrim group leader, travel coordinator, or campaign operator?",
       coordDesc: "We provide coordinated heavy coach shuttles, 45-seat Mercedes Tourismo fleets, schedule management boards, and priority VIP airport lanes to ensure flawless operation for groups of all sizes.",
@@ -236,14 +222,6 @@ export default function Home() {
       dispatchSuccessMsg: "جزاك الله خيراً. تم تسجيل مسار طلبك في لوحة خدمة العملاء لـ قوافل المجد. اضغط على الزر أدناه للتواصل الفوري مع منسق الحجوزات عبر وتساب لتأكيد الموعد وتعيين السائق.",
       openWhatsApp: "التواصل الفوري عبر الواتساب",
       noPrepay: "✓ لا يتطلب دفع مسبق أونلاين • تأكيد تشغيلي فوري",
-
-      calculatorTitle: "مستشار تسعير المسارات وحساب الرحلة",
-      calculatorSub: "اختر نقاط الانطلاق والوصول لحساب التسعيرة المسطحة الثابتة والمضمونة فوراً.",
-      pickupCity: "محطة الانطلاق",
-      destinationCity: "محطة الوصول والوجهة",
-      estimatedRate: "السعر التقديري المسطح",
-      guaranteedRateNote: "تسعيرة ثابتة مضمونة تشمل رسوم الطرق ولا تخضع لزيادات أوقات الذروة.",
-      bookLockedBtn: "احجز الآن بالسعر المضمون",
 
       coordTitle: "إسناد وتنسيق حملات الحج والعمرة والوفود الكبيرة",
       coordSub: "هل أنت مدير حملة عائلية، منسق رحلات وفود، أو مسؤول تفويج ديني؟",
@@ -312,48 +290,6 @@ export default function Home() {
       : `السلام عليكم قوافل المجد المثالية! أرغب في تأكيد حجز رحلتي عبر الموقع:\n\n- *الخدمة المطلوبة:* ${serviceName}\n- *فئة ومستوى الناقلة:* ${caravanClass}\n- *الاسم الكريم:* ${leadName}\n- *رقم التواصل:* ${leadPhone}\n- *تفاصيل الاستلام:* ${pickupDetail}\n\nيرجى تأكيد الحجز وتعيين السائق، بارك الله فيكم.`;
 
     return `https://wa.me/${whatsappNum}?text=${encodeURIComponent(msg)}`;
-  };
-
-  // Base pricing calculator logic depending on input values (estimates)
-  const calculateEstimate = (): number => {
-    let basePrice = 200; // default camry style rate
-
-    // Calculate distance-based factors depending on selected cities
-    if (calcSource.includes("Jeddah") && calcTarget.includes("Makkah")) basePrice = 250;
-    else if (calcSource.includes("Jeddah") && calcTarget.includes("Madinah")) basePrice = 550;
-    else if (calcSource.includes("Makkah") && calcTarget.includes("Madinah")) basePrice = 500;
-    else if (calcSource.includes("Riyadh")) basePrice = 1200;
-    else if (calcSource === calcTarget) basePrice = 150;
-
-    // Class multiplication factors
-    if (calcClass === 'economy') return Math.round(basePrice * 0.7);
-    if (calcClass === 'business') return basePrice;
-    if (calcClass === 'vip') return Math.round(basePrice * 1.8);
-    if (calcClass === 'group') return Math.round(basePrice * 2.5);
-
-    return basePrice;
-  };
-
-  const handleCalculatorBook = () => {
-    // Generate a surrogate vehicle data block and trigger modal
-    const approxVal = calculateEstimate();
-    const surrogate: VehicleData = {
-      id: "calc-surrogate",
-      nameEn: `Custom Route Arrangement (${calcSource} ➔ ${calcTarget})`,
-      nameAr: `ترتيب مسار مخصص (${lang === 'en' ? calcSource : 'محطة البدء'} ➔ ${lang === 'en' ? calcTarget : 'محطة الوصول'})`,
-      typeEn: "Locked Route Plan",
-      typeAr: "مسار محدد ومؤمن",
-      seats: calcClass === 'group' ? 45 : calcClass === 'vip' ? 7 : calcClass === 'business' ? 7 : 4,
-      price: approxVal,
-      tagsEn: [calcSource, calcTarget, "Direct Highway Transfer"],
-      tagsAr: [calcSource, calcTarget, "تفويج بري مباشر عبر الفنادق والمطار"],
-      classFilter: calcClass,
-      recommended: true,
-      emoji: "🕌"
-    };
-
-    setSelectedVehicle(surrogate);
-    setBookingModalOpen(true);
   };
 
   const triggerDirectVehicleBooking = (vehicle: VehicleData) => {
@@ -527,7 +463,7 @@ export default function Home() {
                   <>
                     {/* Tab select header bar */}
                     <div className="flex bg-slate-50 p-1 rounded-xl mb-6 border border-slate-100">
-                      {(['Point to Point', 'Full Circuit', 'By KM', 'Full Contract'] as const).map((tab) => {
+                      {(['Point to Point', 'Packages', 'By KM', 'Full Contract'] as const).map((tab) => {
                         const isActive = tripType === tab;
                         return (
                           <button
@@ -536,12 +472,12 @@ export default function Home() {
                             onClick={() => setTripType(tab)}
                             className={`flex-1 text-center py-2.5 px-0.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer ${
                               isActive 
-                                ? (tab === 'Full Circuit' ? 'bg-purple-700 text-white shadow' : tab === 'By KM' ? 'bg-amber-600 text-white shadow' : 'bg-[#C0272D] text-white shadow') 
+                                ? (tab === 'Packages' ? 'bg-purple-700 text-white shadow' : tab === 'By KM' ? 'bg-amber-600 text-white shadow' : 'bg-[#C0272D] text-white shadow') 
                                 : 'text-slate-600 hover:bg-slate-200/50'
                             }`}
                           >
                             {lang === 'ar' 
-                              ? (tab === 'Point to Point' ? 'نقطة لنقطة' : tab === 'Full Circuit' ? 'التفويج الشامل' : tab === 'By KM' ? 'بالكيلو' : 'عقد كامل') 
+                              ? (tab === 'Point to Point' ? 'نقطة لنقطة' : tab === 'Packages' ? 'الباقات' : tab === 'By KM' ? 'بالكيلو' : 'عقد كامل') 
                               : tab}
                           </button>
                         );
@@ -551,38 +487,39 @@ export default function Home() {
                     <form onSubmit={handleShowVehiclesAndPrices} className="space-y-4" id="hero-quick-form">
                       
                       {/* Conditional Layout based on tripType */}
-                      {tripType === 'Full Circuit' ? (
-                        /* FULL CIRCUIT EXCLUSIVE UI */
+                      {tripType === 'Packages' ? (
+                        /* PACKAGES & ZIYARAT EXCLUSIVE UI */
                         <div className="bg-purple-50/60 p-3.5 rounded-2xl border border-purple-200 space-y-3">
                           <div className="flex items-center gap-2 text-purple-900 font-bold text-xs">
                             <Compass className="w-4 h-4 text-purple-700" />
-                            <span>{lang === 'en' ? 'Exclusive Full Circuit Pilgrimage Route (All Transfers Included)' : 'باقة التفويج الشامل الحصرية (كامل تنقلات الرحلة متضمنة)'}</span>
+                            <span>{lang === 'en' ? 'All-Inclusive Pilgrimage Circuits & Holy Sites Ziyarat' : 'باقات التفويج الشامل والمزارات الدينية الشريفة'}</span>
                           </div>
 
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div className="space-y-1.5">
                               <label className="flex items-center gap-1.5 text-xs font-bold text-purple-900 uppercase tracking-wide">
                                 <Flag className="w-4 h-4 text-purple-700" />
-                                <span>{lang === 'ar' ? 'نوع الباقة' : 'Package Type'}</span>
+                                <span>{lang === 'ar' ? 'نوع الباقة / الزيارة' : 'Package / Tour Selection'}</span>
                               </label>
                               <select
-                                value={circuitType}
-                                onChange={(e) => setCircuitType(e.target.value as any)}
+                                value={packageOptionId}
+                                onChange={(e) => setPackageOptionId(e.target.value)}
                                 className="w-full bg-white border border-purple-200 rounded-xl py-2.5 px-3 text-xs font-bold text-slate-800 outline-none focus:ring-1 focus:ring-purple-700 cursor-pointer"
                               >
-                                <option value="standard_circuit">
-                                  {lang === 'ar' ? 'التفويج القياسي (جدة ➔ مكة ➔ المدينة ➔ المطار)' : 'Standard Ground Circuit (Jeddah ➔ Makkah ➔ Madinah ➔ Airport)'}
-                                </option>
-                                <option value="circuit_with_ziyarat">
-                                  {lang === 'ar' ? 'التفويج الشامل + زيارات المزارات الدينية بمكة والمدينة' : 'All-Inclusive Circuit + Holy Sites Ziyarat (Makkah & Madinah)'}
-                                </option>
+                                {PACKAGE_OPTIONS.map((pkg) => (
+                                  <option key={pkg.id} value={pkg.id}>
+                                    {lang === 'ar' 
+                                      ? `${pkg.nameAr} (${pkg.badgeAr})`
+                                      : `${pkg.nameEn} (${pkg.badgeEn})`}
+                                  </option>
+                                ))}
                               </select>
                             </div>
 
                             <div className="space-y-1.5">
                               <label className="flex items-center gap-1.5 text-xs font-bold text-purple-900 uppercase tracking-wide">
                                 <MapPin className="w-4 h-4 text-purple-700" />
-                                <span>{lang === 'ar' ? 'مطار الوصول' : 'Arrival Airport'}</span>
+                                <span>{lang === 'ar' ? 'نقطة الانطلاق / المطار' : 'Pickup City / Airport'}</span>
                               </label>
                               <select
                                 value={fromLocation}
@@ -591,6 +528,8 @@ export default function Home() {
                               >
                                 <option value="Jeddah Airport (KAIA)">{lang === 'ar' ? 'مطار الملك عبد العزيز الدولي - جدة (KAIA)' : 'King Abdulaziz Airport - Jeddah (KAIA)'}</option>
                                 <option value="Madinah Airport (PMIA)">{lang === 'ar' ? 'مطار الأمير محمد بن عبد العزيز - المدينة (PMIA)' : 'Prince Mohammad Airport - Madinah (PMIA)'}</option>
+                                <option value="Makkah Hotel (near Haram)">{lang === 'ar' ? 'فندق بمكة المكرمة (قرب الحرم)' : 'Makkah Hotel (near Haram)'}</option>
+                                <option value="Madinah Hotel (near Nabawi)">{lang === 'ar' ? 'فندق بالمدينة المنورة (قرب الحرم النبوي)' : 'Madinah Hotel (near Nabawi)'}</option>
                               </select>
                             </div>
                           </div>
@@ -1017,134 +956,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2. LIVE ROUTE LOGISTICS CO-PILOT (calculator and fast-rate display) */}
-      <section className="py-12 bg-white border-b border-rose-50 select-none">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="max-w-xl mx-auto lg:max-w-none grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
-            {/* Left: Quotes explanations (5 cols) */}
-            <div className="lg:col-span-5 space-y-4">
-              <div className="inline-flex items-center gap-1.5 bg-rose-50 border border-rose-100 py-1 px-3 rounded-full text-[#C0272D] font-extrabold text-[10px] tracking-wider uppercase">
-                <Calculator className="w-3.5 h-3.5" />
-                <span>Estimate Guarantee Desk</span>
-              </div>
-              <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-none">
-                {copy.calculatorTitle}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-500 font-semibold leading-relaxed">
-                {copy.calculatorSub}
-              </p>
-              <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 mt-0.5 shrink-0" />
-                <p className="text-xs text-slate-600 font-bold leading-normal">
-                  {copy.guaranteedRateNote}
-                </p>
-              </div>
-            </div>
-
-            {/* Right: Dynamic Interactive quote panel calculator card (7 cols) */}
-            <div className="lg:col-span-7 bg-slate-50 border border-slate-200 rounded-2xl p-6 relative">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                
-                {/* Station origin selection block */}
-                <div className="space-y-1.5">
-                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
-                    {copy.pickupCity}
-                  </span>
-                  <select
-                    value={calcSource}
-                    onChange={(e) => setCalcSource(e.target.value)}
-                    className="w-full bg-white border border-slate-250 rounded-xl py-2.5 px-3 text-xs font-bold text-slate-800 outline-none focus:ring-1 focus:ring-[#C0272D] cursor-pointer"
-                  >
-                    <option value="Jeddah (Airport / Hotels)">{t.jeddah}</option>
-                    <option value="Makkah Al-Mukarramah">{t.makkah}</option>
-                    <option value="Al-Madinah Al-Munawwarah">{t.madinah}</option>
-                    <option value="Riyadh Metropolitan">{t.riyadh}</option>
-                    <option value="Yanbu Port City">{t.yanbu}</option>
-                    <option value="Taif Mountain Resort">{t.taif}</option>
-                  </select>
-                </div>
-
-                {/* Destination station origin block */}
-                <div className="space-y-1.5">
-                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
-                    {copy.destinationCity}
-                  </span>
-                  <select
-                    value={calcTarget}
-                    onChange={(e) => setCalcTarget(e.target.value)}
-                    className="w-full bg-white border border-slate-250 rounded-xl py-2.5 px-3 text-xs font-bold text-slate-800 outline-none focus:ring-1 focus:ring-[#C0272D] cursor-pointer"
-                  >
-                    <option value="Makkah Al-Mukarramah">{t.makkah}</option>
-                    <option value="Al-Madinah Al-Munawwarah">{t.madinah}</option>
-                    <option value="Jeddah (Airport / Hotels)">{t.jeddah}</option>
-                    <option value="Riyadh Metropolitan">{t.riyadh}</option>
-                    <option value="Yanbu Port City">{t.yanbu}</option>
-                    <option value="Taif Mountain Resort">{t.taif}</option>
-                  </select>
-                </div>
-
-              </div>
-
-              {/* Vehicle class select slider tabs */}
-              <div className="mt-5 space-y-2">
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
-                  {lang === 'en' ? "Preferred Cabin Class" : "فئة المقصورة المطلوبة"}
-                </span>
-                <div className="flex flex-wrap gap-1.5 bg-slate-200/60 p-1 rounded-xl">
-                  {['economy', 'business', 'vip', 'group'].map((cls) => (
-                    <button
-                      key={cls}
-                      type="button"
-                      onClick={() => setCalcClass(cls as any)}
-                      className={`flex-1 py-2 text-[11px] font-extrabold capitalize text-center rounded-lg cursor-pointer transition-all duration-200 ${
-                        calcClass === cls 
-                          ? 'bg-white text-slate-900 shadow-sm' 
-                          : 'text-slate-600 hover:bg-white/30'
-                      }`}
-                    >
-                      {cls === 'economy' ? (lang === 'en' ? 'Economy' : 'اقتصادي') :
-                       cls === 'business' ? (lang === 'en' ? 'Premium MPV' : 'عائلي ستاريا') :
-                       cls === 'vip' ? (lang === 'en' ? 'VIP SUV' : 'يوكن ملكي') : 
-                       (lang === 'en' ? 'Bus / Coach' : 'حافلة حملات')}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Calculated dynamic flat rate readout card */}
-              <div className="mt-6 bg-[#C0272D]/5 border border-[#C0272D]/20 p-4 rounded-xl flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">
-                    {copy.estimatedRate}
-                  </span>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-2xl font-black text-[#C0272D]">
-                      {calculateEstimate()}
-                    </span>
-                    <span className="text-[11px] font-black text-slate-500 uppercase">{t.currency}</span>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleCalculatorBook}
-                  className="bg-[#C0272D] hover:bg-[#a61f24] text-white font-extrabold text-xs py-2.5 px-4 rounded-xl cursor-pointer shadow-sm transition-colors duration-200"
-                  id="calc-fast-book-btn"
-                >
-                  {copy.bookLockedBtn} ➔
-                </button>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* 3. TGA REGULATED & CERTIFIED VEHICLE SECTION (Grid) */}
+      {/* TGA REGULATED & CERTIFIED VEHICLE SECTION (Grid) */}
       <section className="py-16 bg-[#fbf9f6] select-none">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
