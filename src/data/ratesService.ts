@@ -3,31 +3,23 @@ import ratesData from './rates.json';
 export interface VehicleRateInfo {
   name: string;
   capacity: string;
+  kmFallbackRate: number;
   baseRates: {
-    fullGroundTransport?: number;
-    fullGroundTransportWithZiyarat?: number;
-    jeddahAirportToMakkahHotel?: number;
-    makkahHotelToMadinaHotel?: number;
-    jeddahAirportToMadinaHotel?: number;
-    madinaAirportToMadinaHotel?: number;
-    madinaHotelToMadinaAirport?: number;
+    cityJeddahToMakkah?: number;
+    cityJeddahToMadinah?: number;
+    cityMakkahToMadinah?: number;
+    cityMadinahInternal?: number;
     makkahZiyarat?: number;
     madinaZiyarat?: number;
     makkahToTaifReturn?: number;
-    perHourRate?: number;
-    madinaHotelToMakkahHotel?: number;
-    madinaHotelToJeddahAirport?: number;
-    makkahHotelToJeddahAirport?: number;
+    fullGroundTransport?: number;
+    fullGroundTransportWithZiyarat?: number;
     [key: string]: number | undefined;
   };
 }
 
 export interface RatesFile {
   globalMultiplier: number;
-  kmFallbackRate: {
-    min: number;
-    max: number;
-  };
   vehicles: {
     [key: string]: VehicleRateInfo;
   };
@@ -35,217 +27,273 @@ export interface RatesFile {
 
 export const rates: RatesFile = (ratesData as unknown) as RatesFile;
 
-export type RouteKey = keyof VehicleRateInfo['baseRates'];
+// Official fallback per-KM rate for custom trips = vehicle's flat rate ÷ 90 km (Jeddah–Makkah reference)
+export const VEHICLE_KM_FALLBACK_RATES: Record<string, number> = {
+  camry: 3.89,
+  fordTaurus: 4.44,
+  gmc_yukon_xl_ac: 5.56,
+  h1_hyundai: 2.56,
+  hiace: 3.67,
+  coaster: 5.89
+};
 
-export interface PredefinedRouteDef {
-  key: RouteKey;
-  pickupId: string;
-  destinationId: string;
-  nameEn: string;
-  nameAr: string;
-}
-
-export const PREDEFINED_ROUTES: PredefinedRouteDef[] = [
-  {
-    key: 'jeddahAirportToMakkahHotel',
-    pickupId: 'jeddah_airport',
-    destinationId: 'makkah_hotel',
-    nameEn: 'Jeddah Airport (KAIA) ➔ Makkah Hotel',
-    nameAr: 'مطار جدة (KAIA) ➔ فندق مكة'
-  },
-  {
-    key: 'makkahHotelToJeddahAirport',
-    pickupId: 'makkah_hotel',
-    destinationId: 'jeddah_airport',
-    nameEn: 'Makkah Hotel ➔ Jeddah Airport (KAIA)',
-    nameAr: 'فندق مكة ➔ مطار جدة (KAIA)'
-  },
-  {
-    key: 'makkahHotelToMadinaHotel',
-    pickupId: 'makkah_hotel',
-    destinationId: 'madina_hotel',
-    nameEn: 'Makkah Hotel ➔ Madina Hotel',
-    nameAr: 'فندق مكة ➔ فندق المدينة'
-  },
-  {
-    key: 'madinaHotelToMakkahHotel',
-    pickupId: 'madina_hotel',
-    destinationId: 'makkah_hotel',
-    nameEn: 'Madina Hotel ➔ Makkah Hotel',
-    nameAr: 'فندق المدينة ➔ فندق مكة'
-  },
-  {
-    key: 'jeddahAirportToMadinaHotel',
-    pickupId: 'jeddah_airport',
-    destinationId: 'madina_hotel',
-    nameEn: 'Jeddah Airport (KAIA) ➔ Madina Hotel',
-    nameAr: 'مطار جدة (KAIA) ➔ فندق المدينة'
-  },
-  {
-    key: 'madinaHotelToJeddahAirport',
-    pickupId: 'madina_hotel',
-    destinationId: 'jeddah_airport',
-    nameEn: 'Madina Hotel ➔ Jeddah Airport (KAIA)',
-    nameAr: 'فندق المدينة ➔ مطار جدة (KAIA)'
-  },
-  {
-    key: 'madinaAirportToMadinaHotel',
-    pickupId: 'madina_airport',
-    destinationId: 'madina_hotel',
-    nameEn: 'Madina Airport (PMIA) ➔ Madina Hotel',
-    nameAr: 'مطار المدينة (PMIA) ➔ فندق المدينة'
-  },
-  {
-    key: 'madinaHotelToMadinaAirport',
-    pickupId: 'madina_hotel',
-    destinationId: 'madina_airport',
-    nameEn: 'Madina Hotel ➔ Madina Airport (PMIA)',
-    nameAr: 'فندق المدينة ➔ مطار المدينة (PMIA)'
-  },
-  {
-    key: 'makkahZiyarat',
-    pickupId: 'makkah_hotel',
-    destinationId: 'makkah_ziyarat',
-    nameEn: 'Makkah Ziyarat Tour (Holy Sites)',
-    nameAr: 'جولة مزارات مكة المكرمة'
-  },
-  {
-    key: 'madinaZiyarat',
-    pickupId: 'madina_hotel',
-    destinationId: 'madina_ziyarat',
-    nameEn: 'Madina Ziyarat Tour (Noble Sites)',
-    nameAr: 'جولة مزارات المدينة المنورة'
-  },
-  {
-    key: 'makkahToTaifReturn',
-    pickupId: 'makkah_hotel',
-    destinationId: 'taif_return',
-    nameEn: 'Makkah ➔ Taif Mountain Tour (Return)',
-    nameAr: 'مكة ➔ الطائف (ذهاب وعودة)'
-  },
-  {
-    key: 'fullGroundTransport',
-    pickupId: 'full_ground_package',
-    destinationId: 'full_ground_complete',
-    nameEn: 'Full Ground Transport (Jeddah ➔ Makkah ➔ Madina ➔ Airport)',
-    nameAr: 'التفويج الكامل (جدة ➔ مكة ➔ المدينة ➔ المطار)'
-  },
-  {
-    key: 'fullGroundTransportWithZiyarat',
-    pickupId: 'full_ground_ziyarat_package',
-    destinationId: 'full_ground_ziyarat_complete',
-    nameEn: 'Full Ground Transport + Ziyarat (All-Inclusive)',
-    nameAr: 'التفويج الكامل مع المزارات الشاملة'
-  },
-  {
-    key: 'perHourRate',
-    pickupId: 'hourly_service',
-    destinationId: 'hourly_duration',
-    nameEn: 'Hourly Service (Per Hour Rate)',
-    nameAr: 'خدمة بالساعة (لكل ساعة)'
-  }
-];
+export type CityKey = 'jeddah' | 'makkah' | 'madina' | 'taif' | 'special';
 
 export interface LocationOption {
   id: string;
+  city: CityKey;
   nameEn: string;
   nameAr: string;
 }
 
-export const PICKUP_OPTIONS_BUSES: LocationOption[] = [
-  { id: 'jeddah_airport', nameEn: 'Jeddah Airport (KAIA)', nameAr: 'مطار جدة الدولي (KAIA)' },
-  { id: 'makkah_hotel', nameEn: 'Makkah Hotel', nameAr: 'فندق مكة المكرمة' },
-  { id: 'madina_hotel', nameEn: 'Madina Hotel', nameAr: 'فندق المدينة المنورة' },
-  { id: 'madina_airport', nameEn: 'Madina Airport (PMIA)', nameAr: 'مطار المدينة المنورة (PMIA)' },
-  { id: 'full_ground_package', nameEn: 'Full Ground Transport Package', nameAr: 'باقة التفويج الكامل' },
-  { id: 'full_ground_ziyarat_package', nameEn: 'Full Ground + Ziyarat Package', nameAr: 'باقة التفويج الكامل مع المزارات' },
-  { id: 'hourly_service', nameEn: 'Hourly Rental Service', nameAr: 'خدمة بالساعة' }
+// Geographic Pickup Locations for Point-to-Point and Custom Trips
+// (Strictly excludes Full Circuit and Hourly options)
+export const PICKUP_OPTIONS: LocationOption[] = [
+  { id: 'jeddah_airport', city: 'jeddah', nameEn: 'Jeddah Airport (KAIA)', nameAr: 'مطار جدة الدولي (KAIA)' },
+  { id: 'jeddah_hotel', city: 'jeddah', nameEn: 'Jeddah City / Hotel', nameAr: 'مدينة / فندق جدة' },
+  { id: 'makkah_hotel', city: 'makkah', nameEn: 'Makkah Hotel (near Haram)', nameAr: 'فندق مكة المكرمة (قرب الحرم)' },
+  { id: 'madina_hotel', city: 'madina', nameEn: 'Madina Hotel (Markaziyah)', nameAr: 'فندق المدينة المنورة (المركزية)' },
+  { id: 'madina_airport', city: 'madina', nameEn: 'Madina Airport (PMIA)', nameAr: 'مطار المدينة المنورة (PMIA)' }
 ];
 
-export const DESTINATION_OPTIONS_BUSES: LocationOption[] = [
-  { id: 'makkah_hotel', nameEn: 'Makkah Hotel', nameAr: 'فندق مكة المكرمة' },
-  { id: 'madina_hotel', nameEn: 'Madina Hotel', nameAr: 'فندق المدينة المنورة' },
-  { id: 'jeddah_airport', nameEn: 'Jeddah Airport (KAIA)', nameAr: 'مطار جدة الدولي (KAIA)' },
-  { id: 'madina_airport', nameEn: 'Madina Airport (PMIA)', nameAr: 'مطار المدينة المنورة (PMIA)' },
-  { id: 'makkah_ziyarat', nameEn: 'Makkah Ziyarat Tour', nameAr: 'جولة مزارات مكة المكرمة' },
-  { id: 'madina_ziyarat', nameEn: 'Madina Ziyarat Tour', nameAr: 'جولة مزارات المدينة المنورة' },
-  { id: 'taif_return', nameEn: 'Taif (Return Trip)', nameAr: 'الطائف (ذهاب وعودة)' },
-  { id: 'full_ground_complete', nameEn: 'Complete Full Circuit', nameAr: 'اكتمال خطة التفويج الكامل' },
-  { id: 'full_ground_ziyarat_complete', nameEn: 'Complete Full Circuit + Ziyarat', nameAr: 'اكتمال خطة التفويج + المزارات' },
-  { id: 'hourly_duration', nameEn: 'Hourly Duration (1 Hour)', nameAr: 'مدة الخدمة (ساعة واحدة)' }
+// Preset Destinations for City-to-City and Tours
+export const DESTINATION_OPTIONS: LocationOption[] = [
+  { id: 'makkah_hotel', city: 'makkah', nameEn: 'Makkah Hotel (near Haram)', nameAr: 'فندق مكة المكرمة (قرب الحرم)' },
+  { id: 'madina_hotel', city: 'madina', nameEn: 'Madina Hotel (Markaziyah)', nameAr: 'فندق المدينة المنورة (المركزية)' },
+  { id: 'madina_airport', city: 'madina', nameEn: 'Madina Airport (PMIA)', nameAr: 'مطار المدينة المنورة (PMIA)' },
+  { id: 'jeddah_airport', city: 'jeddah', nameEn: 'Jeddah Airport (KAIA)', nameAr: 'مطار جدة الدولي (KAIA)' },
+  { id: 'jeddah_hotel', city: 'jeddah', nameEn: 'Jeddah City / Hotel', nameAr: 'مدينة / فندق جدة' },
+  { id: 'makkah_ziyarat', city: 'special', nameEn: 'Makkah Ziyarat Tour (Holy Sites)', nameAr: 'جولة مزارات مكة المكرمة' },
+  { id: 'madina_ziyarat', city: 'special', nameEn: 'Madina Ziyarat Tour (Noble Sites)', nameAr: 'جولة مزارات المدينة المنورة' },
+  { id: 'taif_return', city: 'taif', nameEn: 'Taif Mountain Tour (Return)', nameAr: 'جولة الطائف (ذهاب وعودة)' },
+  { id: 'custom', city: 'special', nameEn: 'Custom Destination...', nameAr: 'وجهة وصول مخصصة...' }
 ];
 
-export const PICKUP_OPTIONS_CARS: LocationOption[] = [
-  ...PICKUP_OPTIONS_BUSES,
-  { id: 'custom', nameEn: 'Custom Pickup Location...', nameAr: 'موقع استلام مخصص...' }
-];
+export interface FullCircuitOption {
+  id: 'standard_circuit' | 'circuit_with_ziyarat';
+  rateKey: 'fullGroundTransport' | 'fullGroundTransportWithZiyarat';
+  nameEn: string;
+  nameAr: string;
+  descriptionEn: string;
+  descriptionAr: string;
+  stopsEn: string[];
+  stopsAr: string[];
+}
 
-export const DESTINATION_OPTIONS_CARS: LocationOption[] = [
-  ...DESTINATION_OPTIONS_BUSES,
-  { id: 'custom', nameEn: 'Custom Destination...', nameAr: 'وجهة وصول مخصصة...' }
-];
-
-/**
- * Calculates the exact scaled price for a given vehicle and route
- */
-export function getScaledRoutePrice(vehicleKey: string, routeKey: RouteKey): number {
-  const vehicle = rates.vehicles[vehicleKey];
-  if (!vehicle || !vehicle.baseRates[routeKey]) {
-    return 0;
+export const FULL_CIRCUIT_OPTIONS: FullCircuitOption[] = [
+  {
+    id: 'standard_circuit',
+    rateKey: 'fullGroundTransport',
+    nameEn: 'Full Ground Transport Package',
+    nameAr: 'باقة التفويج والتنقل الشامل',
+    descriptionEn: 'Complete multi-city pilgrim ground itinerary connecting arrival to departure.',
+    descriptionAr: 'خطة التفويج الكامل لنقل ضيوف الرحمن من الوصول حتى المغادرة.',
+    stopsEn: ['Jeddah Airport Arrival', 'Makkah Haram Stay', 'Intercity Madinah Transfer', 'Madinah / Jeddah Airport Departure'],
+    stopsAr: ['استقبال مطار جدة', 'الإقامة بفندق مكة', 'التفويج إلى المدينة المنورة', 'التوديع للمطار للمغادرة']
+  },
+  {
+    id: 'circuit_with_ziyarat',
+    rateKey: 'fullGroundTransportWithZiyarat',
+    nameEn: 'Full Ground Transport + Ziyarat (All-Inclusive)',
+    nameAr: 'باقة التفويج الشامل + المزارات الدينية',
+    descriptionEn: 'All-inclusive multi-city transport including private guided tours to holy sites in Makkah & Madinah.',
+    descriptionAr: 'خطة النقل الشاملة متضمنة جولات المزارات والمعالم التاريخية في مكة والمدينة.',
+    stopsEn: ['Jeddah Arrival', 'Makkah Hotels', 'Makkah Ziyarat (Arafat, Mina)', 'Madinah Transfer', 'Madinah Ziyarat (Uhud, Quba)', 'Airport Transfer'],
+    stopsAr: ['استقبال جدة', 'فنادق مكة', 'مزارات مكة (عرفات، منى، ثور)', 'الانتقال للمدينة', 'مزارات المدينة (أحد، قباء)', 'توصيل المطار']
   }
-  const base = vehicle.baseRates[routeKey];
-  return Math.round(base * rates.globalMultiplier);
+];
+
+export interface RouteMatchResult {
+  isCityToCity: boolean;
+  rateKey?: string;
+  routeNameEn: string;
+  routeNameAr: string;
+  cityPair: string;
 }
 
 /**
- * Calculates the estimated price for custom distance using kmFallbackRate and globalMultiplier
+ * Maps a location ID to its representative city
  */
-export function getKmEstimatedPrice(distanceKm: number): {
-  min: number;
-  max: number;
-  avg: number;
-  rateMin: number;
-  rateMax: number;
-} {
-  const rateMin = rates.kmFallbackRate.min * rates.globalMultiplier;
-  const rateMax = rates.kmFallbackRate.max * rates.globalMultiplier;
-  const min = Math.round(distanceKm * rateMin);
-  const max = Math.round(distanceKm * rateMax);
-  const avg = Math.round(distanceKm * ((rateMin + rateMax) / 2));
-  return { min, max, avg, rateMin, rateMax };
+export function getLocationCity(locationId: string): CityKey {
+  const found = [...PICKUP_OPTIONS, ...DESTINATION_OPTIONS].find(opt => opt.id === locationId);
+  if (found) return found.city;
+  if (locationId.includes('jeddah')) return 'jeddah';
+  if (locationId.includes('makkah')) return 'makkah';
+  if (locationId.includes('madina') || locationId.includes('madinah')) return 'madina';
+  if (locationId.includes('taif')) return 'taif';
+  return 'special';
 }
 
 /**
- * Resolves whether a pickup and destination pair matches a predefined route
+ * Resolves city-to-city pricing rule.
+ * Crucial Rule: Specific pickup/drop-off point (airport, hotel, station) DOES NOT affect the price.
+ * ONLY the city pair determines the price:
+ * - Jeddah Airport -> Madina Hotel == Jeddah Airport -> Madina Airport == any Jeddah point -> any Madina point!
  */
-export function matchPredefinedRoute(pickupId: string, destinationId: string): PredefinedRouteDef | null {
+export function resolveCityToCityRoute(pickupId: string, destinationId: string): RouteMatchResult | null {
   if (pickupId === 'custom' || destinationId === 'custom') {
     return null;
   }
 
-  // Exact match
-  const exact = PREDEFINED_ROUTES.find(r => r.pickupId === pickupId && r.destinationId === destinationId);
-  if (exact) return exact;
-
-  // Handle special pairings
+  // Check special standalone tours first
   if (destinationId === 'makkah_ziyarat') {
-    return PREDEFINED_ROUTES.find(r => r.key === 'makkahZiyarat') || null;
+    return {
+      isCityToCity: false,
+      rateKey: 'makkahZiyarat',
+      routeNameEn: 'Makkah Ziyarat Tour (Holy Sites)',
+      routeNameAr: 'جولة مزارات مكة المكرمة',
+      cityPair: 'makkah_ziyarat'
+    };
   }
+
   if (destinationId === 'madina_ziyarat') {
-    return PREDEFINED_ROUTES.find(r => r.key === 'madinaZiyarat') || null;
+    return {
+      isCityToCity: false,
+      rateKey: 'madinaZiyarat',
+      routeNameEn: 'Madina Ziyarat Tour (Noble Sites)',
+      routeNameAr: 'جولة مزارات المدينة المنورة',
+      cityPair: 'madina_ziyarat'
+    };
   }
-  if (destinationId === 'taif_return') {
-    return PREDEFINED_ROUTES.find(r => r.key === 'makkahToTaifReturn') || null;
+
+  if (destinationId === 'taif_return' || pickupId === 'taif_return') {
+    return {
+      isCityToCity: false,
+      rateKey: 'makkahToTaifReturn',
+      routeNameEn: 'Makkah ➔ Taif Mountain Tour (Return)',
+      routeNameAr: 'مكة ➔ الطائف (ذهاب وعودة)',
+      cityPair: 'makkah_taif'
+    };
   }
-  if (pickupId === 'full_ground_package' || destinationId === 'full_ground_complete') {
-    return PREDEFINED_ROUTES.find(r => r.key === 'fullGroundTransport') || null;
+
+  const pickupCity = getLocationCity(pickupId);
+  const destCity = getLocationCity(destinationId);
+
+  // 1. City Pair: Jeddah ⇄ Makkah (e.g., Jeddah Airport ➔ Makkah Hotel, Makkah Hotel ➔ Jeddah Airport, Jeddah Hotel ➔ Makkah Hotel)
+  if ((pickupCity === 'jeddah' && destCity === 'makkah') || (pickupCity === 'makkah' && destCity === 'jeddah')) {
+    const isJeddahToMakkah = pickupCity === 'jeddah';
+    return {
+      isCityToCity: true,
+      rateKey: 'cityJeddahToMakkah',
+      routeNameEn: isJeddahToMakkah ? 'Jeddah ➔ Makkah' : 'Makkah ➔ Jeddah',
+      routeNameAr: isJeddahToMakkah ? 'جدة ➔ مكة المكرمة' : 'مكة المكرمة ➔ جدة',
+      cityPair: 'jeddah_makkah'
+    };
   }
-  if (pickupId === 'full_ground_ziyarat_package' || destinationId === 'full_ground_ziyarat_complete') {
-    return PREDEFINED_ROUTES.find(r => r.key === 'fullGroundTransportWithZiyarat') || null;
+
+  // 2. City Pair: Jeddah ⇄ Madinah (e.g., Jeddah Airport ➔ Madina Hotel, Jeddah Airport ➔ Madina Airport, Madina Hotel ➔ Jeddah Airport, etc.)
+  if ((pickupCity === 'jeddah' && destCity === 'madina') || (pickupCity === 'madina' && destCity === 'jeddah')) {
+    const isJeddahToMadina = pickupCity === 'jeddah';
+    return {
+      isCityToCity: true,
+      rateKey: 'cityJeddahToMadinah',
+      routeNameEn: isJeddahToMadina ? 'Jeddah ➔ Madinah' : 'Madinah ➔ Jeddah',
+      routeNameAr: isJeddahToMadina ? 'جدة ➔ المدينة المنورة' : 'المدينة المنورة ➔ جدة',
+      cityPair: 'jeddah_madina'
+    };
   }
-  if (pickupId === 'hourly_service' || destinationId === 'hourly_duration') {
-    return PREDEFINED_ROUTES.find(r => r.key === 'perHourRate') || null;
+
+  // 3. City Pair: Makkah ⇄ Madinah (e.g., Makkah Hotel ➔ Madina Hotel, Makkah Hotel ➔ Madina Airport, Madina Hotel ➔ Makkah Hotel)
+  if ((pickupCity === 'makkah' && destCity === 'madina') || (pickupCity === 'madina' && destCity === 'makkah')) {
+    const isMakkahToMadina = pickupCity === 'makkah';
+    return {
+      isCityToCity: true,
+      rateKey: 'cityMakkahToMadinah',
+      routeNameEn: isMakkahToMadina ? 'Makkah ➔ Madinah' : 'Madinah ➔ Makkah',
+      routeNameAr: isMakkahToMadina ? 'مكة المكرمة ➔ المدينة المنورة' : 'المدينة المنورة ➔ مكة المكرمة',
+      cityPair: 'makkah_madina'
+    };
+  }
+
+  // 4. City Pair: Madinah ⇄ Madinah (Internal transfers like Madina Airport ➔ Madina Hotel or vice-versa)
+  if (pickupCity === 'madina' && destCity === 'madina') {
+    return {
+      isCityToCity: true,
+      rateKey: 'cityMadinahInternal',
+      routeNameEn: 'Madinah Internal Transfer',
+      routeNameAr: 'توصيل داخلي بالمدينة المنورة',
+      cityPair: 'madina_internal'
+    };
+  }
+
+  // 5. Internal Jeddah or Makkah Transfer
+  if (pickupCity === 'jeddah' && destCity === 'jeddah') {
+    return {
+      isCityToCity: true,
+      rateKey: 'cityJeddahToMakkah', // Falls back to local city flat transfer
+      routeNameEn: 'Jeddah Local Transfer',
+      routeNameAr: 'توصيل محلي بجدة',
+      cityPair: 'jeddah_internal'
+    };
+  }
+
+  if (pickupCity === 'makkah' && destCity === 'makkah') {
+    return {
+      isCityToCity: true,
+      rateKey: 'makkahZiyarat', // Local Makkah transfer
+      routeNameEn: 'Makkah Local Transfer',
+      routeNameAr: 'توصيل محلي بمكة المكرمة',
+      cityPair: 'makkah_internal'
+    };
   }
 
   return null;
+}
+
+/**
+ * Computes exact city-to-city or circuit package price for a vehicle
+ */
+export function getCityRoutePrice(vehicleRateKey: string | undefined, rateKey: string): number {
+  if (!vehicleRateKey) return 0;
+  const vehicle = rates.vehicles[vehicleRateKey];
+  if (!vehicle || !vehicle.baseRates) return 0;
+
+  const basePrice = vehicle.baseRates[rateKey];
+  if (typeof basePrice === 'number') {
+    return Math.round(basePrice * (rates.globalMultiplier || 1.0));
+  }
+
+  // Fallback lookups if specific key was aliased
+  if (rateKey === 'cityJeddahToMakkah') {
+    const alt = vehicle.baseRates.jeddahAirportToMakkahHotel || 350;
+    return Math.round(alt * rates.globalMultiplier);
+  }
+  if (rateKey === 'cityJeddahToMadinah') {
+    const alt = vehicle.baseRates.jeddahAirportToMadinaHotel || 500;
+    return Math.round(alt * rates.globalMultiplier);
+  }
+  if (rateKey === 'cityMakkahToMadinah') {
+    const alt = vehicle.baseRates.makkahHotelToMadinaHotel || 500;
+    return Math.round(alt * rates.globalMultiplier);
+  }
+  if (rateKey === 'cityMadinahInternal') {
+    const alt = vehicle.baseRates.madinaAirportToMadinaHotel || 250;
+    return Math.round(alt * rates.globalMultiplier);
+  }
+
+  return 0;
+}
+
+/**
+ * Calculates custom destination trip price using the vehicle's official fallback per-KM rate:
+ * Camry: 3.89 SAR/km
+ * Ford Taurus: 4.44 SAR/km
+ * GMC Yukon XL: 5.56 SAR/km
+ * H1 Hyundai: 2.56 SAR/km
+ * Toyota Hiace: 3.67 SAR/km
+ * Toyota Coaster: 5.89 SAR/km
+ */
+export function getVehicleKmFallbackRate(vehicleRateKey?: string): number {
+  if (!vehicleRateKey) return 3.89;
+  return VEHICLE_KM_FALLBACK_RATES[vehicleRateKey] || rates.vehicles[vehicleRateKey]?.kmFallbackRate || 3.89;
+}
+
+export function getVehicleKmPrice(vehicleRateKey: string | undefined, distanceKm: number): {
+  perKmRate: number;
+  totalPrice: number;
+} {
+  const perKmRate = getVehicleKmFallbackRate(vehicleRateKey);
+  const validDist = Math.max(5, distanceKm || 50);
+  const totalPrice = Math.round(validDist * perKmRate * (rates.globalMultiplier || 1.0));
+  return { perKmRate, totalPrice };
 }

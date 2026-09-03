@@ -18,7 +18,7 @@ export const translations = {
     
     // SearchWidget
     tabPointToPoint: "Point to Point",
-    tabHourly: "By Hour",
+    tabCircuit: "Full Circuit",
     tabByKm: "By KM",
     tabContract: "Full Contract",
     
@@ -75,7 +75,7 @@ export const translations = {
     // How it works
     howTitle: "Seamless Booking Protocol",
     step1Title: "1. Specify Route Detail",
-    step1Desc: "Select from point-to-point, hourly, distance-based, or corporate contract options above.",
+    step1Desc: "Select from city-to-city, full pilgrimage circuit, distance-based, or corporate contract options.",
     step2Title: "2. Choose Your Caravan",
     step2Desc: "Filter and view our certified coaches, VIP sedans, family minivans, or executive transit.",
     step3Title: "3. Fast Booking Confirmation",
@@ -160,7 +160,7 @@ export const translations = {
     
     // SearchWidget
     tabPointToPoint: "من نقطة إلى نقطة",
-    tabHourly: "بالساعة",
+    tabCircuit: "التفويج الشامل",
     tabByKm: "بالكيلومتر",
     tabContract: "عقود نقل كاملة",
     
