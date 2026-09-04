@@ -6,7 +6,7 @@
       "capacity": "4 - 7 Persons",
       "kmFallbackRate": 2.56,
       "baseRates": {
-        "cityJeddahToMakkah": 230,
+        "cityJeddahToMakkah": 300,
         "cityJeddahToMadinah": 450,
         "cityMakkahToMadinah": 440,
         "cityMadinahInternal": 220,
