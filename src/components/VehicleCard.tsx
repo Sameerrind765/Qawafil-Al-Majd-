@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useLang } from '../context/LangContext';
 import { VehicleData, getVehicleImageUrl } from '../data/vehicles';
 import { 
@@ -18,7 +18,8 @@ import {
   ArrowRight,
   CheckCircle2,
   RefreshCw,
-  Sliders
+  Sliders,
+  Plane
 } from 'lucide-react';
 import { 
   rates, 
@@ -27,14 +28,23 @@ import {
   PACKAGE_OPTIONS,
   FULL_CIRCUIT_OPTIONS,
   resolveCityToCityRoute, 
+  getLocationCity,
   getCityRoutePrice, 
-  getVehicleKmPrice,
+  getVehicleKmPrice, 
   getVehicleKmFallbackRate,
-  PackageOption
+  PackageOption,
+  JEDDAH_TERMINAL_OPTIONS,
+  JeddahTerminalId,
+  HAJJ_TERMINAL_SURCHARGE,
+  getTerminalSurcharge
 } from '../data/ratesService';
 
 interface VehicleCardProps {
   vehicle: VehicleData;
+  initialPickupId?: string;
+  initialDestinationId?: string;
+  initialPickupTerminal?: JeddahTerminalId;
+  initialDestinationTerminal?: JeddahTerminalId;
   onBookNow: (vehicle: VehicleData, customDetails?: {
     pickup: string;
     destination: string;
@@ -43,10 +53,20 @@ interface VehicleCardProps {
     isEstimated: boolean;
     distanceKm?: number;
     circuitPackageId?: string;
+    terminalSurcharge?: number;
+    pickupTerminal?: JeddahTerminalId;
+    destinationTerminal?: JeddahTerminalId;
   }) => void;
 }
 
-export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
+export default function VehicleCard({ 
+  vehicle, 
+  initialPickupId,
+  initialDestinationId,
+  initialPickupTerminal,
+  initialDestinationTerminal,
+  onBookNow 
+}: VehicleCardProps) {
   const { lang, t } = useLang();
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -57,8 +77,20 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
   const [tripMode, setTripMode] = useState<'city' | 'circuit' | 'custom'>('city');
 
   // City-to-city route selections
-  const [pickupId, setPickupId] = useState<string>('jeddah_airport');
-  const [destinationId, setDestinationId] = useState<string>('makkah_hotel');
+  const [pickupId, setPickupId] = useState<string>(initialPickupId || 'jeddah_airport');
+  const [destinationId, setDestinationId] = useState<string>(initialDestinationId || 'makkah_hotel');
+
+  // Conditional Jeddah Airport terminal selections (Hajj Terminal +30 SAR surcharge; Terminal 1 & North Terminal: 0 SAR)
+  const [pickupTerminal, setPickupTerminal] = useState<JeddahTerminalId>(initialPickupTerminal || 'terminal_1');
+  const [destinationTerminal, setDestinationTerminal] = useState<JeddahTerminalId>(initialDestinationTerminal || 'terminal_1');
+
+  // Sync if initial props change
+  useEffect(() => {
+    if (initialPickupId) setPickupId(initialPickupId);
+    if (initialDestinationId) setDestinationId(initialDestinationId);
+    if (initialPickupTerminal) setPickupTerminal(initialPickupTerminal);
+    if (initialDestinationTerminal) setDestinationTerminal(initialDestinationTerminal);
+  }, [initialPickupId, initialDestinationId, initialPickupTerminal, initialDestinationTerminal]);
 
   // Package selection
   const [packageOptionId, setPackageOptionId] = useState<string>('standard_circuit');
@@ -76,6 +108,18 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
   const selectedPackage = useMemo(() => {
     return PACKAGE_OPTIONS.find(c => c.id === packageOptionId) || PACKAGE_OPTIONS[0];
   }, [packageOptionId]);
+
+  // Calculate terminal surcharge (Hajj Terminal = +30 SAR; others = 0)
+  const terminalSurcharge = useMemo(() => {
+    let surcharge = 0;
+    if (pickupId === 'jeddah_airport') {
+      surcharge += getTerminalSurcharge(pickupTerminal);
+    }
+    if (destinationId === 'jeddah_airport') {
+      surcharge += getTerminalSurcharge(destinationTerminal);
+    }
+    return surcharge;
+  }, [pickupId, pickupTerminal, destinationId, destinationTerminal]);
 
   // Dynamic Calculation based on mode and city-to-city logic
   const { computedPrice, isEstimated, routeLabel, distanceKm } = useMemo(() => {
@@ -99,10 +143,18 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
         : (lang === 'en' ? 'Custom Destination' : 'وجهة مخصصة');
       
       const pickupObj = PICKUP_OPTIONS.find(p => p.id === pickupId);
-      const pickupName = pickupObj ? (lang === 'en' ? pickupObj.nameEn : pickupObj.nameAr) : pickupId;
+      let pickupName = pickupObj ? (lang === 'en' ? pickupObj.nameEn : pickupObj.nameAr) : pickupId;
+      if (pickupId === 'jeddah_airport') {
+        const termObj = JEDDAH_TERMINAL_OPTIONS.find(t => t.id === pickupTerminal);
+        pickupName = lang === 'en' 
+          ? `Jeddah [${termObj?.nameEn || 'Terminal'}]` 
+          : `جدة [${termObj?.nameAr || 'الصالة'}]`;
+      }
+
+      const customPickupSurcharge = pickupId === 'jeddah_airport' ? getTerminalSurcharge(pickupTerminal) : 0;
 
       return {
-        computedPrice: totalPrice,
+        computedPrice: totalPrice + customPickupSurcharge,
         isEstimated: true,
         routeLabel: `${pickupName} ➔ ${destName} (${customDistanceKm} km)`,
         distanceKm: customDistanceKm
@@ -116,18 +168,62 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
     if (matchedCityRoute && matchedCityRoute.rateKey) {
       const price = getCityRoutePrice(vehicle.rateKey, matchedCityRoute.rateKey);
       if (price > 0) {
+        let label = '';
+        if (!matchedCityRoute.isCityToCity) {
+          label = lang === 'en' ? matchedCityRoute.routeNameEn : matchedCityRoute.routeNameAr;
+        } else {
+          const pickupCity = getLocationCity(pickupId);
+          const destCity = getLocationCity(destinationId);
+
+          let fromName = '';
+          if (pickupCity === 'jeddah') {
+            const termObj = JEDDAH_TERMINAL_OPTIONS.find(t => t.id === pickupTerminal);
+            fromName = pickupId === 'jeddah_airport' && termObj
+              ? (lang === 'en' ? `Jeddah [${termObj.nameEn}]` : `جدة [${termObj.nameAr}]`)
+              : (lang === 'en' ? 'Jeddah' : 'جدة');
+          } else if (pickupCity === 'makkah') {
+            fromName = lang === 'en' ? 'Makkah' : 'مكة المكرمة';
+          } else if (pickupCity === 'madina') {
+            fromName = lang === 'en' ? 'Madinah' : 'المدينة المنورة';
+          } else if (pickupCity === 'taif') {
+            fromName = lang === 'en' ? 'Taif' : 'الطائف';
+          } else {
+            const pObj = PICKUP_OPTIONS.find(p => p.id === pickupId);
+            fromName = pObj ? (lang === 'en' ? pObj.nameEn : pObj.nameAr) : pickupId;
+          }
+
+          let toName = '';
+          if (destCity === 'jeddah') {
+            const termObj = JEDDAH_TERMINAL_OPTIONS.find(t => t.id === destinationTerminal);
+            toName = destinationId === 'jeddah_airport' && termObj
+              ? (lang === 'en' ? `Jeddah [${termObj.nameEn}]` : `جدة [${termObj.nameAr}]`)
+              : (lang === 'en' ? 'Jeddah' : 'جدة');
+          } else if (destCity === 'makkah') {
+            toName = lang === 'en' ? 'Makkah' : 'مكة المكرمة';
+          } else if (destCity === 'madina') {
+            toName = lang === 'en' ? 'Madinah' : 'المدينة المنورة';
+          } else if (destCity === 'taif') {
+            toName = lang === 'en' ? 'Taif' : 'الطائف';
+          } else {
+            const dObj = DESTINATION_OPTIONS.find(d => d.id === destinationId);
+            toName = dObj ? (lang === 'en' ? dObj.nameEn : dObj.nameAr) : destinationId;
+          }
+
+          label = `${fromName} ➔ ${toName}`;
+        }
+
         return {
-          computedPrice: price,
+          computedPrice: price + terminalSurcharge,
           isEstimated: false,
-          routeLabel: lang === 'en' ? matchedCityRoute.routeNameEn : matchedCityRoute.routeNameAr,
+          routeLabel: label,
           distanceKm: undefined
         };
       }
     }
 
-    // Fallback: Default vehicle price
+    // Fallback: Default vehicle price + terminal surcharge
     return {
-      computedPrice: vehicle.price,
+      computedPrice: vehicle.price + terminalSurcharge,
       isEstimated: false,
       routeLabel: lang === 'en' ? 'Standard Route' : 'مسار اعتيادي',
       distanceKm: undefined
@@ -142,7 +238,10 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
     vehicle.rateKey, 
     vehicle.price, 
     selectedPackage, 
-    lang
+    lang,
+    terminalSurcharge,
+    pickupTerminal,
+    destinationTerminal
   ]);
 
   const name = lang === 'en' ? vehicle.nameEn : vehicle.nameAr;
@@ -446,6 +545,28 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
                 </select>
               </div>
 
+              {/* Conditional Jeddah Airport Terminal Selection for Custom Pickup */}
+              {pickupId === 'jeddah_airport' && (
+                <div className="space-y-1 animate-fadeIn">
+                  <label className="text-[9.5px] font-bold text-slate-700 flex items-center gap-1">
+                    <Plane className="w-3 h-3 text-slate-400" />
+                    <span>{lang === 'en' ? 'Jeddah Pickup Terminal' : 'صالة الانطلاق بمطار جدة'}</span>
+                  </label>
+                  <select
+                    value={pickupTerminal}
+                    onChange={(e) => setPickupTerminal(e.target.value as JeddahTerminalId)}
+                    className="w-full bg-white border border-amber-200 focus:border-amber-500 rounded-xl py-1.5 px-2.5 text-xs font-bold text-slate-800 outline-none cursor-pointer shadow-2xs"
+                    id={`custom-pickup-terminal-${vehicle.id}`}
+                  >
+                    {JEDDAH_TERMINAL_OPTIONS.map((term) => (
+                      <option key={term.id} value={term.id}>
+                        {lang === 'en' ? term.nameEn : term.nameAr}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               {/* Custom Destination Text Input */}
               <div className="space-y-1">
                 <label className="text-[9.5px] font-bold text-slate-700 flex items-center gap-1">
@@ -533,7 +654,7 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
                 </span>
               </div>
 
-              {/* Pickup Location Dropdown (Strictly real geographic locations) */}
+              {/* Pickup Location Dropdown */}
               <div className="space-y-1">
                 <label className="text-[9.5px] font-bold text-slate-500 flex items-center gap-1">
                   <MapPin className="w-3 h-3 text-emerald-600" />
@@ -552,6 +673,28 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
                   ))}
                 </select>
               </div>
+
+              {/* Conditional Jeddah Airport Terminal Selection for Pickup */}
+              {pickupId === 'jeddah_airport' && (
+                <div className="space-y-1 animate-fadeIn">
+                  <label className="text-[9.5px] font-bold text-slate-500 flex items-center gap-1">
+                    <Plane className="w-3 h-3 text-slate-400" />
+                    <span>{lang === 'en' ? 'Jeddah Pickup Terminal' : 'صالة الانطلاق بمطار جدة'}</span>
+                  </label>
+                  <select
+                    value={pickupTerminal}
+                    onChange={(e) => setPickupTerminal(e.target.value as JeddahTerminalId)}
+                    className="w-full bg-white border border-slate-200 hover:border-brand-primary/40 focus:border-brand-primary rounded-xl py-1.5 px-2.5 text-xs font-bold text-slate-800 outline-none cursor-pointer transition-colors shadow-2xs"
+                    id={`pickup-terminal-${vehicle.id}`}
+                  >
+                    {JEDDAH_TERMINAL_OPTIONS.map((term) => (
+                      <option key={term.id} value={term.id}>
+                        {lang === 'en' ? term.nameEn : term.nameAr}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               {/* Destination Dropdown */}
               <div className="space-y-1">
@@ -578,6 +721,28 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
                   ))}
                 </select>
               </div>
+
+              {/* Conditional Jeddah Airport Terminal Selection for Destination */}
+              {destinationId === 'jeddah_airport' && (
+                <div className="space-y-1 animate-fadeIn">
+                  <label className="text-[9.5px] font-bold text-slate-500 flex items-center gap-1">
+                    <Plane className="w-3 h-3 text-slate-400" />
+                    <span>{lang === 'en' ? 'Jeddah Drop-off Terminal' : 'صالة الوصول بمطار جدة'}</span>
+                  </label>
+                  <select
+                    value={destinationTerminal}
+                    onChange={(e) => setDestinationTerminal(e.target.value as JeddahTerminalId)}
+                    className="w-full bg-white border border-slate-200 hover:border-brand-primary/40 focus:border-brand-primary rounded-xl py-1.5 px-2.5 text-xs font-bold text-slate-800 outline-none cursor-pointer transition-colors shadow-2xs"
+                    id={`dest-terminal-${vehicle.id}`}
+                  >
+                    {JEDDAH_TERMINAL_OPTIONS.map((term) => (
+                      <option key={term.id} value={term.id}>
+                        {lang === 'en' ? term.nameEn : term.nameAr}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               {/* Active Route display */}
               <div className="text-[9px] font-bold text-slate-500 pt-0.5">
@@ -612,19 +777,43 @@ export default function VehicleCard({ vehicle, onBookNow }: VehicleCardProps) {
 
           <button
             type="button"
-            onClick={() => onBookNow(vehicle, {
-              pickup: pickupId,
-              destination: tripMode === 'custom' 
-                ? (customDestinationText || 'Custom Destination') 
+            onClick={() => {
+              const pickupObj = PICKUP_OPTIONS.find(p => p.id === pickupId);
+              let pickupDisplay = pickupObj ? (lang === 'en' ? pickupObj.nameEn : pickupObj.nameAr) : pickupId;
+              if (pickupId === 'jeddah_airport') {
+                const term = JEDDAH_TERMINAL_OPTIONS.find(t => t.id === pickupTerminal);
+                pickupDisplay = lang === 'en' 
+                  ? `Jeddah Airport [${term?.nameEn || 'Terminal'}]` 
+                  : `مطار جدة [${term?.nameAr || 'الصالة'}]`;
+              }
+
+              const destObj = DESTINATION_OPTIONS.find(d => d.id === destinationId);
+              let destDisplay = tripMode === 'custom' 
+                ? (customDestinationText || (lang === 'en' ? 'Custom Destination' : 'وجهة مخصصة'))
                 : tripMode === 'circuit' 
-                  ? selectedPackage.nameEn 
-                  : destinationId,
-              routeName: routeLabel,
-              computedPrice,
-              isEstimated,
-              distanceKm: tripMode === 'custom' ? customDistanceKm : undefined,
-              circuitPackageId: tripMode === 'circuit' ? packageOptionId : undefined
-            })}
+                  ? (lang === 'en' ? selectedPackage.nameEn : selectedPackage.nameAr) 
+                  : (destObj ? (lang === 'en' ? destObj.nameEn : destObj.nameAr) : destinationId);
+
+              if (tripMode === 'city' && destinationId === 'jeddah_airport') {
+                const term = JEDDAH_TERMINAL_OPTIONS.find(t => t.id === destinationTerminal);
+                destDisplay = lang === 'en' 
+                  ? `Jeddah Airport [${term?.nameEn || 'Terminal'}]` 
+                  : `مطار جدة [${term?.nameAr || 'الصالة'}]`;
+              }
+
+              onBookNow(vehicle, {
+                pickup: pickupDisplay,
+                destination: destDisplay,
+                routeName: routeLabel,
+                computedPrice,
+                isEstimated,
+                distanceKm: tripMode === 'custom' ? customDistanceKm : undefined,
+                circuitPackageId: tripMode === 'circuit' ? packageOptionId : undefined,
+                terminalSurcharge,
+                pickupTerminal: pickupId === 'jeddah_airport' ? pickupTerminal : undefined,
+                destinationTerminal: destinationId === 'jeddah_airport' ? destinationTerminal : undefined
+              });
+            }}
             className="bg-brand-primary hover:bg-brand-dark text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:translate-y-[-1px] active:translate-y-[1px] transition-all duration-200 cursor-pointer flex items-center gap-1.5 group-hover:scale-[1.02]"
             id={`book-btn-${vehicle.id}`}
           >

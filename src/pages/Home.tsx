@@ -10,7 +10,11 @@ import {
   getVehicleKmFallbackRate, 
   resolveCityToCityRoute, 
   getCityRoutePrice,
-  PACKAGE_OPTIONS
+  PACKAGE_OPTIONS,
+  JEDDAH_TERMINAL_OPTIONS,
+  JeddahTerminalId,
+  HAJJ_TERMINAL_SURCHARGE,
+  getTerminalSurcharge
 } from '../data/ratesService';
 
 // Lucide Icons
@@ -44,7 +48,8 @@ import {
   Ticket,
   Headphones,
   Award,
-  Landmark
+  Landmark,
+  Plane
 } from 'lucide-react';
 
 export default function Home() {
@@ -62,6 +67,8 @@ export default function Home() {
   const [tripType, setTripType] = useState<'Point to Point' | 'Packages' | 'By KM' | 'Full Contract'>('Point to Point');
   const [fromLocation, setFromLocation] = useState('Jeddah Airport (KAIA)');
   const [toLocation, setToLocation] = useState('Makkah Hotel (near Haram)');
+  const [fromTerminal, setFromTerminal] = useState<JeddahTerminalId>('terminal_1');
+  const [toTerminal, setToTerminal] = useState<JeddahTerminalId>('terminal_1');
   const [packageOptionId, setPackageOptionId] = useState<string>('standard_circuit');
   const [distanceKm, setDistanceKm] = useState('100');
   const [contractDays, setContractDays] = useState('7 Days');
@@ -81,18 +88,26 @@ export default function Home() {
   } | undefined>(undefined);
 
   const getDynamicVehiclePrice = (vehicle: VehicleData): number => {
+    let terminalSurcharge = 0;
+    if (fromLocation.includes('Jeddah Airport')) {
+      terminalSurcharge += getTerminalSurcharge(fromTerminal);
+    }
+    if (tripType === 'Point to Point' && toLocation.includes('Jeddah Airport')) {
+      terminalSurcharge += getTerminalSurcharge(toTerminal);
+    }
+
     if (tripType === 'Packages') {
       const selectedPkg = PACKAGE_OPTIONS.find(p => p.id === packageOptionId);
       const rateKey = selectedPkg ? selectedPkg.rateKey : 'fullGroundTransport';
       const circuitPrice = getCityRoutePrice(vehicle.rateKey, rateKey);
-      if (circuitPrice > 0) return circuitPrice;
+      if (circuitPrice > 0) return circuitPrice + (fromLocation.includes('Jeddah Airport') ? getTerminalSurcharge(fromTerminal) : 0);
       return vehicle.price * 3;
     }
 
     if (tripType === 'By KM') {
       const kms = Math.max(10, parseInt(distanceKm) || 100);
       const kmRate = getVehicleKmFallbackRate(vehicle.rateKey);
-      return Math.round(kms * kmRate);
+      return Math.round(kms * kmRate) + (fromLocation.includes('Jeddah Airport') ? getTerminalSurcharge(fromTerminal) : 0);
     }
 
     if (tripType === 'Full Contract') {
@@ -115,10 +130,10 @@ export default function Home() {
     const cityMatch = resolveCityToCityRoute(pCity, dCity);
     if (cityMatch && cityMatch.rateKey) {
       const price = getCityRoutePrice(vehicle.rateKey, cityMatch.rateKey);
-      if (price > 0) return price;
+      if (price > 0) return price + terminalSurcharge;
     }
 
-    return vehicle.price;
+    return vehicle.price + terminalSurcharge;
   };
 
   const handleShowVehiclesAndPrices = (e: React.FormEvent) => {
@@ -127,9 +142,21 @@ export default function Home() {
     let finalFrom = fromLocation;
     let finalTo = toLocation;
 
+    if (fromLocation.includes('Jeddah Airport')) {
+      const term = JEDDAH_TERMINAL_OPTIONS.find(t => t.id === fromTerminal);
+      finalFrom = `${fromLocation} [${lang === 'ar' ? term?.nameAr : term?.nameEn}]`;
+    }
+
+    if (tripType === 'Point to Point' && toLocation.includes('Jeddah Airport')) {
+      const term = JEDDAH_TERMINAL_OPTIONS.find(t => t.id === toTerminal);
+      finalTo = `${toLocation} [${lang === 'ar' ? term?.nameAr : term?.nameEn}]`;
+    }
+
     if (tripType === 'Packages') {
       const selectedPkg = PACKAGE_OPTIONS.find(p => p.id === packageOptionId);
-      finalFrom = lang === 'en' ? 'Jeddah / Madinah / Makkah Hotel' : 'جدة / مكة / المدينة المنورة';
+      finalFrom = fromLocation.includes('Jeddah Airport')
+        ? `${fromLocation} [${lang === 'ar' ? JEDDAH_TERMINAL_OPTIONS.find(t => t.id === fromTerminal)?.nameAr : JEDDAH_TERMINAL_OPTIONS.find(t => t.id === fromTerminal)?.nameEn}]`
+        : (lang === 'en' ? 'Jeddah / Madinah / Makkah Hotel' : 'جدة / مكة / المدينة المنورة');
       finalTo = selectedPkg
         ? (lang === 'en' ? selectedPkg.nameEn : selectedPkg.nameAr)
         : (lang === 'en' ? 'Travel & Ziyarat Package' : 'باقة الرحلة والمزارات');
@@ -531,6 +558,27 @@ export default function Home() {
                                 <option value="Makkah Hotel (near Haram)">{lang === 'ar' ? 'فندق بمكة المكرمة (قرب الحرم)' : 'Makkah Hotel (near Haram)'}</option>
                                 <option value="Madinah Hotel (near Nabawi)">{lang === 'ar' ? 'فندق بالمدينة المنورة (قرب الحرم النبوي)' : 'Madinah Hotel (near Nabawi)'}</option>
                               </select>
+
+                              {/* Conditional Jeddah Airport Terminal Selection for Packages */}
+                              {fromLocation.includes('Jeddah Airport') && (
+                                <div className="mt-2 space-y-1.5 animate-fadeIn">
+                                  <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wide">
+                                    <Plane className="w-3.5 h-3.5 text-slate-400" />
+                                    <span>{lang === 'ar' ? 'صالة مطار جدة' : 'Jeddah Airport Terminal'}</span>
+                                  </label>
+                                  <select
+                                    value={fromTerminal}
+                                    onChange={(e) => setFromTerminal(e.target.value as JeddahTerminalId)}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-purple-600 cursor-pointer"
+                                  >
+                                    {JEDDAH_TERMINAL_OPTIONS.map((term) => (
+                                      <option key={term.id} value={term.id}>
+                                        {lang === 'en' ? term.nameEn : term.nameAr}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -562,6 +610,27 @@ export default function Home() {
                                 </option>
                               ))}
                             </select>
+
+                            {/* Conditional Jeddah Airport Terminal Selection for By KM */}
+                            {fromLocation.includes('Jeddah Airport') && (
+                              <div className="mt-2 space-y-1.5 animate-fadeIn">
+                                <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wide">
+                                  <Plane className="w-3.5 h-3.5 text-slate-400" />
+                                  <span>{lang === 'ar' ? 'صالة الانطلاق بمطار جدة' : 'Jeddah Pickup Terminal'}</span>
+                                </label>
+                                <select
+                                  value={fromTerminal}
+                                  onChange={(e) => setFromTerminal(e.target.value as JeddahTerminalId)}
+                                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-amber-600 cursor-pointer"
+                                >
+                                  {JEDDAH_TERMINAL_OPTIONS.map((term) => (
+                                    <option key={term.id} value={term.id}>
+                                      {lang === 'en' ? term.nameEn : term.nameAr}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            )}
                           </div>
 
                           <div className="space-y-1.5">
@@ -613,6 +682,27 @@ export default function Home() {
                                 </option>
                               ))}
                             </select>
+
+                            {/* Conditional Jeddah Airport Terminal Selection for Point-to-Point Pickup */}
+                            {fromLocation.includes('Jeddah Airport') && (
+                              <div className="mt-2 space-y-1.5 animate-fadeIn">
+                                <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wide">
+                                  <Plane className="w-3.5 h-3.5 text-slate-400" />
+                                  <span>{lang === 'ar' ? 'صالة الانطلاق بمطار جدة' : 'Jeddah Pickup Terminal'}</span>
+                                </label>
+                                <select
+                                  value={fromTerminal}
+                                  onChange={(e) => setFromTerminal(e.target.value as JeddahTerminalId)}
+                                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#C0272D] cursor-pointer"
+                                >
+                                  {JEDDAH_TERMINAL_OPTIONS.map((term) => (
+                                    <option key={term.id} value={term.id}>
+                                      {lang === 'en' ? term.nameEn : term.nameAr}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            )}
                           </div>
 
                           <div className="space-y-1.5">
@@ -625,25 +715,48 @@ export default function Home() {
                               </span>
                             </label>
                             {tripType === 'Point to Point' ? (
-                              <select
-                                value={toLocation}
-                                onChange={(e) => setToLocation(e.target.value)}
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#C0272D] cursor-pointer"
-                              >
-                                {[
-                                  "Makkah Hotel (near Haram)",
-                                  "Jeddah Airport (KAIA)",
-                                  "Madinah Hotel (near Nabawi)",
-                                  "Jeddah Hotel / Residence",
-                                  "Madinah Airport (PMIA)"
-                                ].map((loc, idx) => (
-                                  <option key={idx} value={loc}>
-                                    {lang === 'ar' 
-                                      ? (loc === "Jeddah Airport (KAIA)" ? "مطار جدة الدولي (KAIA)" : loc === "Makkah Hotel (near Haram)" ? "فندق مكة (قرب الحرم الشريف)" : loc === "Madinah Hotel (near Nabawi)" ? "فندق المدينة (قرب المسجد النبوي)" : loc === "Jeddah Hotel / Residence" ? "فندق أو سكن بجدة" : "مطار المدينة المنورة (PMIA)")
-                                      : loc}
-                                  </option>
-                                ))}
-                              </select>
+                              <>
+                                <select
+                                  value={toLocation}
+                                  onChange={(e) => setToLocation(e.target.value)}
+                                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#C0272D] cursor-pointer"
+                                >
+                                  {[
+                                    "Makkah Hotel (near Haram)",
+                                    "Jeddah Airport (KAIA)",
+                                    "Madinah Hotel (near Nabawi)",
+                                    "Jeddah Hotel / Residence",
+                                    "Madinah Airport (PMIA)"
+                                  ].map((loc, idx) => (
+                                    <option key={idx} value={loc}>
+                                      {lang === 'ar' 
+                                        ? (loc === "Jeddah Airport (KAIA)" ? "مطار جدة الدولي (KAIA)" : loc === "Makkah Hotel (near Haram)" ? "فندق مكة (قرب الحرم الشريف)" : loc === "Madinah Hotel (near Nabawi)" ? "فندق المدينة (قرب المسجد النبوي)" : loc === "Jeddah Hotel / Residence" ? "فندق أو سكن بجدة" : "مطار المدينة المنورة (PMIA)")
+                                        : loc}
+                                    </option>
+                                  ))}
+                                </select>
+
+                                {/* Conditional Jeddah Airport Terminal Selection for Point-to-Point Destination */}
+                                {toLocation.includes('Jeddah Airport') && (
+                                  <div className="mt-2 space-y-1.5 animate-fadeIn">
+                                    <label className="flex items-center gap-1.5 text-xs font-bold text-slate-500 uppercase tracking-wide">
+                                      <Plane className="w-3.5 h-3.5 text-slate-400" />
+                                      <span>{lang === 'ar' ? 'صالة الوصول بمطار جدة' : 'Jeddah Drop-off Terminal'}</span>
+                                    </label>
+                                    <select
+                                      value={toTerminal}
+                                      onChange={(e) => setToTerminal(e.target.value as JeddahTerminalId)}
+                                      className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#C0272D] cursor-pointer"
+                                    >
+                                      {JEDDAH_TERMINAL_OPTIONS.map((term) => (
+                                        <option key={term.id} value={term.id}>
+                                          {lang === 'en' ? term.nameEn : term.nameAr}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                )}
+                              </>
                             ) : (
                               <select
                                 value={contractDays}
@@ -1009,6 +1122,10 @@ export default function Home() {
               <VehicleCard
                 key={vehicle.id}
                 vehicle={vehicle}
+                initialPickupId={fromLocation.includes('Jeddah Airport') ? 'jeddah_airport' : fromLocation.includes('Madinah Airport') ? 'madina_airport' : fromLocation.includes('Makkah') ? 'makkah_hotel' : fromLocation.includes('Madinah Hotel') ? 'madina_hotel' : 'jeddah_hotel'}
+                initialDestinationId={toLocation.includes('Jeddah Airport') ? 'jeddah_airport' : toLocation.includes('Madinah Airport') ? 'madina_airport' : toLocation.includes('Makkah') ? 'makkah_hotel' : toLocation.includes('Madinah Hotel') ? 'madina_hotel' : 'makkah_hotel'}
+                initialPickupTerminal={fromTerminal}
+                initialDestinationTerminal={toTerminal}
                 onBookNow={handleVehicleCardBooking}
               />
             ))}

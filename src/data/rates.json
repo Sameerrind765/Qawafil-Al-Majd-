@@ -6,7 +6,7 @@
       "capacity": "4 - 7 Persons",
       "kmFallbackRate": 2.56,
       "baseRates": {
-        "cityJeddahToMakkah": 300,
+        "cityJeddahToMakkah": 290,
         "cityJeddahToMadinah": 450,
         "cityMakkahToMadinah": 440,
         "cityMadinahInternal": 220,
@@ -15,14 +15,14 @@
         "makkahToTaifReturn": 430,
         "fullGroundTransport": 1190,
         "fullGroundTransportWithZiyarat": 1590,
-        "jeddahAirportToMakkahHotel": 230,
+        "jeddahAirportToMakkahHotel": 290,
         "makkahHotelToMadinaHotel": 440,
         "jeddahAirportToMadinaHotel": 450,
         "madinaAirportToMadinaHotel": 220,
         "madinaHotelToMadinaAirport": 220,
         "madinaHotelToMakkahHotel": 440,
         "madinaHotelToJeddahAirport": 450,
-        "makkahHotelToJeddahAirport": 230
+        "makkahHotelToJeddahAirport": 290
       }
     },
     "hiace": {

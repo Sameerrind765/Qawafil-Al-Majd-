@@ -83,6 +83,53 @@ export interface PackageOption {
   stopsAr: string[];
 }
 
+export type JeddahTerminalId = 'terminal_1' | 'north_terminal' | 'hajj_terminal';
+
+export interface JeddahTerminalOption {
+  id: JeddahTerminalId;
+  nameEn: string;
+  nameAr: string;
+  badgeEn: string;
+  badgeAr: string;
+  surcharge: number;
+}
+
+export const HAJJ_TERMINAL_SURCHARGE = 30;
+
+export const JEDDAH_TERMINAL_OPTIONS: JeddahTerminalOption[] = [
+  {
+    id: 'terminal_1',
+    nameEn: 'Terminal 1',
+    nameAr: 'صالة رقم 1',
+    badgeEn: '',
+    badgeAr: '',
+    surcharge: 0
+  },
+  {
+    id: 'north_terminal',
+    nameEn: 'North Terminal',
+    nameAr: 'الصالة الشمالية',
+    badgeEn: '',
+    badgeAr: '',
+    surcharge: 0
+  },
+  {
+    id: 'hajj_terminal',
+    nameEn: 'Hajj Terminal',
+    nameAr: 'صالة الحجاج',
+    badgeEn: '',
+    badgeAr: '',
+    surcharge: HAJJ_TERMINAL_SURCHARGE
+  }
+];
+
+export function getTerminalSurcharge(terminalId?: string): number {
+  if (terminalId === 'hajj_terminal') {
+    return HAJJ_TERMINAL_SURCHARGE;
+  }
+  return 0;
+}
+
 export const PACKAGE_OPTIONS: PackageOption[] = [
   {
     id: 'standard_circuit',
