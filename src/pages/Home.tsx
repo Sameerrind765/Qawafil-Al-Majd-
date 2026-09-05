@@ -16,6 +16,7 @@ import {
   HAJJ_TERMINAL_SURCHARGE,
   getTerminalSurcharge
 } from '../data/ratesService';
+import { isDateInCurrentMonth, getTodayDateString } from '../utils/pricingPolicy';
 
 // Lucide Icons
 import { 
@@ -72,7 +73,7 @@ export default function Home() {
   const [packageOptionId, setPackageOptionId] = useState<string>('standard_circuit');
   const [distanceKm, setDistanceKm] = useState('100');
   const [contractDays, setContractDays] = useState('7 Days');
-  const [bookingDate, setBookingDate] = useState('2026-06-15');
+  const [bookingDate, setBookingDate] = useState(getTodayDateString());
   const [passengers, setPassengers] = useState('1–4 passengers');
   const [luggage, setLuggage] = useState('Standard');
   
@@ -786,6 +787,7 @@ export default function Home() {
                             <input
                               type="date"
                               required
+                              min={getTodayDateString()}
                               value={bookingDate}
                               onChange={(e) => setBookingDate(e.target.value)}
                               className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-2.5 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#C0272D]"
@@ -828,6 +830,7 @@ export default function Home() {
                             <input
                               type="date"
                               required
+                              min={getTodayDateString()}
                               value={bookingDate}
                               onChange={(e) => setBookingDate(e.target.value)}
                               className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-2.5 text-xs font-bold text-slate-800 outline-none focus:bg-white focus:border-[#C0272D]"
@@ -883,6 +886,38 @@ export default function Home() {
                                 </option>
                               ))}
                             </select>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Rate Guarantee Notice in Hero Search */}
+                      {bookingDate && (
+                        <div 
+                          className={`mt-2 p-2.5 rounded-xl border text-xs leading-relaxed transition-all ${
+                            isDateInCurrentMonth(bookingDate)
+                              ? 'bg-emerald-50/70 border-emerald-200/80 text-emerald-900'
+                              : 'bg-amber-50/80 border-amber-200/80 text-amber-950'
+                          }`}
+                          id="hero-rate-guarantee-notice"
+                        >
+                          <div className="flex items-center gap-2">
+                            {isDateInCurrentMonth(bookingDate) ? (
+                              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                            ) : (
+                              <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <span className="font-extrabold text-[11px] block">
+                                {isDateInCurrentMonth(bookingDate)
+                                  ? (lang === 'ar' ? 'سعر ثابت ومضمون (رحلات الشهر الحالي)' : 'Current Month Travel: Guaranteed Fixed Price')
+                                  : (lang === 'ar' ? 'نافذة تسعير مرنة (أقل بـ 10% من سعر السوق)' : 'Rate Guarantee Window: 10% Below Market Rate')}
+                              </span>
+                              <p className="text-[10px] text-slate-600 font-medium mt-0.5 leading-normal">
+                                {isDateInCurrentMonth(bookingDate)
+                                  ? (lang === 'ar' ? 'يتم تثبيت السعر الموضح وضمانه فور الحجز.' : 'Bookings within current month retain a guaranteed fixed price.')
+                                  : (lang === 'ar' ? 'الحجز مؤكد؛ سيتم اعتماد السعر النهائي قبل أسبوعين من موعد السفر بخصم 10% عن سعر السوق السائد.' : 'Reservation confirmed; final price will be finalized 2 weeks before travel at 10% below the market rate.')}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -1122,6 +1157,7 @@ export default function Home() {
               <VehicleCard
                 key={vehicle.id}
                 vehicle={vehicle}
+                bookingDate={bookingDate}
                 initialPickupId={fromLocation.includes('Jeddah Airport') ? 'jeddah_airport' : fromLocation.includes('Madinah Airport') ? 'madina_airport' : fromLocation.includes('Makkah') ? 'makkah_hotel' : fromLocation.includes('Madinah Hotel') ? 'madina_hotel' : 'jeddah_hotel'}
                 initialDestinationId={toLocation.includes('Jeddah Airport') ? 'jeddah_airport' : toLocation.includes('Madinah Airport') ? 'madina_airport' : toLocation.includes('Makkah') ? 'makkah_hotel' : toLocation.includes('Madinah Hotel') ? 'madina_hotel' : 'makkah_hotel'}
                 initialPickupTerminal={fromTerminal}

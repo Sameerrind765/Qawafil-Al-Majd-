@@ -38,9 +38,11 @@ import {
   HAJJ_TERMINAL_SURCHARGE,
   getTerminalSurcharge
 } from '../data/ratesService';
+import { isDateInCurrentMonth, getRateGuaranteePolicy } from '../utils/pricingPolicy';
 
 interface VehicleCardProps {
   vehicle: VehicleData;
+  bookingDate?: string;
   initialPickupId?: string;
   initialDestinationId?: string;
   initialPickupTerminal?: JeddahTerminalId;
@@ -61,6 +63,7 @@ interface VehicleCardProps {
 
 export default function VehicleCard({ 
   vehicle, 
+  bookingDate,
   initialPickupId,
   initialDestinationId,
   initialPickupTerminal,
@@ -249,6 +252,8 @@ export default function VehicleCard({
   const tags = (lang === 'en' ? vehicle.tagsEn : vehicle.tagsAr) || [];
 
   // WhatsApp helper
+  const ratePolicy = getRateGuaranteePolicy(bookingDate, computedPrice);
+
   const getWhatsAppURL = () => {
     let modeText = '';
     if (tripMode === 'circuit') {
@@ -259,11 +264,25 @@ export default function VehicleCard({
       modeText = `[City Route: ${routeLabel}]`;
     }
 
+    let policyNote = '';
+    let priceLine = '';
+    if (ratePolicy.isLaterThanThreeMonths) {
+      priceLine = `Price: ${lang === 'en' ? 'Reservation confirmed; final price will be finalized 2 weeks before travel at 10% below the market rate.' : 'الحجز مؤكد؛ سيتم اعتماد السعر النهائي قبل أسبوعين من موعد السفر بخصم 10% عن سعر السوق السائد.'}`;
+      policyNote = `- *Rate Policy:* ${ratePolicy.policyStatementEn}`;
+    } else if (ratePolicy.isCurrentMonth) {
+      priceLine = `Price: ${computedPrice} SAR (${isEstimated ? 'Estimated' : 'Flat Rate'})`;
+      policyNote = `- *Rate Policy:* Guaranteed Fixed Rate (${computedPrice} SAR)`;
+    } else {
+      priceLine = `Price: ${computedPrice} SAR (Benchmark Reference)`;
+      policyNote = `- *Rate Policy:* ${ratePolicy.policyStatementEn} (Benchmark: ${computedPrice} SAR)`;
+    }
+
     const text = encodeURIComponent(
       `Assalamu Alaikum, I would like to book ${vehicle.nameEn} with Qawafil Al Majd.\n` +
       `Trip Type: ${modeText}\n` +
       `Route: ${routeLabel}\n` +
-      `Price: ${computedPrice} SAR (${isEstimated ? 'Estimated' : 'Flat Rate'})\n` +
+      `${priceLine}\n` +
+      `${policyNote}\n` +
       `Vehicle Capacity: ${vehicle.capacity}`
     );
     return `https://wa.me/966567540263?text=${text}`;
@@ -330,28 +349,50 @@ export default function VehicleCard({
         </div>
 
         {/* Live Overlapping Price Badge at bottom right of image */}
-        <div className="absolute bottom-0 right-3 bg-white px-4 py-2 rounded-t-2xl shadow-lg border-x border-t border-rose-100 flex flex-col items-center justify-center translate-y-[2px] z-10">
-          <div className="flex items-baseline gap-0.5">
-            <span className="text-xl sm:text-2xl font-black text-[#C0272D] leading-none">
-              {computedPrice}
-            </span>
-            <span className="text-[10px] font-black text-[#C0272D] uppercase ml-1">
-              {t.currency || 'SAR'}
-            </span>
-          </div>
-          <span className={`text-[8px] font-black tracking-wider uppercase mt-1 leading-none ${
-            isEstimated 
-              ? 'text-amber-700 bg-amber-100/70 px-1.5 py-0.5 rounded' 
-              : tripMode === 'circuit'
-                ? 'text-purple-700 bg-purple-100/70 px-1.5 py-0.5 rounded'
-                : 'text-emerald-700 bg-emerald-100/70 px-1.5 py-0.5 rounded'
-          }`}>
-            {isEstimated 
-              ? (lang === 'en' ? 'KM ESTIMATED' : 'حساب بالمسافة') 
-              : tripMode === 'circuit'
-                ? (lang === 'en' ? 'PACKAGE DEAL' : 'باقة رحلات')
-                : (lang === 'en' ? 'FIXED FARE' : 'سعر ثابت')}
-          </span>
+        <div className="absolute bottom-0 right-3 bg-white px-3.5 py-1.5 rounded-t-2xl shadow-lg border-x border-t border-rose-100 flex flex-col items-center justify-center translate-y-[2px] z-10 min-w-[125px]">
+          {ratePolicy.isLaterThanThreeMonths ? (
+            <>
+              <div className="flex items-center gap-1">
+                <span className="text-xl sm:text-2xl font-black text-amber-700 leading-none">
+                  -10%
+                </span>
+                <span className="text-[9px] font-black text-slate-700 uppercase tracking-tight">
+                  {lang === 'en' ? 'MARKET RATE' : 'سعر السوق'}
+                </span>
+              </div>
+              <span className="text-[8px] font-black tracking-wider uppercase mt-1 leading-none text-amber-900 bg-amber-100 border border-amber-200 px-1.5 py-0.5 rounded text-center whitespace-nowrap">
+                {lang === 'en' ? '10% BELOW MARKET' : 'أقل بـ 10% من السوق'}
+              </span>
+            </>
+          ) : (
+            <>
+              <div className="flex items-baseline gap-0.5">
+                <span className="text-xl sm:text-2xl font-black text-[#C0272D] leading-none">
+                  {computedPrice}
+                </span>
+                <span className="text-[10px] font-black text-[#C0272D] uppercase ml-1">
+                  {t.currency || 'SAR'}
+                </span>
+              </div>
+              <span className={`text-[8px] font-black tracking-wider uppercase mt-1 leading-none ${
+                bookingDate && !isDateInCurrentMonth(bookingDate)
+                  ? 'text-amber-900 bg-amber-100 border border-amber-200 px-1.5 py-0.5 rounded'
+                  : isEstimated 
+                    ? 'text-amber-700 bg-amber-100/70 px-1.5 py-0.5 rounded' 
+                    : tripMode === 'circuit'
+                      ? 'text-purple-700 bg-purple-100/70 px-1.5 py-0.5 rounded'
+                      : 'text-emerald-700 bg-emerald-100/70 px-1.5 py-0.5 rounded'
+              }`}>
+                {bookingDate && !isDateInCurrentMonth(bookingDate)
+                  ? (lang === 'en' ? '10% BELOW MARKET' : 'خصم 10% عن السوق')
+                  : isEstimated 
+                    ? (lang === 'en' ? 'KM ESTIMATED' : 'حساب بالمسافة') 
+                    : tripMode === 'circuit'
+                      ? (lang === 'en' ? 'PACKAGE DEAL' : 'باقة رحلات')
+                      : (lang === 'en' ? 'FIXED FARE' : 'سعر ثابت')}
+              </span>
+            </>
+          )}
         </div>
       </div>
 
@@ -768,11 +809,22 @@ export default function VehicleCard({
 
         {/* Bottom bar with Vehicle Type indicator + Book Now CTA button */}
         <div className="flex items-center justify-between gap-3 mt-4 pt-3.5 border-t border-slate-100">
-          <div className="flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span className="text-[10px] font-extrabold text-slate-600 uppercase tracking-wide">
-              {lang === 'en' ? 'Official License' : 'مرخص نظامياً'}
-            </span>
+          <div className="flex items-center gap-1.5 min-w-0">
+            {bookingDate && !isDateInCurrentMonth(bookingDate) ? (
+              <>
+                <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <span className="text-[10px] font-extrabold text-amber-900 uppercase tracking-wide truncate">
+                  {lang === 'en' ? '10% Below Market' : 'خصم 10% عن السوق'}
+                </span>
+              </>
+            ) : (
+              <>
+                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span className="text-[10px] font-extrabold text-slate-600 uppercase tracking-wide truncate">
+                  {lang === 'en' ? 'Guaranteed Rate' : 'سعر مضمون ومثبت'}
+                </span>
+              </>
+            )}
           </div>
 
           <button

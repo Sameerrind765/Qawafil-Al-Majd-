@@ -98,6 +98,8 @@ export interface HomepageLead {
   date?: string;
   time?: string;
   price?: number; // Estimated booking revenue SAR
+  ratePolicy?: 'guaranteed_fixed' | 'market_discount_10';
+  rateGuaranteeNotice?: string;
 }
 
 export interface Transaction {

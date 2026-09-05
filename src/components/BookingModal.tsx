@@ -5,6 +5,7 @@ import { X, CheckCircle2, MessageSquare, ShieldCheck, Mail, User, Phone, MapPin,
 import { saveLead } from '../firebaseService';
 import { HomepageLead } from '../types';
 import { serverTimestamp } from 'firebase/firestore';
+import { getRateGuaranteePolicy, getTodayDateString } from '../utils/pricingPolicy';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -36,13 +37,15 @@ export default function BookingModal({ isOpen, onClose, selectedVehicle, booking
 
   const modalRef = useRef<HTMLDivElement>(null);
 
+  const policy = getRateGuaranteePolicy(travelDate, selectedVehicle?.price);
+
   // Sync state with bookingDetails whenever modal opens or details change
   useEffect(() => {
     if (bookingDetails?.date) {
       setTravelDate(bookingDetails.date);
       setDateError('');
     } else {
-      setTravelDate('');
+      setTravelDate(getTodayDateString());
     }
   }, [bookingDetails, isOpen]);
 
@@ -94,8 +97,8 @@ export default function BookingModal({ isOpen, onClose, selectedVehicle, booking
       const finalTime = departureTime || '09:30';
 
       const detailsStr = bookingDetails
-        ? `Date: ${finalDate} | Time: ${finalTime} | Pax: ${bookingDetails.passengers} | Luggage: ${bookingDetails.luggage} | Hotel: ${pickupHotel} | Notes: ${specialRequests}`
-        : `Hotel: ${pickupHotel} | Notes: ${specialRequests}`;
+        ? `Date: ${finalDate} | Time: ${finalTime} | Pax: ${bookingDetails.passengers} | Luggage: ${bookingDetails.luggage} | Hotel: ${pickupHotel} | Policy: ${policy.policyStatementEn} | Notes: ${specialRequests}`
+        : `Date: ${finalDate} | Time: ${finalTime} | Hotel: ${pickupHotel} | Policy: ${policy.policyStatementEn} | Notes: ${specialRequests}`;
       
       const rawPrice = selectedVehicle?.price;
       const parsedPrice = typeof rawPrice === 'number' 
@@ -115,7 +118,9 @@ export default function BookingModal({ isOpen, onClose, selectedVehicle, booking
         status: 'Pending',
         date: finalDate,
         time: finalTime,
-        price: parsedPrice
+        price: parsedPrice,
+        ratePolicy: policy.status,
+        rateGuaranteeNotice: lang === 'en' ? policy.policyStatementEn : policy.policyStatementAr
       };
 
       await saveLead(newLead);
@@ -147,13 +152,28 @@ export default function BookingModal({ isOpen, onClose, selectedVehicle, booking
     let routeInfo = '';
     if (bookingDetails) {
       routeInfo = lang === 'en'
-        ? `\n- *Trip Type:* ${bookingDetails.tripType}\n- *From:* ${bookingDetails.fromLocation}\n- *To:* ${bookingDetails.toLocation}\n- *Date:* ${bookingDetails.date}\n- *Passengers:* ${bookingDetails.passengers}\n- *Luggage:* ${bookingDetails.luggage}`
-        : `\n- *نوع الرحلة:* ${bookingDetails.tripType}\n- *من:* ${bookingDetails.fromLocation}\n- *إلى:* ${bookingDetails.toLocation}\n- *التاريخ:* ${bookingDetails.date}\n- *الركاب:* ${bookingDetails.passengers}\n- *الحقائب:* ${bookingDetails.luggage}`;
+        ? `\n- *Trip Type:* ${bookingDetails.tripType}\n- *From:* ${bookingDetails.fromLocation}\n- *To:* ${bookingDetails.toLocation}\n- *Date:* ${travelDate || bookingDetails.date}\n- *Passengers:* ${bookingDetails.passengers}\n- *Luggage:* ${bookingDetails.luggage}`
+        : `\n- *نوع الرحلة:* ${bookingDetails.tripType}\n- *من:* ${bookingDetails.fromLocation}\n- *إلى:* ${bookingDetails.toLocation}\n- *التاريخ:* ${travelDate || bookingDetails.date}\n- *الركاب:* ${bookingDetails.passengers}\n- *الحقائب:* ${bookingDetails.luggage}`;
+    }
+
+    let ratePolicyLine = '';
+    if (policy.isLaterThanThreeMonths) {
+      ratePolicyLine = lang === 'en'
+        ? `- *Rate Policy:* ${policy.policyStatementEn}`
+        : `- *سياسة التسعير:* ${policy.policyStatementAr}`;
+    } else if (policy.isCurrentMonth) {
+      ratePolicyLine = lang === 'en'
+        ? `- *Rate:* SAR ${vPrice} (${policy.badgeEn})`
+        : `- *السعر:* ${vPrice} ريال (${policy.badgeAr})`;
+    } else {
+      ratePolicyLine = lang === 'en'
+        ? `- *Rate Policy:* ${policy.policyStatementEn}\n- *Estimated Benchmark:* SAR ${vPrice}`
+        : `- *سياسة التسعير:* ${policy.policyStatementAr}\n- *السعر المرجعي التقديري:* ${vPrice} ريال`;
     }
 
     const msg = lang === 'en'
-      ? `Assalamu Alaikum Qawafil Al Majd Al Misaliya! I want to confirm my booking reservation for:\n\n- *Vehicle:* ${vName}\n- *Rate:* SAR ${vPrice}${routeInfo}\n- *My Name:* ${fullName}\n- *WhatsApp:* ${phone}\n- *Pickup Details:* ${pickupHotel}\n- *Notes:* ${specialRequests}\n\nPlease confirm booking and assign driver, thank you.`
-      : `السلام عليكم قوافل المجد المثالية! أرغب في تأكيد حجز الرحلة:\n\n- *المركبة المطلوبة:* ${vName}\n- *التسعيرة المقدرة:* ${vPrice} ريال${routeInfo}\n- *الاسم الكريم:* ${fullName}\n- *رقم التواصل:* ${phone}\n- *موقع الاستلام:* ${pickupHotel}\n- *متطلبات خاصة:* ${specialRequests}\n\nيرجى تأكيد الحجز وتعيين السائق، بارك الله فيكم.`;
+      ? `Assalamu Alaikum Qawafil Al Majd Al Misaliya! I want to confirm my booking reservation for:\n\n- *Vehicle:* ${vName}\n${ratePolicyLine}${routeInfo}\n- *My Name:* ${fullName}\n- *WhatsApp:* ${phone}\n- *Pickup Details:* ${pickupHotel}\n- *Notes:* ${specialRequests}\n\nPlease confirm booking and assign driver, thank you.`
+      : `السلام عليكم قوافل المجد المثالية! أرغب في تأكيد حجز الرحلة:\n\n- *المركبة المطلوبة:* ${vName}\n${ratePolicyLine}${routeInfo}\n- *الاسم الكريم:* ${fullName}\n- *رقم التواصل:* ${phone}\n- *موقع الاستلام:* ${pickupHotel}\n- *متطلبات خاصة:* ${specialRequests}\n\nيرجى تأكيد الحجز وتعيين السائق، بارك الله فيكم.`;
     return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
   };
 
@@ -190,20 +210,40 @@ export default function BookingModal({ isOpen, onClose, selectedVehicle, booking
         {selectedVehicle && !isSuccess && (
           <div className="bg-rose-50/70 border-b border-rose-100/50 px-6 py-3.5 flex justify-between items-center text-xs">
             <div>
-              <p className="font-semibold text-slate-500 uppercase tracking-wide">
-                Selected Caravan
+              <p className="font-semibold text-slate-500 uppercase tracking-wide text-[10px]">
+                {lang === 'en' ? 'Selected Caravan' : 'المركبة المختارة'}
               </p>
               <h4 className="font-bold text-slate-850 text-sm mt-0.5">
                 {selectedVehicle.emoji} {lang === 'en' ? selectedVehicle.nameEn : selectedVehicle.nameAr}
               </h4>
             </div>
             <div className="text-right">
-              <p className="font-semibold text-slate-500 uppercase tracking-wide">
-                Guaranteed Flat Rate
-              </p>
-              <p className="text-brand-primary font-extrabold text-sm mt-0.5">
-                {selectedVehicle.price} {t.currency}
-              </p>
+              <span className={`inline-block text-[9.5px] font-extrabold px-2 py-0.5 rounded-md mb-0.5 ${
+                policy.isCurrentMonth
+                  ? 'bg-emerald-100 text-emerald-850 border border-emerald-200'
+                  : 'bg-amber-100 text-amber-900 border border-amber-200'
+              }`}>
+                {lang === 'en' ? policy.badgeEn : policy.badgeAr}
+              </span>
+              {policy.isLaterThanThreeMonths ? (
+                <div className="text-right mt-0.5">
+                  <span className="text-amber-800 font-black text-sm block">
+                    {lang === 'en' ? '10% Below Market' : 'خصم 10% عن السوق'}
+                  </span>
+                  <span className="text-[9px] font-bold text-slate-500 block">
+                    {lang === 'en' ? 'Finalized at travel date' : 'يُعتمد السعر وقت السفر'}
+                  </span>
+                </div>
+              ) : (
+                <p className="text-brand-primary font-extrabold text-sm mt-0.5">
+                  {selectedVehicle.price} {t.currency}
+                  {!policy.isCurrentMonth && (
+                    <span className="text-[10px] font-bold text-slate-500 block">
+                      {lang === 'en' ? '(Est. Benchmark)' : '(سعر مرجعي)'}
+                    </span>
+                  )}
+                </p>
+              )}
             </div>
           </div>
         )}
@@ -230,9 +270,40 @@ export default function BookingModal({ isOpen, onClose, selectedVehicle, booking
               <h4 className="text-lg font-extrabold text-slate-900 mb-2">
                 {t.bookingSuccessTitle}
               </h4>
-              <p className="text-xs text-slate-500 leading-relaxed max-w-sm mx-auto mb-6">
+              <p className="text-xs text-slate-500 leading-relaxed max-w-sm mx-auto mb-4">
                 {t.bookingSuccessDesc}
               </p>
+
+              {/* Explicit Policy Confirmation Callout */}
+              <div 
+                className={`mb-6 p-4 rounded-xl border text-left text-xs ${
+                  policy.isCurrentMonth 
+                    ? 'bg-emerald-50/90 border-emerald-200 text-emerald-950' 
+                    : 'bg-amber-50 border-amber-200 text-amber-950'
+                }`}
+                id="booking-success-policy-callout"
+              >
+                <div className="flex items-center gap-2 font-black text-xs mb-1.5">
+                  <ShieldCheck className={`w-4 h-4 ${policy.isCurrentMonth ? 'text-emerald-600' : 'text-amber-600'}`} />
+                  <span>{lang === 'en' ? policy.badgeEn : policy.badgeAr}</span>
+                </div>
+                <p className="font-black text-xs leading-normal">
+                  {lang === 'en' ? policy.policyStatementEn : policy.policyStatementAr}
+                </p>
+                {!policy.isCurrentMonth ? (
+                  <p className="text-[11px] text-amber-900 mt-1.5 leading-relaxed">
+                    {lang === 'en'
+                      ? `Your reservation is 100% secured! 2 weeks before your travel date, our operations team will lock in your final fare at 10% below the prevailing market price.`
+                      : `حجز مركبتك مؤكد ومضمون 100%! وقبل موعد الرحلة بأسبوعين سيتواصل معك فريق التشغيل لتثبيت السعر النهائي بخصم 10% أقل من سعر السوق السائد.`}
+                  </p>
+                ) : (
+                  <p className="text-[11px] text-emerald-800 mt-1.5 leading-relaxed">
+                    {lang === 'en'
+                      ? `Your locked fare of SAR ${selectedVehicle?.price || 0} is fully guaranteed for your in-month travel.`
+                      : `سعرك الثابت البالغ ${selectedVehicle?.price || 0} ريال مضمون ومثبت بالكامل لرحلتك خلال هذا الشهر.`}
+                  </p>
+                )}
+              </div>
 
               <div className="space-y-3">
                 <a
@@ -322,6 +393,7 @@ export default function BookingModal({ isOpen, onClose, selectedVehicle, booking
                   <input
                     type="date"
                     required
+                    min={getTodayDateString()}
                     value={travelDate}
                     onChange={(e) => {
                       setTravelDate(e.target.value);
@@ -350,6 +422,53 @@ export default function BookingModal({ isOpen, onClose, selectedVehicle, booking
                   />
                 </div>
               </div>
+
+              {/* Dynamic Rate Guarantee Policy Notice */}
+              {travelDate && (
+                <div 
+                  className={`p-3 rounded-xl border text-xs leading-relaxed transition-all ${
+                    policy.isCurrentMonth
+                      ? 'bg-emerald-50/90 border-emerald-200 text-emerald-950'
+                      : 'bg-amber-50/90 border-amber-200 text-amber-950'
+                  }`}
+                  id="booking-modal-policy-notice"
+                >
+                  <div className="flex items-start gap-2">
+                    {policy.isCurrentMonth ? (
+                      <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    ) : (
+                      <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    )}
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[9.5px] font-black uppercase px-1.5 py-0.5 rounded ${
+                          policy.isCurrentMonth ? 'bg-emerald-100 text-emerald-850' : 'bg-amber-200/70 text-amber-900'
+                        }`}>
+                          {lang === 'en' ? policy.badgeEn : policy.badgeAr}
+                        </span>
+                      </div>
+                      <p className="font-extrabold text-xs">
+                        {lang === 'en' ? policy.policyStatementEn : policy.policyStatementAr}
+                      </p>
+                      {!policy.isCurrentMonth && (
+                        policy.isLaterThanThreeMonths ? (
+                          <p className="text-[10.5px] text-amber-900 font-bold pt-0.5">
+                            {lang === 'en'
+                              ? 'Reservation confirmed; final price will be finalized 2 weeks before travel at 10% below the market rate.'
+                              : 'الحجز مؤكد؛ سيتم اعتماد السعر النهائي قبل أسبوعين من موعد السفر بخصم 10% عن سعر السوق السائد.'}
+                          </p>
+                        ) : (
+                          <p className="text-[10.5px] text-amber-900/80 font-medium pt-0.5">
+                            {lang === 'en'
+                              ? `Current rate (SAR ${selectedVehicle?.price || 0}) serves as an estimated benchmark. Final price will be finalized 2 weeks before travel with an exclusive 10% discount off prevailing market rates.`
+                              : `السعر الحالي (${selectedVehicle?.price || 0} ريال) يعد معياراً مرجعياً. سيتم اعتماد السعر النهائي قبل أسبوعين من موعد الرحلة بخصم 10% مضمون عن أسعار السوق السائدة.`}
+                          </p>
+                        )
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Special Requests Log */}
               <div className="space-y-1.5">

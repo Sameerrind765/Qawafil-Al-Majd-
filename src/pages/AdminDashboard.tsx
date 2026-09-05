@@ -1807,7 +1807,20 @@ export default function AdminDashboard() {
                                   </div>
                                 </td>
                                 <td className="py-4 px-6 text-slate-600 font-mono text-[11px]">
-                                  {!lead.date ? '—' : formatBookingDateTime(lead.date, lead.time)}
+                                  <div>{!lead.date ? '—' : formatBookingDateTime(lead.date, lead.time)}</div>
+                                  {lead.ratePolicy && (
+                                    <div className="mt-1">
+                                      <span className={`inline-block text-[9px] font-black uppercase px-2 py-0.5 rounded-full border ${
+                                        lead.ratePolicy === 'guaranteed_fixed'
+                                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                          : 'bg-amber-50 text-amber-800 border-amber-200'
+                                      }`}>
+                                        {lead.ratePolicy === 'guaranteed_fixed' 
+                                          ? (lang === 'en' ? '🔒 Fixed Price' : '🔒 سعر ثابت') 
+                                          : (lang === 'en' ? '✨ 10% Below Market' : '✨ خصم 10% عن السوق')}
+                                      </span>
+                                    </div>
+                                  )}
                                 </td>
                                 <td className="py-4 px-6" onClick={(e) => e.stopPropagation()}>
                                   <select
@@ -2004,6 +2017,29 @@ export default function AdminDashboard() {
                     📍 {selectedLead.customStation}
                   </p>
                 </div>
+
+                {/* Rate Policy & Guarantee Notice */}
+                {selectedLead.ratePolicy && (
+                  <div className={`p-3 rounded-xl border text-xs ${
+                    selectedLead.ratePolicy === 'guaranteed_fixed'
+                      ? 'bg-emerald-50/80 border-emerald-200 text-emerald-950'
+                      : 'bg-amber-50/80 border-amber-200 text-amber-950'
+                  }`}>
+                    <div className="flex items-center justify-between font-black text-[11px] mb-1">
+                      <span>{lang === 'en' ? 'Rate Guarantee Status:' : 'حالة ضمان السعر:'}</span>
+                      <span className="uppercase">
+                        {selectedLead.ratePolicy === 'guaranteed_fixed' 
+                          ? (lang === 'en' ? 'Guaranteed Fixed Price' : 'سعر ثابت ومضمون')
+                          : (lang === 'en' ? '10% Below Market Rate' : 'خصم 10% عن سعر السوق')}
+                      </span>
+                    </div>
+                    {selectedLead.rateGuaranteeNotice && (
+                      <p className="text-[10.5px] font-medium leading-relaxed text-slate-700">
+                        {selectedLead.rateGuaranteeNotice}
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
                   <button
