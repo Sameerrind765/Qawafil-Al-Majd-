@@ -9,6 +9,7 @@ import Home from './pages/Home';
 import Fleet from './pages/Fleet';
 import Ziyarat from './pages/Ziyarat';
 import Contact from './pages/Contact';
+import BookingConfirmation from './pages/BookingConfirmation';
 
 // Only keep AdminDashboard lazy — it's genuinely large AND shouldn't be indexed
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
@@ -29,6 +30,9 @@ export function AppContent() {
           <Route path="/fleet" element={<Fleet />} />
           <Route path="/ziyarat" element={<Ziyarat />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/booking-confirmation" element={<BookingConfirmation />} />
+          <Route path="/confirmation" element={<BookingConfirmation />} />
+          <Route path="/thank-you" element={<BookingConfirmation />} />
           <Route
             path="/admin"
             element={

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLang } from '../context/LangContext';
 import { vehiclesData, VehicleData, getVehicleImageUrl } from '../data/vehicles';
 import BookingModal from '../components/BookingModal';
@@ -55,6 +56,7 @@ import {
 
 export default function Home() {
   const { lang, t } = useLang();
+  const navigate = useNavigate();
   
   // State for card favorites
   const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
@@ -296,13 +298,45 @@ export default function Home() {
       
       await saveLead(newLead);
       
+      const bookingConfirmationData = {
+        ...newLead,
+        date: bookingDate || getTodayDateString(),
+        time: '09:30',
+        price: 1500
+      };
+
+      try {
+        sessionStorage.setItem('qam_last_booking', JSON.stringify(bookingConfirmationData));
+      } catch (e) {}
+
       setLeadLoading(false);
-      setLeadSuccessVisible(true);
+      navigate(`/booking-confirmation?id=${encodeURIComponent(generatedId)}`, {
+        state: { booking: bookingConfirmationData }
+      });
     } catch (error) {
       console.error("Failed to submit pilgrim lead to Firestore:", error);
-      // Fallback: still show success to keep UX friendly for the pilgrim, but notify in console
+      const fallbackBookingData = {
+        id: 'lead_' + Date.now(),
+        name: leadName.trim(),
+        phone: leadPhone.trim(),
+        service: leadService,
+        caravan: leadCaravan,
+        customStation: leadCustomStation.trim() || 'N/A',
+        createdAt: new Date().toISOString(),
+        status: 'Pending' as const,
+        date: bookingDate || getTodayDateString(),
+        time: '09:30',
+        price: 1500
+      };
+
+      try {
+        sessionStorage.setItem('qam_last_booking', JSON.stringify(fallbackBookingData));
+      } catch (e) {}
+
       setLeadLoading(false);
-      setLeadSuccessVisible(true);
+      navigate(`/booking-confirmation?id=${encodeURIComponent(fallbackBookingData.id)}`, {
+        state: { booking: fallbackBookingData }
+      });
     }
   };
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLang } from '../context/LangContext';
 import { VehicleData } from '../data/vehicles';
 import { X, CheckCircle2, MessageSquare, ShieldCheck, Mail, User, Phone, MapPin, Sparkles } from 'lucide-react';
@@ -23,6 +24,7 @@ interface BookingModalProps {
 
 export default function BookingModal({ isOpen, onClose, selectedVehicle, bookingDetails }: BookingModalProps) {
   const { lang, t } = useLang();
+  const navigate = useNavigate();
   
   // Controlled inputs state
   const [fullName, setFullName] = useState('');
@@ -124,11 +126,58 @@ export default function BookingModal({ isOpen, onClose, selectedVehicle, booking
       };
 
       await saveLead(newLead);
-      setIsSuccess(true);
+
+      const bookingConfirmationData = {
+        id: generatedId,
+        name: fullName.trim(),
+        phone: phone.trim(),
+        service: serviceStr,
+        caravan: selectedVehicle?.nameEn || 'Default Fleet',
+        customStation: pickupHotel.trim() || 'Hotel / Terminal Transfer',
+        createdAt: new Date().toISOString(),
+        status: 'Pending' as const,
+        date: finalDate,
+        time: finalTime,
+        price: parsedPrice,
+        ratePolicy: policy.status,
+        rateGuaranteeNotice: lang === 'en' ? policy.policyStatementEn : policy.policyStatementAr
+      };
+
+      try {
+        sessionStorage.setItem('qam_last_booking', JSON.stringify(bookingConfirmationData));
+      } catch (e) {}
+
+      resetAndClose();
+      navigate(`/booking-confirmation?id=${encodeURIComponent(generatedId)}`, {
+        state: { booking: bookingConfirmationData }
+      });
     } catch (err) {
       console.error("Failed to save booking custom lead to Firestore:", err);
-      // Fallback: still show complete window for UX
-      setIsSuccess(true);
+      // Fallback: still redirect for seamless UX and conversion tracking
+      const fallbackBookingData = {
+        id: 'lead_' + Date.now(),
+        name: fullName.trim() || 'Valued Pilgrim',
+        phone: phone.trim(),
+        service: selectedVehicle?.nameEn ? `Booking: ${selectedVehicle.nameEn}` : 'Direct Booking',
+        caravan: selectedVehicle?.nameEn || 'VIP Fleet',
+        customStation: pickupHotel.trim() || 'Makkah / Madinah / Jeddah',
+        createdAt: new Date().toISOString(),
+        status: 'Pending' as const,
+        date: travelDate || getTodayDateString(),
+        time: departureTime || '09:30',
+        price: selectedVehicle?.price || 1200,
+        ratePolicy: policy.status,
+        rateGuaranteeNotice: lang === 'en' ? policy.policyStatementEn : policy.policyStatementAr
+      };
+
+      try {
+        sessionStorage.setItem('qam_last_booking', JSON.stringify(fallbackBookingData));
+      } catch (e) {}
+
+      resetAndClose();
+      navigate(`/booking-confirmation?id=${encodeURIComponent(fallbackBookingData.id)}`, {
+        state: { booking: fallbackBookingData }
+      });
     } finally {
       setLoading(false);
     }
