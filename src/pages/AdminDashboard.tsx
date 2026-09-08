@@ -53,13 +53,14 @@ import { auth } from '../authFirebase';
 import { onAuthStateChanged, signOut, User, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut as authSignOut, getAuth, GoogleAuthProvider, signInWithPopup, linkWithPopup, reauthenticateWithPopup } from 'firebase/auth';
 import { initializeApp, deleteApp } from 'firebase/app';
 import firebaseConfig from '../../firebase-applet-config.json';
+import AdminRatesManager from '../components/AdminRatesManager';
 
 export default function AdminDashboard() {
   const { lang, t } = useLang();
   const tr = TRANSLATIONS[lang];
 
   // Active dashboard view tab
-  const [activeTab, setActiveTab] = useState<'leads' | 'ledger' | 'receipts' | 'sheets' | 'settings'>('leads');
+  const [activeTab, setActiveTab] = useState<'leads' | 'ledger' | 'receipts' | 'sheets' | 'rates' | 'settings'>('leads');
 
   // Local Auth and Profile states
   const [user, setUser] = useState<User | null>(null);
@@ -1549,6 +1550,14 @@ export default function AdminDashboard() {
                 📊 {lang === 'en' ? 'Google Sheets Sync' : 'مزامنة جداول جوجل'}
               </button>
             )}
+            <button
+              onClick={() => setActiveTab('rates')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition-colors ${
+                activeTab === 'rates' ? 'bg-amber-600 text-white shadow-sm font-black' : 'bg-white border border-slate-200 text-amber-900 hover:bg-slate-50'
+              }`}
+            >
+              🏷️ {lang === 'en' ? 'Rates & Hajj Terminal' : 'الأسعار وصالة الحجاج'}
+            </button>
             {role === 'superadmin' && (
               <button
                 onClick={() => setActiveTab('settings')}
@@ -3308,6 +3317,11 @@ export default function AdminDashboard() {
 
             </div>
           </div>
+        )}
+
+        {/* TAB 5: RATES & HAJJ TERMINAL MANAGEMENT */}
+        {activeTab === 'rates' && (
+          <AdminRatesManager />
         )}
 
         {/* TAB 6: TEAM SETTINGS (Visible only to superadmin) */}

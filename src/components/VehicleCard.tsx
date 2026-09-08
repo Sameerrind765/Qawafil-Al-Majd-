@@ -36,7 +36,9 @@ import {
   JEDDAH_TERMINAL_OPTIONS,
   JeddahTerminalId,
   HAJJ_TERMINAL_SURCHARGE,
-  getTerminalSurcharge
+  getTerminalSurcharge,
+  getVehicleHajjTerminalRate,
+  getJeddahTerminalOptions
 } from '../data/ratesService';
 import { isDateInCurrentMonth, getRateGuaranteePolicy } from '../utils/pricingPolicy';
 
@@ -107,22 +109,26 @@ export default function VehicleCard({
     return getVehicleKmFallbackRate(vehicle.rateKey);
   }, [vehicle.rateKey]);
 
+  // Dedicated vehicle Hajj Terminal rate & custom options
+  const vehicleHajjRate = useMemo(() => getVehicleHajjTerminalRate(vehicle.rateKey), [vehicle.rateKey]);
+  const terminalOptions = useMemo(() => getJeddahTerminalOptions(vehicle.rateKey), [vehicle.rateKey]);
+
   // Selected package object
   const selectedPackage = useMemo(() => {
     return PACKAGE_OPTIONS.find(c => c.id === packageOptionId) || PACKAGE_OPTIONS[0];
   }, [packageOptionId]);
 
-  // Calculate terminal surcharge (Hajj Terminal = +30 SAR; others = 0)
+  // Calculate terminal surcharge (Hajj Terminal = per-vehicle rate; others = 0)
   const terminalSurcharge = useMemo(() => {
     let surcharge = 0;
     if (pickupId === 'jeddah_airport') {
-      surcharge += getTerminalSurcharge(pickupTerminal);
+      surcharge += getTerminalSurcharge(pickupTerminal, vehicle.rateKey);
     }
     if (destinationId === 'jeddah_airport') {
-      surcharge += getTerminalSurcharge(destinationTerminal);
+      surcharge += getTerminalSurcharge(destinationTerminal, vehicle.rateKey);
     }
     return surcharge;
-  }, [pickupId, pickupTerminal, destinationId, destinationTerminal]);
+  }, [pickupId, pickupTerminal, destinationId, destinationTerminal, vehicle.rateKey]);
 
   // Dynamic Calculation based on mode and city-to-city logic
   const { computedPrice, isEstimated, routeLabel, distanceKm } = useMemo(() => {
@@ -148,13 +154,13 @@ export default function VehicleCard({
       const pickupObj = PICKUP_OPTIONS.find(p => p.id === pickupId);
       let pickupName = pickupObj ? (lang === 'en' ? pickupObj.nameEn : pickupObj.nameAr) : pickupId;
       if (pickupId === 'jeddah_airport') {
-        const termObj = JEDDAH_TERMINAL_OPTIONS.find(t => t.id === pickupTerminal);
+        const termObj = terminalOptions.find(t => t.id === pickupTerminal);
         pickupName = lang === 'en' 
           ? `Jeddah [${termObj?.nameEn || 'Terminal'}]` 
           : `جدة [${termObj?.nameAr || 'الصالة'}]`;
       }
 
-      const customPickupSurcharge = pickupId === 'jeddah_airport' ? getTerminalSurcharge(pickupTerminal) : 0;
+      const customPickupSurcharge = pickupId === 'jeddah_airport' ? getTerminalSurcharge(pickupTerminal, vehicle.rateKey) : 0;
 
       return {
         computedPrice: totalPrice + customPickupSurcharge,
@@ -410,12 +416,16 @@ export default function VehicleCard({
               <h4 className="text-base font-black text-slate-900 tracking-tight truncate group-hover:text-brand-primary transition-colors">
                 {name}
               </h4>
-              <div className="flex items-center gap-2 mt-0.5">
+              <div className="flex flex-wrap items-center gap-1.5 mt-1">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">
                   {vehicle.capacity}
                 </span>
                 <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
                   {kmRate} SAR/km
+                </span>
+                <span className="text-[10px] font-bold text-amber-900 bg-amber-100/90 border border-amber-300 px-2 py-0.5 rounded-md inline-flex items-center gap-1 shadow-2xs" title="Hajj Terminal Rate Addition">
+                  <Plane className="w-2.5 h-2.5 text-amber-700" />
+                  <span>{lang === 'en' ? `Hajj: +${vehicleHajjRate} SAR` : `صالة الحجاج: +${vehicleHajjRate} ر.س`}</span>
                 </span>
               </div>
             </div>
@@ -728,7 +738,7 @@ export default function VehicleCard({
                     className="w-full bg-white border border-slate-200 hover:border-brand-primary/40 focus:border-brand-primary rounded-xl py-1.5 px-2.5 text-xs font-bold text-slate-800 outline-none cursor-pointer transition-colors shadow-2xs"
                     id={`pickup-terminal-${vehicle.id}`}
                   >
-                    {JEDDAH_TERMINAL_OPTIONS.map((term) => (
+                    {terminalOptions.map((term) => (
                       <option key={term.id} value={term.id}>
                         {lang === 'en' ? term.nameEn : term.nameAr}
                       </option>
@@ -776,12 +786,23 @@ export default function VehicleCard({
                     className="w-full bg-white border border-slate-200 hover:border-brand-primary/40 focus:border-brand-primary rounded-xl py-1.5 px-2.5 text-xs font-bold text-slate-800 outline-none cursor-pointer transition-colors shadow-2xs"
                     id={`dest-terminal-${vehicle.id}`}
                   >
-                    {JEDDAH_TERMINAL_OPTIONS.map((term) => (
+                    {terminalOptions.map((term) => (
                       <option key={term.id} value={term.id}>
                         {lang === 'en' ? term.nameEn : term.nameAr}
                       </option>
                     ))}
                   </select>
+                </div>
+              )}
+
+              {/* Explicit Hajj Terminal Addition Notice when selected */}
+              {((pickupId === 'jeddah_airport' && pickupTerminal === 'hajj_terminal') || (destinationId === 'jeddah_airport' && destinationTerminal === 'hajj_terminal')) && (
+                <div className="bg-amber-50 border border-amber-300/80 rounded-xl px-2.5 py-1.5 text-[10px] font-bold text-amber-900 flex items-center justify-between animate-fadeIn">
+                  <span className="flex items-center gap-1">
+                    <Plane className="w-3 h-3 text-amber-600" />
+                    <span>{lang === 'en' ? 'Hajj Terminal addition included:' : 'تم تضمين رسم صالة الحجاج:'}</span>
+                  </span>
+                  <span className="font-black font-mono text-amber-950">+{vehicleHajjRate} SAR</span>
                 </div>
               )}
 

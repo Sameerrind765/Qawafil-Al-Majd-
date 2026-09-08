@@ -4,7 +4,12 @@ export interface VehicleRateInfo {
   name: string;
   capacity: string;
   kmFallbackRate: number;
+  hajjTerminalRate?: number;
+  hajjTerminalSurcharge?: number;
   baseRates: {
+    hajjTerminalRate?: number;
+    hajjTerminalAddition?: number;
+    hajjTerminal?: number;
     cityJeddahToMakkah?: number;
     cityJeddahToMadinah?: number;
     cityMakkahToMadinah?: number;
@@ -26,6 +31,37 @@ export interface RatesFile {
 }
 
 export const rates: RatesFile = (ratesData as unknown) as RatesFile;
+
+// Local override key for admin rate customization
+export const CUSTOM_RATES_STORAGE_KEY = 'qawafil_custom_rates_v1';
+
+export function getCustomRatesOverride(): Record<string, Partial<VehicleRateInfo>> | null {
+  try {
+    const saved = localStorage.getItem(CUSTOM_RATES_STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch (e) {
+    // ignore
+  }
+  return null;
+}
+
+export function saveCustomRatesOverride(overrides: Record<string, Partial<VehicleRateInfo>>) {
+  try {
+    localStorage.setItem(CUSTOM_RATES_STORAGE_KEY, JSON.stringify(overrides));
+    window.dispatchEvent(new Event('rates-updated'));
+  } catch (e) {
+    console.error('Failed to save custom rates to localStorage', e);
+  }
+}
+
+export function resetCustomRatesOverride() {
+  try {
+    localStorage.removeItem(CUSTOM_RATES_STORAGE_KEY);
+    window.dispatchEvent(new Event('rates-updated'));
+  } catch (e) {
+    // ignore
+  }
+}
 
 // Official fallback per-KM rate for custom trips = vehicle's flat rate ÷ 90 km (Jeddah–Makkah reference)
 export const VEHICLE_KM_FALLBACK_RATES: Record<string, number> = {
@@ -96,6 +132,52 @@ export interface JeddahTerminalOption {
 
 export const HAJJ_TERMINAL_SURCHARGE = 30;
 
+export function getVehicleHajjTerminalRate(vehicleRateKey?: string): number {
+  if (!vehicleRateKey) return HAJJ_TERMINAL_SURCHARGE;
+  const overrides = getCustomRatesOverride();
+  if (overrides && overrides[vehicleRateKey]?.hajjTerminalRate !== undefined) {
+    return Number(overrides[vehicleRateKey]!.hajjTerminalRate) || 0;
+  }
+  const v = rates.vehicles[vehicleRateKey];
+  if (!v) return HAJJ_TERMINAL_SURCHARGE;
+  if (typeof v.hajjTerminalRate === 'number') return v.hajjTerminalRate;
+  if (typeof v.hajjTerminalSurcharge === 'number') return v.hajjTerminalSurcharge;
+  if (typeof v.baseRates?.hajjTerminalRate === 'number') return v.baseRates.hajjTerminalRate;
+  if (typeof v.baseRates?.hajjTerminalAddition === 'number') return v.baseRates.hajjTerminalAddition;
+  if (typeof v.baseRates?.hajjTerminal === 'number') return v.baseRates.hajjTerminal;
+  return HAJJ_TERMINAL_SURCHARGE;
+}
+
+export function getJeddahTerminalOptions(vehicleRateKey?: string): JeddahTerminalOption[] {
+  const hajjRate = getVehicleHajjTerminalRate(vehicleRateKey);
+  return [
+    {
+      id: 'terminal_1',
+      nameEn: 'Terminal 1 (Standard Fare)',
+      nameAr: 'صالة رقم 1 (بدون رسوم إضافية)',
+      badgeEn: '0 SAR',
+      badgeAr: '0 ريال',
+      surcharge: 0
+    },
+    {
+      id: 'north_terminal',
+      nameEn: 'North Terminal (Standard Fare)',
+      nameAr: 'الصالة الشمالية (بدون رسوم إضافية)',
+      badgeEn: '0 SAR',
+      badgeAr: '0 ريال',
+      surcharge: 0
+    },
+    {
+      id: 'hajj_terminal',
+      nameEn: `Hajj Terminal (+${hajjRate} SAR)`,
+      nameAr: `صالة الحجاج (+${hajjRate} ريال إضافي)`,
+      badgeEn: `+${hajjRate} SAR`,
+      badgeAr: `+${hajjRate} ريال`,
+      surcharge: hajjRate
+    }
+  ];
+}
+
 export const JEDDAH_TERMINAL_OPTIONS: JeddahTerminalOption[] = [
   {
     id: 'terminal_1',
@@ -123,9 +205,9 @@ export const JEDDAH_TERMINAL_OPTIONS: JeddahTerminalOption[] = [
   }
 ];
 
-export function getTerminalSurcharge(terminalId?: string): number {
+export function getTerminalSurcharge(terminalId?: string, vehicleRateKey?: string): number {
   if (terminalId === 'hajj_terminal') {
-    return HAJJ_TERMINAL_SURCHARGE;
+    return getVehicleHajjTerminalRate(vehicleRateKey);
   }
   return 0;
 }
@@ -344,35 +426,42 @@ export function resolveCityToCityRoute(pickupId: string, destinationId: string):
  */
 export function getCityRoutePrice(vehicleRateKey: string | undefined, rateKey: string): number {
   if (!vehicleRateKey) return 0;
+  const overrides = getCustomRatesOverride();
+  const overrideVehicle = overrides?.[vehicleRateKey];
   const vehicle = rates.vehicles[vehicleRateKey];
-  if (!vehicle || !vehicle.baseRates) return 0;
+  if (!vehicle && !overrideVehicle) return 0;
+
+  const baseRates = {
+    ...(vehicle?.baseRates || {}),
+    ...(overrideVehicle?.baseRates || {})
+  };
 
   if (rateKey === 'bothZiyarat') {
-    const makkah = vehicle.baseRates.makkahZiyarat || 0;
-    const madina = vehicle.baseRates.madinaZiyarat || 0;
+    const makkah = baseRates.makkahZiyarat || 0;
+    const madina = baseRates.madinaZiyarat || 0;
     return Math.round((makkah + madina) * (rates.globalMultiplier || 1.0));
   }
 
-  const basePrice = vehicle.baseRates[rateKey];
+  const basePrice = baseRates[rateKey];
   if (typeof basePrice === 'number') {
     return Math.round(basePrice * (rates.globalMultiplier || 1.0));
   }
 
   // Fallback lookups if specific key was aliased
   if (rateKey === 'cityJeddahToMakkah') {
-    const alt = vehicle.baseRates.jeddahAirportToMakkahHotel || 350;
+    const alt = baseRates.jeddahAirportToMakkahHotel || 350;
     return Math.round(alt * rates.globalMultiplier);
   }
   if (rateKey === 'cityJeddahToMadinah') {
-    const alt = vehicle.baseRates.jeddahAirportToMadinaHotel || 500;
+    const alt = baseRates.jeddahAirportToMadinaHotel || 500;
     return Math.round(alt * rates.globalMultiplier);
   }
   if (rateKey === 'cityMakkahToMadinah') {
-    const alt = vehicle.baseRates.makkahHotelToMadinaHotel || 500;
+    const alt = baseRates.makkahHotelToMadinaHotel || 500;
     return Math.round(alt * rates.globalMultiplier);
   }
   if (rateKey === 'cityMadinahInternal') {
-    const alt = vehicle.baseRates.madinaAirportToMadinaHotel || 250;
+    const alt = baseRates.madinaAirportToMadinaHotel || 250;
     return Math.round(alt * rates.globalMultiplier);
   }
 
@@ -390,6 +479,10 @@ export function getCityRoutePrice(vehicleRateKey: string | undefined, rateKey: s
  */
 export function getVehicleKmFallbackRate(vehicleRateKey?: string): number {
   if (!vehicleRateKey) return 3.89;
+  const overrides = getCustomRatesOverride();
+  if (overrides?.[vehicleRateKey]?.kmFallbackRate !== undefined) {
+    return Number(overrides[vehicleRateKey]!.kmFallbackRate) || 3.89;
+  }
   return VEHICLE_KM_FALLBACK_RATES[vehicleRateKey] || rates.vehicles[vehicleRateKey]?.kmFallbackRate || 3.89;
 }
 
