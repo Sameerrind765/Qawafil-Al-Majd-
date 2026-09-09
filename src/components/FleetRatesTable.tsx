@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLang } from '../context/LanguageContext';
+import { useLang } from '../context/LangContext';
 import { vehiclesData, VehicleData } from '../data/vehicles';
 import { 
   getVehicleHajjTerminalRate, 
@@ -111,6 +111,7 @@ export default function FleetRatesTable({ onSelectVehicle, highlightHajjTerminal
           <thead>
             <tr className="bg-slate-50/90 border-b border-slate-200 text-slate-700 font-black text-[11px] uppercase tracking-wider">
               <th className="py-3.5 px-4">{lang === 'en' ? 'Vehicle & Capacity' : 'المركبة والسعة'}</th>
+              <th className="py-3.5 px-4 bg-emerald-50/60 text-emerald-950 font-black border-x border-emerald-100">{lang === 'en' ? 'Intercity (Apt ➔ Hotel)' : 'توصيل داخلي (مطار ➔ فندق)'}</th>
               <th className="py-3.5 px-4">{lang === 'en' ? 'Jeddah ➔ Makkah' : 'جدة ➔ مكة'}</th>
               <th className="py-3.5 px-4">{lang === 'en' ? 'Jeddah ➔ Madinah' : 'جدة ➔ المدينة'}</th>
               <th className="py-3.5 px-4">{lang === 'en' ? 'Makkah ➔ Madinah' : 'مكة ➔ المدينة'}</th>
@@ -129,6 +130,7 @@ export default function FleetRatesTable({ onSelectVehicle, highlightHajjTerminal
           <tbody className="divide-y divide-slate-100 text-slate-700 font-semibold">
             {filteredVehicles.map((vehicle) => {
               const hajjRate = getVehicleHajjTerminalRate(vehicle.rateKey);
+              const jeddahInternal = getCityRoutePrice(vehicle.rateKey, 'cityJeddahInternal') || 100;
               const jeddahMakkah = getCityRoutePrice(vehicle.rateKey, 'cityJeddahToMakkah');
               const jeddahMadinah = getCityRoutePrice(vehicle.rateKey, 'cityJeddahToMadinah');
               const makkahMadinah = getCityRoutePrice(vehicle.rateKey, 'cityMakkahToMadinah');
@@ -156,6 +158,11 @@ export default function FleetRatesTable({ onSelectVehicle, highlightHajjTerminal
                         </div>
                       </div>
                     </div>
+                  </td>
+
+                  {/* Intercity: Airport to Hotel */}
+                  <td className="py-3 px-4 font-mono font-black text-emerald-800 bg-emerald-50/30 border-x border-emerald-100/70 whitespace-nowrap">
+                    {jeddahInternal} <span className="text-[10px] text-emerald-600 font-sans">SAR</span>
                   </td>
 
                   {/* Route 1: Jeddah to Makkah */}

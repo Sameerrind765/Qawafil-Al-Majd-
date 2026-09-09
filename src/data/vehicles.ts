@@ -27,7 +27,7 @@ export interface VehicleData {
   capacity?: string;
   seats: number;
   price: number;
-  hajjTerminalRate: number;
+  hajjTerminalRate?: number;
   tagsEn: string[];
   tagsAr: string[];
   classFilter: 'economy' | 'business' | 'vip' | 'group';
@@ -98,8 +98,8 @@ export const vehiclesData: VehicleData[] = [
   {
     id: "h1_hyundai",
     rateKey: "h1_hyundai",
-    nameEn: "H1 Hyundai",
-    nameAr: "هيونداي H1 عائلي",
+    nameEn: "Hyundai Staria / H1",
+    nameAr: "هيونداي ستاريا / H1",
     typeEn: "Family Passenger MPV",
     typeAr: "عائلية ممتازة",
     capacity: vRates.h1_hyundai.capacity,

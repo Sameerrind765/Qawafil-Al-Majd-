@@ -82,8 +82,8 @@ export default function VehicleCard({
   const [tripMode, setTripMode] = useState<'city' | 'circuit' | 'custom'>('city');
 
   // City-to-city route selections
-  const [pickupId, setPickupId] = useState<string>(initialPickupId || 'jeddah_airport');
-  const [destinationId, setDestinationId] = useState<string>(initialDestinationId || 'makkah_hotel');
+  const [pickupId, setPickupId] = useState<string>(initialPickupId || 'madina_airport');
+  const [destinationId, setDestinationId] = useState<string>(initialDestinationId || 'madina_hotel');
 
   // Conditional Jeddah Airport terminal selections (Hajj Terminal +30 SAR surcharge; Terminal 1 & North Terminal: 0 SAR)
   const [pickupTerminal, setPickupTerminal] = useState<JeddahTerminalId>(initialPickupTerminal || 'terminal_1');
@@ -183,39 +183,50 @@ export default function VehicleCard({
         } else {
           const pickupCity = getLocationCity(pickupId);
           const destCity = getLocationCity(destinationId);
+          const pObj = PICKUP_OPTIONS.find(p => p.id === pickupId);
+          const termObjPickup = JEDDAH_TERMINAL_OPTIONS.find(t => t.id === pickupTerminal);
+          const dObj = DESTINATION_OPTIONS.find(d => d.id === destinationId);
+          const termObjDest = JEDDAH_TERMINAL_OPTIONS.find(t => t.id === destinationTerminal);
 
           let fromName = '';
-          if (pickupCity === 'jeddah') {
-            const termObj = JEDDAH_TERMINAL_OPTIONS.find(t => t.id === pickupTerminal);
-            fromName = pickupId === 'jeddah_airport' && termObj
-              ? (lang === 'en' ? `Jeddah [${termObj.nameEn}]` : `جدة [${termObj.nameAr}]`)
-              : (lang === 'en' ? 'Jeddah' : 'جدة');
-          } else if (pickupCity === 'makkah') {
-            fromName = lang === 'en' ? 'Makkah' : 'مكة المكرمة';
-          } else if (pickupCity === 'madina') {
-            fromName = lang === 'en' ? 'Madinah' : 'المدينة المنورة';
-          } else if (pickupCity === 'taif') {
-            fromName = lang === 'en' ? 'Taif' : 'الطائف';
-          } else {
-            const pObj = PICKUP_OPTIONS.find(p => p.id === pickupId);
-            fromName = pObj ? (lang === 'en' ? pObj.nameEn : pObj.nameAr) : pickupId;
-          }
-
           let toName = '';
-          if (destCity === 'jeddah') {
-            const termObj = JEDDAH_TERMINAL_OPTIONS.find(t => t.id === destinationTerminal);
-            toName = destinationId === 'jeddah_airport' && termObj
-              ? (lang === 'en' ? `Jeddah [${termObj.nameEn}]` : `جدة [${termObj.nameAr}]`)
-              : (lang === 'en' ? 'Jeddah' : 'جدة');
-          } else if (destCity === 'makkah') {
-            toName = lang === 'en' ? 'Makkah' : 'مكة المكرمة';
-          } else if (destCity === 'madina') {
-            toName = lang === 'en' ? 'Madinah' : 'المدينة المنورة';
-          } else if (destCity === 'taif') {
-            toName = lang === 'en' ? 'Taif' : 'الطائف';
+
+          if (pickupCity === destCity) {
+            // Intra-city / intercity airport-to-hotel or internal transfer
+            fromName = pickupId === 'jeddah_airport' && termObjPickup
+              ? (lang === 'en' ? `Jeddah Airport [${termObjPickup.nameEn}]` : `مطار جدة [${termObjPickup.nameAr}]`)
+              : (pObj ? (lang === 'en' ? pObj.nameEn : pObj.nameAr) : (lang === 'en' ? 'Airport / City' : 'المطار / المدينة'));
+            toName = destinationId === 'jeddah_airport' && termObjDest
+              ? (lang === 'en' ? `Jeddah Airport [${termObjDest.nameEn}]` : `مطار جدة [${termObjDest.nameAr}]`)
+              : (dObj ? (lang === 'en' ? dObj.nameEn : dObj.nameAr) : (lang === 'en' ? 'Hotel / City' : 'الفندق / المدينة'));
           } else {
-            const dObj = DESTINATION_OPTIONS.find(d => d.id === destinationId);
-            toName = dObj ? (lang === 'en' ? dObj.nameEn : dObj.nameAr) : destinationId;
+            if (pickupCity === 'jeddah') {
+              fromName = pickupId === 'jeddah_airport' && termObjPickup
+                ? (lang === 'en' ? `Jeddah [${termObjPickup.nameEn}]` : `جدة [${termObjPickup.nameAr}]`)
+                : (lang === 'en' ? 'Jeddah' : 'جدة');
+            } else if (pickupCity === 'makkah') {
+              fromName = lang === 'en' ? 'Makkah' : 'مكة المكرمة';
+            } else if (pickupCity === 'madina') {
+              fromName = lang === 'en' ? 'Madinah' : 'المدينة المنورة';
+            } else if (pickupCity === 'taif') {
+              fromName = lang === 'en' ? 'Taif' : 'الطائف';
+            } else {
+              fromName = pObj ? (lang === 'en' ? pObj.nameEn : pObj.nameAr) : pickupId;
+            }
+
+            if (destCity === 'jeddah') {
+              toName = destinationId === 'jeddah_airport' && termObjDest
+                ? (lang === 'en' ? `Jeddah [${termObjDest.nameEn}]` : `جدة [${termObjDest.nameAr}]`)
+                : (lang === 'en' ? 'Jeddah' : 'جدة');
+            } else if (destCity === 'makkah') {
+              toName = lang === 'en' ? 'Makkah' : 'مكة المكرمة';
+            } else if (destCity === 'madina') {
+              toName = lang === 'en' ? 'Madinah' : 'المدينة المنورة';
+            } else if (destCity === 'taif') {
+              toName = lang === 'en' ? 'Taif' : 'الطائف';
+            } else {
+              toName = dObj ? (lang === 'en' ? dObj.nameEn : dObj.nameAr) : destinationId;
+            }
           }
 
           label = `${fromName} ➔ ${toName}`;
@@ -234,7 +245,7 @@ export default function VehicleCard({
     return {
       computedPrice: vehicle.price + terminalSurcharge,
       isEstimated: false,
-      routeLabel: lang === 'en' ? 'Standard Route' : 'مسار اعتيادي',
+      routeLabel: lang === 'en' ? 'Direct Transfer' : 'توصيل مباشر',
       distanceKm: undefined
     };
   }, [
@@ -267,7 +278,7 @@ export default function VehicleCard({
     } else if (tripMode === 'custom') {
       modeText = `[Custom Trip: ${customDistanceKm} KM @ ${kmRate} SAR/KM]`;
     } else {
-      modeText = `[City Route: ${routeLabel}]`;
+      modeText = `[Direct Transfer: ${routeLabel}]`;
     }
 
     let policyNote = '';
@@ -423,23 +434,19 @@ export default function VehicleCard({
                 <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
                   {kmRate} SAR/km
                 </span>
-                <span className="text-[10px] font-bold text-amber-900 bg-amber-100/90 border border-amber-300 px-2 py-0.5 rounded-md inline-flex items-center gap-1 shadow-2xs" title="Hajj Terminal Rate Addition">
-                  <Plane className="w-2.5 h-2.5 text-amber-700" />
-                  <span>{lang === 'en' ? `Hajj: +${vehicleHajjRate} SAR` : `صالة الحجاج: +${vehicleHajjRate} ر.س`}</span>
-                </span>
               </div>
             </div>
           </div>
 
           <div className="border-t border-slate-100 my-3" />
 
-          {/* TRIP MODE SELECTOR TABS: City Route | Packages | Custom Trip */}
+          {/* TRIP MODE SELECTOR TABS: Direct Transfer | Packages | Custom Trip */}
           <div className="flex items-center p-1 bg-slate-100/80 rounded-xl mb-3 text-[10px] font-extrabold">
             <button
               type="button"
               onClick={() => {
                 setTripMode('city');
-                if (destinationId === 'custom') setDestinationId('makkah_hotel');
+                if (destinationId === 'custom') setDestinationId('madina_hotel');
               }}
               className={`flex-1 py-1.5 px-2 rounded-lg text-center transition-all cursor-pointer ${
                 tripMode === 'city'
@@ -447,7 +454,7 @@ export default function VehicleCard({
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {lang === 'en' ? 'City Route' : 'مسار المدن'}
+              {lang === 'en' ? 'Direct Transfer' : 'توصيل مباشر'}
             </button>
             <button
               type="button"
@@ -691,17 +698,17 @@ export default function VehicleCard({
           )}
 
           {/* ========================================================================= */}
-          {/* 3. STANDARD CITY-TO-CITY ROUTE MODE                                      */}
+          {/* 3. DIRECT CHAUFFEUR TRANSFER ROUTE MODE                                   */}
           {/* ========================================================================= */}
           {tripMode === 'city' && (
             <div className="bg-slate-50/80 border border-slate-200/80 rounded-2xl p-3 mb-3.5 space-y-2.5">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-black text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
                   <Route className="w-3.5 h-3.5 text-brand-primary" />
-                  <span>{lang === 'en' ? 'Select City-to-City Route' : 'تحديد مسار المدينة'}</span>
+                  <span>{lang === 'en' ? 'Direct Chauffeur Transfer' : 'مسار التوصيل المباشر'}</span>
                 </span>
                 <span className="text-[9px] font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                  {lang === 'en' ? 'Fixed Fare' : 'سعر ثابت'}
+                  {lang === 'en' ? 'Direct Route' : 'مسار مباشر'}
                 </span>
               </div>
 

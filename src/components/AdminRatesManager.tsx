@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLang } from '../context/LanguageContext';
+import { useLang } from '../context/LangContext';
 import { 
   rates, 
   VehicleRateInfo, 
@@ -32,6 +32,7 @@ interface EditableVehicleConfig {
   capacity: string;
   hajjTerminalRate: number;
   kmFallbackRate: number;
+  cityJeddahInternal: number;
   cityJeddahToMakkah: number;
   cityJeddahToMadinah: number;
   cityMakkahToMadinah: number;
@@ -64,10 +65,11 @@ export default function AdminRatesManager() {
         capacity: v.capacity,
         hajjTerminalRate: hajjRate,
         kmFallbackRate: cust.kmFallbackRate !== undefined ? Number(cust.kmFallbackRate) : v.kmFallbackRate,
+        cityJeddahInternal: custBase.cityJeddahInternal !== undefined ? Number(custBase.cityJeddahInternal) : (base.cityJeddahInternal || (key === 'h1_hyundai' ? 100 : (key === 'camry' || key === 'fordTaurus') ? 70 : 150)),
         cityJeddahToMakkah: custBase.cityJeddahToMakkah !== undefined ? Number(custBase.cityJeddahToMakkah) : (base.cityJeddahToMakkah || 300),
         cityJeddahToMadinah: custBase.cityJeddahToMadinah !== undefined ? Number(custBase.cityJeddahToMadinah) : (base.cityJeddahToMadinah || 500),
         cityMakkahToMadinah: custBase.cityMakkahToMadinah !== undefined ? Number(custBase.cityMakkahToMadinah) : (base.cityMakkahToMadinah || 500),
-        cityMadinahInternal: custBase.cityMadinahInternal !== undefined ? Number(custBase.cityMadinahInternal) : (base.cityMadinahInternal || 250),
+        cityMadinahInternal: custBase.cityMadinahInternal !== undefined ? Number(custBase.cityMadinahInternal) : (base.cityMadinahInternal || (key === 'h1_hyundai' ? 100 : (key === 'camry' || key === 'fordTaurus') ? 70 : 150)),
         makkahZiyarat: custBase.makkahZiyarat !== undefined ? Number(custBase.makkahZiyarat) : (base.makkahZiyarat || 250),
         madinaZiyarat: custBase.madinaZiyarat !== undefined ? Number(custBase.madinaZiyarat) : (base.madinaZiyarat || 250),
       };
@@ -123,10 +125,14 @@ export default function AdminRatesManager() {
         kmFallbackRate: Number(cfg.kmFallbackRate),
         baseRates: {
           hajjTerminalRate: Number(cfg.hajjTerminalRate),
+          cityJeddahInternal: Number(cfg.cityJeddahInternal),
+          jeddahAirportToJeddahHotel: Number(cfg.cityJeddahInternal),
           cityJeddahToMakkah: Number(cfg.cityJeddahToMakkah),
           cityJeddahToMadinah: Number(cfg.cityJeddahToMadinah),
           cityMakkahToMadinah: Number(cfg.cityMakkahToMadinah),
           cityMadinahInternal: Number(cfg.cityMadinahInternal),
+          madinaAirportToMadinaHotel: Number(cfg.cityMadinahInternal),
+          madinaHotelToMadinaAirport: Number(cfg.cityMadinahInternal),
           makkahZiyarat: Number(cfg.makkahZiyarat),
           madinaZiyarat: Number(cfg.madinaZiyarat),
         }
@@ -456,6 +462,25 @@ export default function AdminRatesManager() {
                   step="10"
                   value={activeVehicle.cityMakkahToMadinah}
                   onChange={(e) => handleFieldChange(activeVehicle.key, 'cityMakkahToMadinah', Number(e.target.value))}
+                  className="w-full bg-white border border-slate-300 focus:border-slate-800 rounded-xl py-2.5 px-3 text-sm font-black text-slate-900 font-mono outline-none"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 font-mono pt-1">
+                  SAR
+                </span>
+              </div>
+            </div>
+
+            {/* Jeddah Internal / Intercity (Airport to Hotel) */}
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4.5 space-y-2">
+              <label className="text-xs font-black text-slate-800 uppercase tracking-wide block">
+                {lang === 'en' ? 'Jeddah Airport ➔ Hotel (Intercity)' : 'مطار جدة ➔ فندق (توصيل داخلي)'}
+              </label>
+              <div className="relative pt-1">
+                <input
+                  type="number"
+                  step="5"
+                  value={activeVehicle.cityJeddahInternal}
+                  onChange={(e) => handleFieldChange(activeVehicle.key, 'cityJeddahInternal', Number(e.target.value))}
                   className="w-full bg-white border border-slate-300 focus:border-slate-800 rounded-xl py-2.5 px-3 text-sm font-black text-slate-900 font-mono outline-none"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 font-mono pt-1">

@@ -386,24 +386,26 @@ export function resolveCityToCityRoute(pickupId: string, destinationId: string):
     };
   }
 
-  // 4. City Pair: Madinah ⇄ Madinah (Internal transfers like Madina Airport ➔ Madina Hotel or vice-versa)
+  // 4. City Pair: Madinah ⇄ Madinah (Internal/intercity transfers like Madina Airport ➔ Madina Hotel or vice-versa)
   if (pickupCity === 'madina' && destCity === 'madina') {
+    const isAirportTransfer = pickupId.includes('airport') || destinationId.includes('airport');
     return {
       isCityToCity: true,
       rateKey: 'cityMadinahInternal',
-      routeNameEn: 'Madinah Internal Transfer',
-      routeNameAr: 'توصيل داخلي بالمدينة المنورة',
+      routeNameEn: isAirportTransfer ? 'Madinah Airport ⇄ Hotel Transfer' : 'Madinah Intercity Transfer',
+      routeNameAr: isAirportTransfer ? 'توصيل مطار المدينة ⇄ فندق المدينة' : 'توصيل داخلي بالمدينة المنورة',
       cityPair: 'madina_internal'
     };
   }
 
-  // 5. Internal Jeddah or Makkah Transfer
+  // 5. Internal Jeddah Transfer (Jeddah Airport ➔ Jeddah Hotel or vice-versa)
   if (pickupCity === 'jeddah' && destCity === 'jeddah') {
+    const isAirportTransfer = pickupId.includes('airport') || destinationId.includes('airport');
     return {
       isCityToCity: true,
-      rateKey: 'cityJeddahToMakkah', // Falls back to local city flat transfer
-      routeNameEn: 'Jeddah Local Transfer',
-      routeNameAr: 'توصيل محلي بجدة',
+      rateKey: 'cityJeddahInternal',
+      routeNameEn: isAirportTransfer ? 'Jeddah Airport ⇄ Hotel Transfer' : 'Jeddah Intercity Transfer',
+      routeNameAr: isAirportTransfer ? 'توصيل مطار جدة ⇄ فندق جدة' : 'توصيل داخلي بجدة',
       cityPair: 'jeddah_internal'
     };
   }
@@ -411,8 +413,8 @@ export function resolveCityToCityRoute(pickupId: string, destinationId: string):
   if (pickupCity === 'makkah' && destCity === 'makkah') {
     return {
       isCityToCity: true,
-      rateKey: 'makkahZiyarat', // Local Makkah transfer
-      routeNameEn: 'Makkah Local Transfer',
+      rateKey: 'cityMakkahInternal',
+      routeNameEn: 'Makkah City Transfer',
       routeNameAr: 'توصيل محلي بمكة المكرمة',
       cityPair: 'makkah_internal'
     };
@@ -448,6 +450,18 @@ export function getCityRoutePrice(vehicleRateKey: string | undefined, rateKey: s
   }
 
   // Fallback lookups if specific key was aliased
+  if (rateKey === 'cityJeddahInternal') {
+    const alt = baseRates.jeddahAirportToJeddahHotel || (vehicleRateKey === 'h1_hyundai' ? 100 : (vehicleRateKey === 'camry' || vehicleRateKey === 'fordTaurus') ? 70 : 150);
+    return Math.round(alt * (rates.globalMultiplier || 1.0));
+  }
+  if (rateKey === 'cityMadinahInternal') {
+    const alt = baseRates.madinaAirportToMadinaHotel || (vehicleRateKey === 'h1_hyundai' ? 100 : (vehicleRateKey === 'camry' || vehicleRateKey === 'fordTaurus') ? 70 : 150);
+    return Math.round(alt * (rates.globalMultiplier || 1.0));
+  }
+  if (rateKey === 'cityMakkahInternal') {
+    const alt = baseRates.cityMakkahInternal || (vehicleRateKey === 'h1_hyundai' ? 100 : (vehicleRateKey === 'camry' || vehicleRateKey === 'fordTaurus') ? 70 : 150);
+    return Math.round(alt * (rates.globalMultiplier || 1.0));
+  }
   if (rateKey === 'cityJeddahToMakkah') {
     const alt = baseRates.jeddahAirportToMakkahHotel || 350;
     return Math.round(alt * rates.globalMultiplier);
@@ -458,10 +472,6 @@ export function getCityRoutePrice(vehicleRateKey: string | undefined, rateKey: s
   }
   if (rateKey === 'cityMakkahToMadinah') {
     const alt = baseRates.makkahHotelToMadinaHotel || 500;
-    return Math.round(alt * rates.globalMultiplier);
-  }
-  if (rateKey === 'cityMadinahInternal') {
-    const alt = baseRates.madinaAirportToMadinaHotel || 250;
     return Math.round(alt * rates.globalMultiplier);
   }
 

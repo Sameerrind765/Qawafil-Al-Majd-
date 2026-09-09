@@ -68,8 +68,8 @@ export default function Home() {
   // New customized tabbed booking form states
   const [heroWorkflow, setHeroWorkflow] = useState<'precise' | 'quick'>('precise');
   const [tripType, setTripType] = useState<'Point to Point' | 'Packages' | 'By KM' | 'Full Contract'>('Point to Point');
-  const [fromLocation, setFromLocation] = useState('Jeddah Airport (KAIA)');
-  const [toLocation, setToLocation] = useState('Makkah Hotel (near Haram)');
+  const [fromLocation, setFromLocation] = useState('Madinah Airport (PMIA)');
+  const [toLocation, setToLocation] = useState('Madinah Hotel (near Nabawi)');
   const [fromTerminal, setFromTerminal] = useState<JeddahTerminalId>('terminal_1');
   const [toTerminal, setToTerminal] = useState<JeddahTerminalId>('terminal_1');
   const [packageOptionId, setPackageOptionId] = useState<string>('standard_circuit');
@@ -379,7 +379,7 @@ export default function Home() {
     if (customDetails) {
       let resolvedTripType = customDetails.isEstimated 
         ? (lang === 'en' ? 'Estimated Distance' : 'مسافة تقديرية') 
-        : (lang === 'en' ? 'City-to-City Route' : 'مسار المدن الثابت');
+        : (lang === 'en' ? 'Direct Chauffeur Transfer' : 'توصيل مباشر خاص');
       
       if (customDetails.circuitPackageId) {
         resolvedTripType = lang === 'en' ? 'Full Ground Circuit' : 'التفويج الشامل';
@@ -1193,7 +1193,7 @@ export default function Home() {
                 vehicle={vehicle}
                 bookingDate={bookingDate}
                 initialPickupId={fromLocation.includes('Jeddah Airport') ? 'jeddah_airport' : fromLocation.includes('Madinah Airport') ? 'madina_airport' : fromLocation.includes('Makkah') ? 'makkah_hotel' : fromLocation.includes('Madinah Hotel') ? 'madina_hotel' : 'jeddah_hotel'}
-                initialDestinationId={toLocation.includes('Jeddah Airport') ? 'jeddah_airport' : toLocation.includes('Madinah Airport') ? 'madina_airport' : toLocation.includes('Makkah') ? 'makkah_hotel' : toLocation.includes('Madinah Hotel') ? 'madina_hotel' : 'makkah_hotel'}
+                initialDestinationId={toLocation.includes('Jeddah Airport') ? 'jeddah_airport' : toLocation.includes('Jeddah Hotel') ? 'jeddah_hotel' : toLocation.includes('Madinah Airport') ? 'madina_airport' : toLocation.includes('Makkah') ? 'makkah_hotel' : toLocation.includes('Madinah Hotel') ? 'madina_hotel' : 'jeddah_hotel'}
                 initialPickupTerminal={fromTerminal}
                 initialDestinationTerminal={toTerminal}
                 onBookNow={handleVehicleCardBooking}
